@@ -16,3 +16,9 @@ Python 3.12 is pinned for this project. Python dependencies are managed with uv 
 To synchronize the Python environment, run `uv sync --locked` from the project root. This environment currently contains no application dependencies; they will be added and pinned as the relevant roadmap work begins.
 
 See [AGENTS.md](AGENTS.md) for repository boundaries, security expectations, and the `RJ1899157`-only GitHub and commit identity policy.
+
+## Architecture
+
+- [Proposed domain model and database boundaries](docs/architecture/domain-model.md)
+
+The logical design is documented. Database schema implementation and migration checks are still pending.
