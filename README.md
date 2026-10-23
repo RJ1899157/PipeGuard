@@ -11,6 +11,8 @@ The sample pipelines are inputs to the monitoring system, not part of the PipeGu
 
 ## Local development status
 
-Week 1 setup is in progress. Python 3.12 is the target runtime; project Python dependencies will be installed only into `.venv/`. Docker Desktop is intentionally left stopped until a later task requires containers.
+Python 3.12 is pinned for this project. Python dependencies are managed with uv and installed into the project-local `.venv/` from `pyproject.toml` and `uv.lock`. Docker Desktop is intentionally left stopped until a planned task needs containers.
+
+To synchronize the Python environment, run `uv sync --locked` from the project root. This environment currently contains no application dependencies; they will be added and pinned as the relevant roadmap work begins.
 
 See [AGENTS.md](AGENTS.md) for repository boundaries, security expectations, and the `RJ1899157`-only GitHub and commit identity policy.
