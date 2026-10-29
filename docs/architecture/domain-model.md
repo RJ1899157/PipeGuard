@@ -2,6 +2,19 @@
 
 Status: proposed logical design, ready for schema implementation. No database or migration exists yet.
 
+[Architecture overview](overview.md) · [Documentation index](../README.md) · [Delivery roadmap](../roadmap.md)
+
+## Contents
+
+- [Purpose and boundaries](#purpose-and-boundaries)
+- [Running example](#running-example)
+- [Core entities](#core-entities)
+- [Investigation and recovery extension](#investigation-and-recovery-extension)
+- [Database rules and reasons](#database-rules-and-reasons)
+- [Alternatives considered](#alternatives-considered)
+- [Planned database checkpoint](#planned-database-checkpoint)
+- [Official references](#official-references)
+
 ## Purpose and boundaries
 
 PipeGuard stores monitoring metadata, evidence, and incident workflows. Business rows remain in the sample pipeline warehouse. Start with three independent databases when containers are needed: `pipeguard` for this application, `airflow` for the orchestrator, and `sample_warehouse` for monitored data. They may share a local PostgreSQL server but must have separate database roles and credentials. This is a local development boundary, not physical failure isolation.
