@@ -13,6 +13,11 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 | [Development setup](development/setup.md) | Repository access, Python environment, dependencies, and verification status |
 | [Delivery roadmap](roadmap.md) | Thirteen delivery stages with outputs and acceptance criteria |
 
+## Dashboard
+
+- [Setup and local access](../apps/pipeguard/web/README.md)
+- [Verification](dashboard-verification.md)
+
 ## Sample workloads
 
 - [Orders pipeline](../sample-pipelines/orders/README.md): independent warehouse, ingestion, dbt models, quality checks and verification.

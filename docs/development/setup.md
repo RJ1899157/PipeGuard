@@ -4,13 +4,13 @@
 
 The project includes PostgreSQL 17, seventeen SQLAlchemy metadata models (including incident, lineage and evidence records), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
-The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. There is no dashboard or incident engine yet.
+The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. Deterministic incident detection, lineage and a local read-only dashboard are implemented. See the [dashboard setup](../../apps/pipeguard/web/README.md) for frontend startup and its local owner access boundary.
 
 ## Prerequisites
 
 - Python 3.12, uv, Git and Docker Desktop.
 - GitHub access as `RJ1899157` for the private repository.
-- Node.js 22 and pnpm will be needed for the future web application.
+- Node.js 22 and pnpm 11.25.0 for the web application.
 
 The primary checkout is `/Users/rishabhjain/Desktop/PipeGuard`. Run the following
 commands from the repository root. Python packages are installed only in `.venv`;

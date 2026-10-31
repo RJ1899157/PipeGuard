@@ -4,7 +4,7 @@
 
 PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It collects execution metadata, quality results and bounded dataset lineage, detects incidents through deterministic rules and preserves supporting evidence. AI-generated hypotheses remain a later stage.
 
-> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. Dataset lineage, historical graph traversal and immutable incident evidence bundles are implemented through a bounded OpenLineage profile. The dashboard, AI investigation and approved recovery remain planned.
+> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. Dataset lineage, historical graph traversal and immutable incident evidence bundles are implemented through a bounded OpenLineage profile. The local read-only dashboard now exposes pipeline coverage, execution attempts, incident history and attempt-scoped interactive lineage. AI investigation and approved recovery remain planned.
 
 [Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md) · [Incident operations](docs/incident-operations.md) · [Failure coverage](docs/failure-coverage.md) · [Lineage and evidence](docs/architecture/lineage-evidence.md)
 
@@ -49,10 +49,10 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 | Python environment | Python 3.12, uv, project-local `.venv` | Configured; persistence dependencies locked |
 | Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Initial schema implemented |
 | API and validation | FastAPI, Pydantic 2 | Authenticated local API and versioned contracts implemented |
-| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Orders/dbt workload and Airflow execution adapter implemented; OpenLineage planned |
-| Web application | Next.js 16, React 19, TypeScript 5, Tailwind 4, shadcn/ui | Planned |
-| Graphs and charts | React Flow, Apache ECharts | Planned |
-| Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose and persistence tests available; browser tests and CI planned |
+| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented |
+| Web application | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local read-only dashboard foundation implemented; pnpm lockfile committed |
+| Graphs and charts | React Flow; Apache ECharts planned | Attempt-scoped 2D graph and textual alternative implemented; charts remain planned |
+| Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose, backend/web checks and manual browser verification available; CI planned |
 | Later integrations | Marquez, Prometheus, optional GCP | Deferred |
 
 Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.
@@ -70,6 +70,8 @@ uv sync --locked
 The repository is private and requires authorized GitHub access. For the existing checkout on the development machine, use `/Users/rishabhjain/Desktop/PipeGuard` and run only `uv sync --locked`.
 
 The command prepares the monitoring application’s `.venv`. The development setup documents database migration, API provisioning and startup. The [orders workload](sample-pipelines/orders/README.md) has its own environment and execution instructions. Docker Desktop is only needed when container-backed services are introduced. See [development setup](docs/development/setup.md) for environment and dependency policies.
+
+For the dashboard, follow the [web setup](apps/pipeguard/web/README.md). It runs locally on port 3000 and uses the existing API without exposing its credential to the browser.
 
 ## Repository layout
 
