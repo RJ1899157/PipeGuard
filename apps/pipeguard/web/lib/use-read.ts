@@ -1,6 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { demoRead } from "./demo";
+import { snapshotKinds } from "./boundary";
+import type { ReadSnapshot } from "./types";
 export function useRead<T>(
   kind: string,
   params: Record<string, string> | null,
@@ -30,13 +32,25 @@ export function useRead<T>(
           ...(scenario ? { scenario } : {}),
         }).toString();
   const identity = `${demo}:${revision}:${key}`;
+  const scopeQuery = new URLSearchParams(key || "");
+  scopeQuery.delete("offset");
+  const snapshotScope = `${demo}:${revision}:${scopeQuery}`;
+  const snapshotRef = useRef<{ scope: string; token: string } | null>(null);
   const [state, setState] = useState<{
     data: T | null;
     error: string | null;
     loading: boolean;
     at: string | null;
     key: string | null;
-  }>({ data: null, error: null, loading: false, at: null, key: null });
+    page: { has_more: boolean; snapshot: ReadSnapshot } | null;
+  }>({
+    data: null,
+    error: null,
+    loading: false,
+    at: null,
+    key: null,
+    page: null,
+  });
   useEffect(() => {
     if (key === null) {
       setState({
@@ -45,6 +59,7 @@ export function useRead<T>(
         loading: false,
         at: null,
         key: identity,
+        page: null,
       });
       return;
     }
@@ -55,21 +70,52 @@ export function useRead<T>(
       loading: true,
       at: null,
       key: identity,
+      page: null,
     });
     async function load() {
       try {
         let data: unknown;
+        let page: { has_more: boolean; snapshot: ReadSnapshot } | null = null;
         if (demo) data = demoRead(kind, new URLSearchParams(key!));
         else {
-          const response = await fetch(`/api/read?${key}`, {
-            cache: "no-store",
-            signal: controller.signal,
-          });
+          const query = new URLSearchParams(key!);
+          const paged = snapshotKinds.includes(kind);
+          if (paged)
+            query.set(
+              "snapshot",
+              snapshotRef.current?.scope === snapshotScope
+                ? snapshotRef.current.token
+                : "new",
+            );
+          const response = await fetch(
+            kind === "watchdog" ? "/api/watchdog" : `/api/read?${query}`,
+            {
+              cache: "no-store",
+              signal: controller.signal,
+            },
+          );
           if (!response.ok) {
             const body = await response.json();
             throw new Error(body.error || "api_unavailable");
           }
           data = await response.json();
+          if (paged) {
+            const envelope = data as {
+              items: unknown[];
+              has_more: boolean;
+              snapshot: ReadSnapshot;
+            };
+            if (!Array.isArray(envelope.items) || !envelope.snapshot?.token)
+              throw new Error("invalid_read_snapshot");
+            page = { has_more: envelope.has_more, snapshot: envelope.snapshot };
+            if (!controller.signal.aborted)
+              snapshotRef.current = {
+                scope: snapshotScope,
+                token: envelope.snapshot.token,
+              };
+            if (kind === "incidents" || kind === "history")
+              data = envelope.items;
+          }
         }
         if (!controller.signal.aborted)
           setState({
@@ -78,6 +124,7 @@ export function useRead<T>(
             loading: false,
             at: new Date().toISOString(),
             key: identity,
+            page,
           });
       } catch (error) {
         if (!controller.signal.aborted)
@@ -87,13 +134,21 @@ export function useRead<T>(
             loading: false,
             at: null,
             key: identity,
+            page: null,
           });
       }
     }
     void load();
     return () => controller.abort();
-  }, [key, demo, revision, kind, identity]);
+  }, [key, demo, revision, kind, identity, snapshotScope]);
   return state.key === identity
     ? state
-    : { data: null, error: null, loading: key !== null, at: null, key };
+    : {
+        data: null,
+        error: null,
+        loading: key !== null,
+        at: null,
+        key,
+        page: null,
+      };
 }

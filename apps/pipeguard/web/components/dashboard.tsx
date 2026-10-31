@@ -31,6 +31,8 @@ import type {
 import { graphEvidence, selectedEdgeIndex } from "@/lib/graph-evidence";
 import { useRead } from "@/lib/use-read";
 import { ExecutionTimeline, QualityResults } from "./analytics";
+import { GraphText } from "./graph-text";
+import { WatchdogStatus } from "./watchdog-status";
 const Lineage = dynamic(() => import("./lineage"), {
   ssr: false,
   loading: () => <div className="empty">Loading lineage diagram…</div>,
@@ -122,12 +124,20 @@ function State({
             ? "Dashboard access denied"
             : error === "record_not_found"
               ? "Record no longer available"
-              : "Data unavailable"}
+              : error === "read_snapshot_expired"
+                ? "List snapshot expired"
+                : error === "read_snapshot_capacity"
+                  ? "Selection exceeds snapshot capacity"
+                  : "Data unavailable"}
         </strong>
         <span>
           {error === "dashboard_not_configured"
             ? "Start the dashboard with its private local configuration."
-            : "The API could not supply these records. Check the local services, then use Refresh."}
+            : error === "read_snapshot_expired"
+              ? "Use Refresh to capture current records and start again. Pages will not be silently mixed."
+              : error === "read_snapshot_capacity"
+                ? "Wait for older snapshots to expire, or narrow the execution scope, then use Refresh."
+                : "The API could not supply these records. Check the local services, then use Refresh."}
         </span>
       </div>
     );
@@ -407,7 +417,20 @@ export default function Dashboard() {
                   : "Inspect lineage and every execution attempt, including earlier failures."}
             </p>
           </div>
-          <button className="refresh" onClick={() => setRevision((n) => n + 1)}>
+          <button
+            className="refresh"
+            onClick={() => {
+              setJobOffset(0);
+              setRunOffset(0);
+              setAttemptOffset(0);
+              setIncidentOffset(0);
+              setHistoryOffset(0);
+              setIncident("");
+              setEvent("");
+              setShowEvidence(false);
+              setRevision((n) => n + 1);
+            }}
+          >
             <ArrowClockwiseIcon size={17} />
             Refresh
           </button>
@@ -431,6 +454,26 @@ export default function Dashboard() {
             </span>
           )}
         </div>
+        {!demo &&
+          (view === "Overview"
+            ? jobs.page
+            : view === "Incidents"
+              ? incidents.page
+              : runs.page
+          )?.snapshot && (
+            <p className="notice small-note">
+              Each list has its own stable snapshot. This list was captured at{" "}
+              {
+                (view === "Overview"
+                  ? jobs.page
+                  : view === "Incidents"
+                    ? incidents.page
+                    : runs.page)!.snapshot.captured_at
+              }
+              . Refresh includes later changes and starts again from the first
+              page.
+            </p>
+          )}
         {view === "Overview" ? (
           <section className="panel">
             <div className="section-heading">
@@ -513,6 +556,7 @@ export default function Dashboard() {
                 }}
               />
             </State>
+            <WatchdogStatus demo={demo} revision={revision} />
             <div className="notice">
               <InfoIcon size={18} />
               {coverage.error
@@ -590,7 +634,10 @@ export default function Dashboard() {
               </State>
               <Pager
                 offset={incidentOffset}
-                more={(incidents.data?.length || 0) === 50}
+                more={
+                  incidents.page?.has_more ??
+                  (incidents.data?.length || 0) === 50
+                }
                 onChange={(n) => {
                   setIncidentOffset(n);
                   setIncident("");
@@ -635,7 +682,10 @@ export default function Dashboard() {
                     historyOffset > 0) && (
                     <Pager
                       offset={historyOffset}
-                      more={(history.data?.length || 0) === 50}
+                      more={
+                        history.page?.has_more ??
+                        (history.data?.length || 0) === 50
+                      }
                       onChange={setHistoryOffset}
                     />
                   )}
@@ -817,40 +867,11 @@ export default function Dashboard() {
                                   : ""}
                               </span>
                             </div>
-                            <details className="text-alternative">
-                              <summary>
-                                Text view of lineage · {graph.data.nodes.length}{" "}
-                                nodes / {graph.data.edges.length} links
-                              </summary>
-                              <ul>
-                                {graph.data.nodes.map((n) => (
-                                  <li key={n.id}>
-                                    <button
-                                      onClick={() => {
-                                        selectGraphNode(n.id);
-                                      }}
-                                    >
-                                      {n.kind}: {n.name}
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                              <h3>Observed links</h3>
-                              <ul>
-                                {graph.data.edges.map((e, i) => (
-                                  <li key={i}>
-                                    <button
-                                      className="text-button"
-                                      onClick={() => selectGraphEdge(i)}
-                                      aria-label={`Dependency: ${graphNames.get(e.source)} to ${graphNames.get(e.target)}`}
-                                    >
-                                      {graphNames.get(e.source)} →{" "}
-                                      {graphNames.get(e.target)}
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </details>
+                            <GraphText
+                              graph={graph.data}
+                              onNodeSelect={selectGraphNode}
+                              onEdgeSelect={selectGraphEdge}
+                            />
                           </>
                         )}
                       </State>
@@ -969,7 +990,7 @@ export default function Dashboard() {
                     </section>
                     {job && run && attempt && (
                       <QualityResults
-                        key={scope}
+                        key={`${scope}:${revision}`}
                         jobId={job.id}
                         run={run.external_run_id}
                         attempt={attempt.attempt_number}

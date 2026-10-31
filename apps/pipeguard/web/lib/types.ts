@@ -31,6 +31,20 @@ export type Page<T> = {
   has_more: boolean;
   limit: number;
   offset: number;
+  snapshot?: ReadSnapshot;
+  summary?: QualitySummary;
+};
+export type ReadSnapshot = {
+  token: string;
+  captured_at: string;
+  expires_at: string;
+  total_count: number;
+};
+export type QualitySummary = {
+  report_count: number;
+  conflicting_rule_count: number;
+  has_conflicts: boolean;
+  scope: "filtered_history";
 };
 export type Incident = {
   id: string;

@@ -1,14 +1,56 @@
 /** Local owner UI: deny DNS rebinding and cross-site browser requests. */
 export function localRequestAllowed(headers: Headers): boolean {
+  return localRequestRejection(headers) === null;
+}
+export function localRequestRejection(headers: Headers): string | null {
   const host = headers.get("host");
-  if (host !== "127.0.0.1:3000" && host !== "localhost:3000") return false;
+  if (host !== "127.0.0.1:3000" && host !== "localhost:3000") return "host";
   const origin = headers.get("origin");
-  if (origin && origin !== `http://${host}`) return false;
+  if (origin && origin !== `http://${host}`) return "origin";
   const site = headers.get("sec-fetch-site");
-  return !site || site === "same-origin" || site === "none";
+  return !site || site === "same-origin" || site === "none"
+    ? null
+    : "fetch_metadata";
+}
+/** A top-level visit may originate elsewhere; it serves only the app shell.
+ * Metadata routes and embedded/cross-origin fetches still require same origin.
+ */
+export function localDocumentAllowed(
+  headers: Headers,
+  method: string,
+  pathname: string,
+): boolean {
+  return (
+    method === "GET" &&
+    pathname === "/" &&
+    localRequestRejection(headers) === "fetch_metadata" &&
+    headers.get("sec-fetch-mode") === "navigate" &&
+    headers.get("sec-fetch-dest") === "document"
+  );
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const snapshotKinds = [
+  "jobs",
+  "runs",
+  "attempts",
+  "incidents",
+  "history",
+  "quality",
+];
 export function readPath(query: URLSearchParams): string | null {
+  const snapshot = query.get("snapshot");
+  if (
+    snapshot !== null &&
+    (!snapshotKinds.includes(query.get("kind") || "") ||
+      !/^(new|[A-Za-z0-9_-]{43})$/.test(snapshot))
+  )
+    return null;
+  const path = baseReadPath(query);
+  return path && snapshot
+    ? `${path}&snapshot=${encodeURIComponent(snapshot)}`
+    : path;
+}
+function baseReadPath(query: URLSearchParams): string | null {
   const kind = query.get("kind");
   const id = query.get("id") || "";
   const offset = Number(query.get("offset") || 0);

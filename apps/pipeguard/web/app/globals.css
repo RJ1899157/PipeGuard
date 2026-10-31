@@ -124,6 +124,8 @@ pre {
   height: 1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .skip-link {
   position: absolute;
@@ -717,6 +719,7 @@ dd {
   padding: 7px;
 }
 .table-wrap {
+  position: relative;
   overflow-x: auto;
   margin-top: 18px;
 }

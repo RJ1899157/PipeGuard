@@ -127,3 +127,66 @@ test("quality read scope retains pagination and the complete API attempt range",
     null,
   );
 });
+
+test("snapshot cursors stay bounded and only reach supported read lists", () => {
+  for (const snapshot of ["new", "a".repeat(43)]) {
+    const path = readPath(
+      new URLSearchParams({ kind: "jobs", offset: "50", snapshot }),
+    );
+    assert.equal(
+      new URL(path!, "http://127.0.0.1:8000").searchParams.get("snapshot"),
+      snapshot,
+    );
+  }
+  for (const snapshot of [
+    "",
+    "../events",
+    "https://evil.test",
+    "a".repeat(129),
+  ])
+    assert.equal(
+      readPath(new URLSearchParams({ kind: "jobs", snapshot })),
+      null,
+    );
+  for (const kind of ["coverage", "lineage", "lineage-event"])
+    assert.equal(
+      readPath(
+        new URLSearchParams({
+          kind,
+          id,
+          run: "run",
+          attempt: "1",
+          snapshot: "new",
+        }),
+      ),
+      null,
+    );
+});
+
+test("top-level local document visits work without allowing cross-site data access", async () => {
+  const { localDocumentAllowed } = await import("../lib/boundary.ts");
+  const headers = new Headers({
+    host: "127.0.0.1:3000",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-dest": "document",
+  });
+  assert.equal(localRequestAllowed(headers), false);
+  assert.equal(localDocumentAllowed(headers, "GET", "/"), true);
+  for (const [method, path] of [
+    ["POST", "/"],
+    ["GET", "/api/read"],
+    ["GET", "/api/watchdog"],
+  ])
+    assert.equal(localDocumentAllowed(headers, method, path), false);
+  for (const [key, value] of [
+    ["host", "evil.test"],
+    ["origin", "https://evil.test"],
+    ["sec-fetch-dest", "iframe"],
+    ["sec-fetch-mode", "cors"],
+  ]) {
+    const bad = new Headers(headers);
+    bad.set(key, value);
+    assert.equal(localDocumentAllowed(bad, "GET", "/"), false);
+  }
+});

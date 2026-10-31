@@ -72,3 +72,48 @@ test("exact history page boundary produces an empty next page", () => {
     50,
   );
 });
+
+test("hidden quality conflicts remain visible before visiting later reports", () => {
+  const query = new URLSearchParams({
+    quality_fixture: "hidden-conflict",
+    attempt: "2",
+  });
+  const first = demoRead("quality", query) as {
+    items: { payload: { checks: { status: string }[] } }[];
+    has_more: boolean;
+    summary: { report_count: number; conflicting_rule_count: number };
+  };
+  assert.equal(first.items.length, 50);
+  assert.equal(first.has_more, true);
+  assert.equal(
+    first.items.every((r) =>
+      r.payload.checks.every((c) => c.status === "pass"),
+    ),
+    true,
+  );
+  assert.equal(first.summary.report_count, 51);
+  assert.equal(first.summary.conflicting_rule_count, 4);
+  query.set("offset", "50");
+  const next = demoRead("quality", query) as typeof first;
+  assert.equal(next.items.length, 1);
+  assert.equal(next.has_more, false);
+  assert.equal(next.summary.conflicting_rule_count, 4);
+});
+
+test("hidden-conflict fixture also preserves a missing first-attempt report", () => {
+  const page = demoRead(
+    "quality",
+    new URLSearchParams({ quality_fixture: "hidden-conflict", attempt: "1" }),
+  ) as {
+    items: unknown[];
+    summary: { report_count: number; has_conflicts: boolean };
+  };
+  assert.deepEqual(page.items, []);
+  assert.equal(page.summary.report_count, 0);
+  assert.equal(page.summary.has_conflicts, false);
+  const watcher = demoRead(
+    "watchdog",
+    new URLSearchParams({ scenario: "stale" }),
+  ) as { status: { monitor: string } };
+  assert.equal(watcher.status.monitor, "stale");
+});

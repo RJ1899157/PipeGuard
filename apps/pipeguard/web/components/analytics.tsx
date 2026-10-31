@@ -157,7 +157,9 @@ export function QualityResults({
   const report =
     reports.data?.items.find((r) => r.id === selected) ||
     reports.data?.items[0];
-  const conflicts = conflictingRules(reports.data?.items || []);
+  const conflicts =
+    reports.data?.summary?.conflicting_rule_count ??
+    conflictingRules(reports.data?.items || []);
   const counts = useMemo(() => (report ? qualityCounts(report) : []), [report]);
   const option = useMemo(
     () => ({
@@ -204,8 +206,11 @@ export function QualityResults({
         </p>
       ) : reports.error ? (
         <p className="notice warning" role="alert">
-          Quality reports unavailable. Use Refresh to retry; no passing result
-          is inferred.
+          {reports.error === "read_snapshot_expired"
+            ? "Report snapshot expired. Use Refresh to capture current reports."
+            : reports.error === "read_snapshot_capacity"
+              ? "Snapshot capacity reached. Wait for older snapshots to expire or narrow the scope, then use Refresh."
+              : "Quality reports unavailable. Use Refresh to retry; no passing result is inferred."}
         </p>
       ) : !report ? (
         <p className="notice">
@@ -229,8 +234,11 @@ export function QualityResults({
           </label>
           {conflicts > 0 && (
             <p className="notice warning">
-              {conflicts} rule/version conflict(s) in the loaded reports for
-              this attempt. Choosing a passing report does not erase
+              {conflicts} rule/version conflict(s) in{" "}
+              {reports.data?.summary
+                ? "all stored reports"
+                : "the loaded reports"}{" "}
+              for this attempt. Choosing a passing report does not erase
               contradictory evidence.
             </p>
           )}
@@ -295,6 +303,16 @@ export function QualityResults({
             </p>
           )}
         </>
+      )}
+      {reports.data?.summary && (
+        <p className="small-note">
+          Conflict check covers all {reports.data.summary.report_count} stored
+          reports in this execution-attempt scope
+          {reports.data.snapshot
+            ? `, captured ${reports.data.snapshot.captured_at}`
+            : ""}
+          . New reports appear after Refresh.
+        </p>
       )}
       <div className="pager">
         <span>Report page {offset / 50 + 1} · up to 50 observations</span>

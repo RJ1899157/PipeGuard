@@ -36,15 +36,21 @@ export async function GET(request: NextRequest) {
               ? "dashboard_unauthorized"
               : upstream.status === 404
                 ? "record_not_found"
-                : "api_unavailable",
+                : upstream.status === 410
+                  ? "read_snapshot_expired"
+                  : upstream.status === 413
+                    ? "read_snapshot_capacity"
+                    : "api_unavailable",
         },
         {
           status:
             upstream.status === 404
               ? 404
-              : upstream.status === 401 || upstream.status === 403
-                ? 502
-                : 503,
+              : upstream.status === 410 || upstream.status === 413
+                ? upstream.status
+                : upstream.status === 401 || upstream.status === 403
+                  ? 502
+                  : 503,
         },
       );
     const data = await upstream.json();

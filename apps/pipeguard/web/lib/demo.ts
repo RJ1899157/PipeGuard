@@ -1,3 +1,4 @@
+import { conflictingRules } from "./analytics.ts";
 import { qualityFixture, performanceGraph } from "./exploration-fixtures.ts";
 import type {
   Job,
@@ -67,7 +68,8 @@ export const demoCoverage: Coverage = {
     },
   ],
   unmonitored_job_ids: [],
-  notice: "External watchdog required for host, API and database outages.",
+  notice:
+    "The independent local watcher detects service outages; total host loss requires another device.",
 };
 export const demoIncident: Incident = {
   id: id(6),
@@ -196,6 +198,56 @@ export function demoRead(kind: string, query: URLSearchParams): unknown {
         created_at: time("09:15:10"),
       },
     ] satisfies History[];
+  if (kind === "watchdog")
+    return {
+      version: 1,
+      checked_at: new Date().toISOString(),
+      status: {
+        api: "healthy",
+        database: "healthy",
+        monitor: scenario === "stale" ? "stale" : "fresh",
+      },
+      notification: "disabled",
+    };
+  if (
+    kind === "quality" &&
+    query.get("quality_fixture") === "hidden-conflict"
+  ) {
+    const pair = qualityFixture(
+      demoJob.id,
+      demoRun.external_run_id,
+      Number(query.get("attempt") || 2),
+      true,
+    );
+    if (pair.length === 0)
+      return {
+        ...page([]),
+        summary: {
+          report_count: 0,
+          conflicting_rule_count: 0,
+          has_conflicts: false,
+          scope: "filtered_history",
+        },
+      };
+    const all = Array.from({ length: 50 }, (_, i) => ({
+      ...pair[1],
+      id: id(2000 + i),
+    }));
+    all.push({ ...pair[0], id: id(2100) });
+    const offset = Number(query.get("offset") || 0);
+    return {
+      items: all.slice(offset, offset + 50),
+      offset,
+      limit: 50,
+      has_more: offset + 50 < all.length,
+      summary: {
+        report_count: all.length,
+        conflicting_rule_count: conflictingRules(all),
+        has_conflicts: true,
+        scope: "filtered_history",
+      },
+    };
+  }
   if (kind === "quality")
     return page(
       query.get("quality_fixture") === "empty"
