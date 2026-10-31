@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import secrets
 import sys
+from local_files import write_private
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "apps/pipeguard/src"))
 from psycopg import sql
@@ -38,15 +39,7 @@ def main():
             grant_runtime_access(connection)
         values.update(PIPEGUARD_API_PASSWORD=runtime_password, PIPEGUARD_ADMIN_TOKEN=admin_token,
                       PIPEGUARD_API_DATABASE_URL=runtime_url.render_as_string(hide_password=False))
-        # Write a private temporary file and atomically replace the configuration.
-        temp = path.with_name(".env.api-tmp")
-        descriptor = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        try:
-            with os.fdopen(descriptor, "w") as stream:
-                stream.write("".join(f"{key}={value}\n" for key, value in values.items()))
-            temp.replace(path)
-        finally:
-            temp.unlink(missing_ok=True)
+        write_private(path, "".join(f"{key}={value}\n" for key, value in values.items()))
     finally:
         admin_engine.dispose()
         owner_engine.dispose()

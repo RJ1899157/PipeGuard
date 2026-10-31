@@ -22,9 +22,6 @@ if __name__ == "__main__":
                    if key in {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "SHELL"}}
     environment.update(PIPEGUARD_ADMIN_TOKEN=token, NEXT_TELEMETRY_DISABLED="1")
     command = "dev" if "--dev" in sys.argv else "start"
-    process = subprocess.Popen([node, str(next_cli), command, "--hostname", "127.0.0.1", "--port", "3000"], cwd=web, env=environment)
-    try:
-        raise SystemExit(process.wait())
-    except KeyboardInterrupt:
-        process.terminate()
-        process.wait(timeout=15)
+    # Replace the launcher so signals and exit status belong to the web process.
+    os.chdir(web)
+    os.execve(node, [node, str(next_cli), command, "--hostname", "127.0.0.1", "--port", "3000"], environment)

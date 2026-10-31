@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 import httpx
+from local_files import write_private
 
 
 def main():
@@ -47,14 +48,7 @@ def main():
         credential.raise_for_status()
         values.update(PIPEGUARD_INTEGRATION_ID=integration["id"], PIPEGUARD_JOB_ID=job["id"],
                       PIPEGUARD_PRODUCER_TOKEN=credential.json()["token"], PIPEGUARD_BASE_URL="http://127.0.0.1:8000")
-    temp=path.with_name(".env.monitor-tmp")
-    descriptor=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-    try:
-        with os.fdopen(descriptor,"w") as stream:
-            stream.write("".join(f"{key}={value}\n" for key,value in values.items()))
-        temp.replace(path)
-    finally:
-        temp.unlink(missing_ok=True)
+    write_private(path,"".join(f"{key}={value}\n" for key,value in values.items()))
     print("Scoped sample producer configured; token saved privately without displaying it")
 
 

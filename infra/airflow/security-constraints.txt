@@ -1,0 +1,15 @@
+# Reviewed security updates above Apache's unmodified 3.3.2 release constraints.
+# See README.md for advisory provenance and compatibility verification.
+certifi==2026.10.23
+dnspython==2.9.1
+mako==1.4.3
+pyjwt==2.15.1
+urllib3==2.8.0
+opentelemetry-api==1.45.2
+opentelemetry-exporter-otlp==1.45.2
+opentelemetry-exporter-otlp-proto-common==1.45.2
+opentelemetry-exporter-otlp-proto-grpc==1.45.2
+opentelemetry-exporter-otlp-proto-http==1.45.2
+opentelemetry-proto==1.45.2
+opentelemetry-sdk==1.45.2
+opentelemetry-semantic-conventions==0.66b2

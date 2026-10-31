@@ -1,11 +1,15 @@
 """Run source validation, raw replacement, and dbt build under one workload lock."""
 from datetime import datetime, timezone
+from contextlib import contextmanager
 import argparse
+import fcntl
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
+import time
 from uuid import uuid4
 
 from orders_pipeline.loader import InvalidSource, WAREHOUSE_LOCK, Warehouse, parse_orders, replace_orders
@@ -16,19 +20,84 @@ from orders_pipeline.lineage import extract as extract_lineage, gap as lineage_g
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@contextmanager
+def _warehouse_guard(path):
+    """Keep local runner exclusion alive in dbt even if its parent is SIGKILLed."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    try:
+        deadline = time.monotonic() + 5
+        while True:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("warehouse_busy") from None
+                time.sleep(0.05)
+        yield descriptor
+    finally:
+        # Never unlink or explicitly unlock: an inherited child descriptor can
+        # still own this same lock after the parent's descriptor is closed.
+        os.close(descriptor)
+
+
+def _run_dbt(command, environment, log, lock_fd=None):
+    """Stop dbt before releasing the warehouse lock on catchable interruption."""
+    process = None
+    interruption = None
+    handlers = {kind: signal.getsignal(kind) for kind in (signal.SIGINT, signal.SIGTERM)}
+    def interrupted(signum, frame):
+        nonlocal interruption
+        interruption = signum
+        if process is not None:
+            raise InterruptedError("workload_interrupted")
+    for kind in handlers:
+        signal.signal(kind, interrupted)
+    try:
+        process = subprocess.Popen(command, env=environment, stdout=log,
+                                   stderr=subprocess.STDOUT, start_new_session=True,
+                                   pass_fds=() if lock_fd is None else (lock_fd,))
+        if interruption is not None:
+            raise InterruptedError("workload_interrupted")
+        returncode = process.wait(timeout=120)
+        return subprocess.CompletedProcess(command, returncode)
+    finally:
+        for kind in handlers:
+            signal.signal(kind, signal.SIG_IGN)
+        try:
+            if process is not None:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+        finally:
+            for kind, handler in handlers.items():
+                signal.signal(kind, handler)
+
+
 def run(source: Path, settings: Warehouse):
     rows = parse_orders(source)
     invocation = uuid4().hex
     artifacts = ROOT / "target" / invocation
     artifacts.mkdir(parents=True)
     environment = {key: value for key, value in os.environ.items()
-                   if not key.startswith(("PIPEGUARD_", "AIRFLOW"))} | {
+                   if key in {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL"}} | {
         "DBT_SEND_ANONYMOUS_USAGE_STATS": "false", "DBT_USE_COLORS": "false",
         "ORDERS_HOST": settings.host, "ORDERS_PORT": str(settings.port),
         "ORDERS_DATABASE": settings.database, "ORDERS_USER": settings.user,
         "ORDERS_SCHEMA_PREFIX": settings.prefix, "DBT_ENV_SECRET_ORDERS_PASSWORD": settings.password,
     }
-    with settings.connect() as connection:
+    with _warehouse_guard(ROOT / "target/warehouse.lock") as lock_fd, settings.connect() as connection:
         connection.execute("SELECT pg_advisory_lock(%s)", (WAREHOUSE_LOCK,))
         load_started_at = datetime.now(timezone.utc).isoformat()
         replace_orders(connection, rows, settings.prefix)
@@ -38,8 +107,7 @@ def run(source: Path, settings: Warehouse):
                    "--profiles-dir", str(ROOT / "dbt"), "--target-path", str(artifacts),
                    "--log-path", str(artifacts / "logs")]
         with (artifacts / "dbt-console.log").open("w") as log:
-            result = subprocess.run(command, env=environment, stdout=log, stderr=subprocess.STDOUT,
-                                    timeout=120, check=False)
+            result = _run_dbt(command, environment, log, lock_fd)
     summary = {"invocation": invocation, "rows_loaded": len(rows), "dbt_succeeded": result.returncode == 0,
                "artifacts": str(artifacts.relative_to(ROOT)),
                "load_started_at": load_started_at, "load_finished_at": load_finished_at}

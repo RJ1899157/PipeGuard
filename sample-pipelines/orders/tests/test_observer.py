@@ -110,13 +110,16 @@ def test_dbt_subprocess_does_not_receive_monitoring_or_airflow_credentials(wareh
     settings,_=warehouse
     monkeypatch.setenv("PIPEGUARD_PRODUCER_TOKEN","SYNTHETIC_TOKEN_FOR_FILTER_CHECK")
     monkeypatch.setenv("AIRFLOW_LOCAL_DB_PASSWORD","SYNTHETIC_PASSWORD_FOR_FILTER_CHECK")
+    monkeypatch.setenv("POSTGRES_PASSWORD","SYNTHETIC_ADMIN_PASSWORD_FOR_FILTER_CHECK")
     captured=[]
-    def invocation(command,**kwargs):
-        captured.append(kwargs["env"])
+    def invocation(command,environment,log,lock_fd):
+        assert type(lock_fd) is int
+        captured.append(environment)
         return CompletedProcess(command,0)
-    monkeypatch.setattr(runner.subprocess,"run",invocation)
+    monkeypatch.setattr(runner,"_run_dbt",invocation)
     runner.run(runner.ROOT/"data/orders.csv",settings)
     assert not any(key.startswith(("PIPEGUARD_","AIRFLOW")) for key in captured[0])
+    assert "POSTGRES_PASSWORD" not in captured[0]
     assert captured[0]["DBT_ENV_SECRET_ORDERS_PASSWORD"]==settings.password
 
 
@@ -124,3 +127,24 @@ def test_arbitrary_error_text_never_enters_outbox(observer):
     with pytest.raises(ValueError,match="Unsupported error"):
         observer.emit("private-error",1,"failed","SYNTHETIC_PRIVATE_ERROR_TEXT")
     assert not list(observer.outbox.rglob("*.json"))
+
+
+@pytest.mark.parametrize("content", ["[]", "null", '{"event_id":null}', " " * 65537])
+def test_malformed_outbox_does_not_block_other_replay(observer, monkeypatch, content):
+    opener = Opener()
+    monkeypatch.setattr("orders_pipeline.observer.build_opener", lambda *args: opener)
+    (observer.directory / "invalid.json").write_text(content)
+    assert observer.emit("healthy", 1, "running")
+    assert observer.replay() == {"observations": 2, "acknowledged": 1, "pending": 1}
+
+
+def test_invalid_acknowledgement_is_pending(observer, monkeypatch):
+    class InvalidResponse(Response):
+        def read(self, *args):
+            return b"[]"
+    class InvalidOpener:
+        def open(self, *args, **kwargs):
+            return InvalidResponse()
+    monkeypatch.setattr("orders_pipeline.observer.build_opener", lambda *args: InvalidOpener())
+    assert not observer.emit("invalid-ack", 1, "running")
+    assert not list(observer.directory.glob("*.sent"))

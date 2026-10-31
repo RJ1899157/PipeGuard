@@ -4,6 +4,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 
 from airflow.sdk import DAG, Param, get_current_context, task
@@ -32,9 +33,38 @@ def build_orders():
              "--attempt",str(context["ti"].try_number)]
     if context["params"]["simulate_first_attempt_failure"]:
         command.append("--simulate-first-attempt-failure")
-    result=subprocess.run(command,env=environment,capture_output=True,text=True,timeout=180,check=False)
+    process=None
+    interruption=None
+    handlers={kind:signal.getsignal(kind) for kind in (signal.SIGINT,signal.SIGTERM)}
+    def interrupted(signum,frame):
+        nonlocal interruption
+        interruption=signum
+        if process is not None:raise InterruptedError("orders_workload_interrupted")
+    for kind in handlers:
+        signal.signal(kind,interrupted)
+    try:
+        process=subprocess.Popen(command,env=environment,stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,text=True,start_new_session=True)
+        if interruption is not None:raise InterruptedError("orders_workload_interrupted")
+        stdout,_=process.communicate(timeout=180)
+        result=subprocess.CompletedProcess(command,process.returncode,stdout=stdout)
+    finally:
+        for kind in handlers:
+            signal.signal(kind,signal.SIG_IGN)
+        try:
+            if process is not None:
+                try:os.killpg(process.pid,signal.SIGTERM)
+                except ProcessLookupError:pass
+                try:process.wait(timeout=10)
+                except subprocess.TimeoutExpired:pass
+                try:os.killpg(process.pid,signal.SIGKILL)
+                except ProcessLookupError:pass
+                process.wait()
+        finally:
+            for kind,handler in handlers.items():
+                signal.signal(kind,handler)
     if result.returncode:
-        # The workload has already persisted its bounded failure observation.
+        # Source reconciliation also covers failures before producer receipt.
         raise RuntimeError("orders_workload_failed; inspect workload artifacts and PipeGuard attempts")
     summary=json.loads(result.stdout.strip().splitlines()[-1])
     return {key:summary[key] for key in ("external_run_id","attempt_number","dbt_succeeded","monitoring")}

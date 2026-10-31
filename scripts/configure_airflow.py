@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import secrets
 import sys
+from local_files import write_private
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"apps/pipeguard/src"))
 import psycopg
@@ -37,17 +38,13 @@ def main():
         connection.execute("REVOKE ALL ON DATABASE pipeguard, sample_warehouse FROM airflow_owner")
     password_file=home/"users.json"
     if not password_file.exists():
-        fd=os.open(password_file,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-        with os.fdopen(fd,"w") as stream:
-            json.dump({"RJ1899157":secrets.token_urlsafe(32)},stream)
+        write_private(password_file, json.dumps({"RJ1899157":secrets.token_urlsafe(32)}), exclusive=True)
+    if password_file.is_symlink():
+        raise RuntimeError("Password configuration must be a regular file")
     users=json.loads(password_file.read_text())
     if "pipeguard_observer" not in users:
         users["pipeguard_observer"]=secrets.token_urlsafe(32)
-        temporary=password_file.with_suffix(".tmp")
-        fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-        with os.fdopen(fd,"w") as stream:
-            json.dump(users,stream)
-        temporary.replace(password_file)
+        write_private(password_file,json.dumps(users))
     values={
         "AIRFLOW_LOCAL_DB_PASSWORD":password,"AIRFLOW_HOME":str(home),
         "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN":owner.set(username="airflow_owner",password=password,database="airflow",drivername="postgresql+psycopg2").render_as_string(hide_password=False),
@@ -65,14 +62,7 @@ def main():
         "AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK":"False","OBJC_DISABLE_INITIALIZE_FORK_SAFETY":"YES",
         "AIRFLOW__CORE__DEFAULT_TIMEZONE":"utc",
     }
-    temp=private.with_name(".env.airflow-tmp")
-    fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-    try:
-        with os.fdopen(fd,"w") as stream:
-            stream.write("".join(f"{key}={value}\n" for key,value in values.items()))
-        temp.replace(private)
-    finally:
-        temp.unlink(missing_ok=True)
+    write_private(private,"".join(f"{key}={value}\n" for key,value in values.items()))
     print("Airflow metadata database and private local configuration prepared")
 
 

@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import secrets
 import sys
+from local_files import write_private
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "apps/pipeguard/src"))
 import psycopg
@@ -38,14 +39,7 @@ def main():
     values.update(ORDERS_HOST=owner.host, ORDERS_PORT=str(owner.port or 5432),
                   ORDERS_DATABASE="sample_warehouse", ORDERS_USER="sample_orders",
                   DBT_ENV_SECRET_ORDERS_PASSWORD=password, DBT_SEND_ANONYMOUS_USAGE_STATS="false")
-    temp = target.with_name(".env.warehouse-tmp")
-    descriptor = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    try:
-        with os.fdopen(descriptor, "w") as stream:
-            stream.write("".join(f"{key}={value}\n" for key, value in values.items()))
-        temp.replace(target)
-    finally:
-        temp.unlink(missing_ok=True)
+    write_private(target, "".join(f"{key}={value}\n" for key, value in values.items()))
     print("Independent sample database configured; only workload credentials saved in sample .env")
 
 

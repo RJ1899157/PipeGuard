@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import signal
 import subprocess
-import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -49,14 +48,22 @@ def main():
         signal.signal(signal.SIGINT,signal.SIG_IGN)
         signal.signal(signal.SIGTERM,signal.SIG_IGN)
         for process in processes:
-            if process.poll() is None:
+            try:
                 os.killpg(process.pid,signal.SIGTERM)
+            except ProcessLookupError:
+                pass
         for process in processes:
             try:
                 process.wait(timeout=15)
             except subprocess.TimeoutExpired:
+                pass
+            # A component leader may exit before its descendants. The group is
+            # still ours, and must not survive the launcher shutdown.
+            try:
                 os.killpg(process.pid,signal.SIGKILL)
-                process.wait()
+            except ProcessLookupError:
+                pass
+            process.wait()
         for stream in streams:
             stream.close()
 

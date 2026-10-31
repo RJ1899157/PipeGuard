@@ -105,6 +105,11 @@ class Observer:
                     raise ValueError("Conflicting local observation identity")
         finally:
             temporary.unlink(missing_ok=True)
+        descriptor = os.open(self.directory, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
         return self.deliver(path)
 
     def deliver(self, path):
@@ -112,7 +117,11 @@ class Observer:
         if marker.exists():
             return True
         try:
-            payload = json.loads(path.read_text())
+            with path.open("rb") as stream:
+                raw = stream.read(65537)
+            if len(raw) > 65536:
+                return False
+            payload = json.loads(raw)
             if payload["integration_id"] != self.integration_id or payload["job_id"] != self.job_id:
                 return False
             request = Request(self.base_url.rstrip("/") + ("/v1/lineage-events" if "event" in payload else "/v1/quality-reports" if "checks" in payload else "/v1/events"), data=json.dumps(payload).encode(),
@@ -125,7 +134,7 @@ class Observer:
                 UUID(answer["event_id"])
             marker.touch(mode=0o600)
             return True
-        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError):
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
             return False
 
     def replay(self):

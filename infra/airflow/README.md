@@ -20,7 +20,9 @@ Official references:
 
 `constraints-3.12.txt` is the unmodified Apache release file. `requirements.in` selects
 Airflow and both PostgreSQL drivers required by its synchronous/async metadata paths.
-`requirements.lock` records the resolved packages and hashes. To install from root:
+`security-constraints.txt` updates vulnerable transitive dependencies; the OpenTelemetry
+family is updated together. `requirements.lock` records the complete compatible
+resolution and hashes. To install from root:
 
 ```sh
 uv venv infra/airflow/.venv --python 3.12
@@ -28,8 +30,27 @@ uv pip sync --python infra/airflow/.venv/bin/python infra/airflow/requirements.l
 ```
 
 To intentionally regenerate a resolution, review the official constraint version,
-then use the command recorded at the top of `requirements.lock` and rerun validation.
+then run `uv run python scripts/compile_airflow_requirements.py` and rerun validation.
+The resolver replaces only the named upstream constraints and still checks every
+package's declared dependency requirements. It does not force incompatible packages
+or bypass TLS/hash verification.
 Do not install Airflow into the monitoring app or sample environment.
+
+### Reviewed dependency advisories
+
+The 2026-10-31 audit queried installed package/version pairs against OSV and checked
+maintainer advisories. The security constraints address:
+
+| Package | Selected version | Maintainer advisory and local applicability |
+| --- | --- | --- |
+| certifi | 2026.10.23 | [GHSA-6q48-6c7w-9gw2](https://github.com/certifi/python-certifi/security/advisories/GHSA-6q48-6c7w-9gw2): compromised emSign intermediate keys; update the trust store even though the sample uses loopback HTTP |
+| dnspython | 2.9.1 | [GHSA-45c3-73f7-pv4m](https://github.com/rthalley/dnspython/security/advisories/GHSA-45c3-73f7-pv4m): excessive DNS parser CPU; the sample has no external DNS input |
+| Mako | 1.4.3 | [GHSA-5639-2j2p-m4mx](https://github.com/sqlalchemy/mako/security/advisories/GHSA-5639-2j2p-m4mx): Windows drive-letter template traversal; not applicable to this Mac, still patched for portability |
+| OpenTelemetry | 1.45.2 / 0.66b2 | [GHSA-xcq7-p3pf-p88h](https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-xcq7-p3pf-p88h): unbounded tracestate parsing; no external tracing inputs are configured |
+| PyJWT | 2.15.1 | [GHSA-42vr-xj54-vc7v](https://github.com/jpadilla/pyjwt/security/advisories/GHSA-42vr-xj54-vc7v), [GHSA-x33g-cr3x-6449](https://github.com/jpadilla/pyjwt/security/advisories/GHSA-x33g-cr3x-6449): unverified-payload recursion and inconsistent OKP JWKs; Airflow uses JWT authentication, with no external JWK configuration in this sample |
+| urllib3 | 2.8.0 | [GHSA-8988-9cw3-xx77](https://github.com/urllib3/urllib3/security/advisories/GHSA-8988-9cw3-xx77), [GHSA-gh4c-6fx4-qh6g](https://github.com/urllib3/urllib3/security/advisories/GHSA-gh4c-6fx4-qh6g), [GHSA-vxq7-64xx-v4gw](https://github.com/urllib3/urllib3/security/advisories/GHSA-vxq7-64xx-v4gw): proxy TLS, deflate loop and unbounded chunk parsing; no external proxy is configured |
+
+No-known-advisory results are time-specific checks, not a production security claim.
 
 ## Local preparation
 
@@ -110,11 +131,23 @@ emit its warning without preventing execution. Existing test tooling also emits 
 HTTPX deprecation warning.
 
 The adapter records normal workload starts/outcomes and source/dbt exceptions. Abrupt
-worker termination or an SDK failure before workload entry can leave missing terminal
-observations. A polling reconciler using Airflow's public API is not implemented;
-there is no false claim of complete capture of every scheduler/worker failure.
-OpenLineage, quality-result contracts, deterministic incidents and recovery actions
-are later stages. See the sample README for durable event delivery semantics.
+worker termination or an SDK failure before workload entry can leave missing producer
+terminal observations. The independent public-API reconciler retains available
+Airflow evidence and flags missing coverage; quality, lineage and deterministic
+incidents are implemented. Recovery execution remains planned.
+
+Catchable SIGINT/SIGTERM and subprocess timeouts stop owned process groups before
+releasing workload resources. A persistent local file lock is inherited by dbt, so
+SIGKILL of its parent retains exclusion while that child survives. The PostgreSQL
+advisory lock remains in place too. The local lock protects cooperating runners
+from the same checkout on this Unix host; other checkouts/hosts, direct SQL writers
+and external scripts must use separately designed warehouse fencing. Never unlink
+`sample-pipelines/orders/target/warehouse.lock` while a workload may be active.
+SIGKILL cannot run cleanup handlers or invent missing outcomes; independent
+reconciliation exposes available source evidence and coverage gaps. This is not
+atomic warehouse rollback. Host power loss, disk failure and off-host notifications
+require separate operations.
+See the sample README for durable event delivery semantics.
 
 ## Independent monitoring
 
