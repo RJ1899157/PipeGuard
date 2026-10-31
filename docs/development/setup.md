@@ -2,9 +2,9 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, six SQLAlchemy metadata models, an Alembic
-migrations, internal execution ingestion and integration tests. There is no HTTP API,
-dashboard, incident engine or sample workload yet.
+The project includes PostgreSQL 17, seven SQLAlchemy metadata models (including producer credentials), an Alembic
+migrations, execution ingestion, an authenticated HTTP API and integration tests.
+There is no dashboard, incident engine or sample workload yet.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ PostgreSQL listens on `127.0.0.1:55432`. Compose pins the upstream PostgreSQL 17
 image by digest. The image used at this checkpoint reports PostgreSQL 17.11.
 The database `pipeguard` belongs to `pipeguard_owner`, a non-superuser without
 role-creation or database-creation privileges. This account is for migrations;
-a separate restricted runtime role must precede API deployment. The database
+the restricted `pipeguard_api` runtime role is provisioned separately below. The database
 admin credential is separate. Airflow and sample warehouse accounts are deferred.
 
 Initialization scripts execute only on a new database volume. Changing passwords
@@ -49,14 +49,34 @@ if it contains needed data.
 For subsequent starts, reuse `.env` and run Compose followed by `alembic upgrade
 head`. `uv run --env-file .env` loads environment values without shell activation.
 
-## Database checks
+## API startup
+
+After applying migrations, configure runtime privileges and private API credentials:
+
+```sh
+uv run --env-file .env python scripts/configure_api.py
+uv run --env-file .env python scripts/run_api.py
+```
+
+The provisioner is restricted to the local `pipeguard` database. It uses the local
+PostgreSQL administrator for role creation and the owner for grants, saves a separate
+runtime connection and administrator token privately in `.env`, and prints no secrets.
+Repeated provisioning retains existing private values. Run it again after migrations
+that add API-accessible tables. Do not copy placeholder values from `.env.example`.
+
+The API runs at `http://127.0.0.1:8000`; Ctrl+C stops it. Startup refuses an owner or
+privileged account. The public `/health/live` endpoint reports liveness; all metadata
+routes require a bearer token. Read the [HTTP contract](../contracts/http-api.md)
+for producer setup, token handling, endpoints and local boundaries.
+
+## Database and API checks
 
 ```sh
 uv run --env-file .env pytest -q
 uv run --env-file .env alembic check
 ```
 
-Tests require a reachable PostgreSQL database and create unique `test_<uuid>`
+Tests require a reachable PostgreSQL database and completed API provisioning; they create unique `test_<uuid>`
 schemas. They migrate and drop only those generated schemas. Use the local
 synthetic-data database, never a production connection. Missing database
 configuration fails explicitly rather than silently skipping integration checks.
@@ -92,6 +112,7 @@ Python dependencies remain in `.venv`; future JavaScript dependencies belong in
 local `node_modules`, and Airflow constraints must remain isolated as necessary.
 Repository identity and commit rules are in [AGENTS.md](../../AGENTS.md).
 
-The persistence and ingestion checkpoint passed 58 tests against local PostgreSQL,
-including CLI checks, plus Alembic metadata comparison. No API, browser, performance or production-security verification is
-claimed. See the [roadmap](../roadmap.md) for remaining acceptance criteria.
+The persistence, ingestion and API checkpoint passed 74 automated tests against local
+PostgreSQL, including CLI and restricted-role HTTP checks, plus Alembic metadata
+comparison. Real loopback HTTP verification passed as described in the API contract.
+No browser, performance or production-security verification is claimed. See the [roadmap](../roadmap.md) for remaining acceptance criteria.

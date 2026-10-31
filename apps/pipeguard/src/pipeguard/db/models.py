@@ -121,3 +121,15 @@ class IngestedEvent(Record, Base):
     processing_state: Mapped[str] = mapped_column(String(20), server_default="pending")
     processing_error: Mapped[str | None] = mapped_column(Text)
     processed_at: Mapped[datetime | None]
+
+
+class ProducerCredential(Record, Base):
+    __tablename__ = "producer_credentials"
+    __table_args__ = (
+        UniqueConstraint("token_hash"),
+        CheckConstraint("token_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        Index("ix_producer_credentials_integration", "integration_id"),
+    )
+    integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="RESTRICT"))
+    token_hash: Mapped[str] = mapped_column(String(64))
+    revoked: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))

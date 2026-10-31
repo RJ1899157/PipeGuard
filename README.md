@@ -4,7 +4,7 @@
 
 PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It will collect execution metadata, quality results, and lineage; detect incidents through deterministic rules; and present supporting evidence alongside AI-generated hypotheses.
 
-> **Status: persistence and internal event ingestion implemented.** PostgreSQL storage, versioned migrations, validated event receipts, replay protection and execution projections are available through an internal service and local command. The HTTP API, sample pipelines, incident processing and dashboard remain planned.
+> **Status: persistence, ingestion and local HTTP API implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. The dashboard, sample pipelines, incident processing and recovery remain planned.
 
 [Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md)
 
@@ -48,7 +48,7 @@ These are delivery targets, not currently available features. The [roadmap](docs
 | --- | --- | --- |
 | Python environment | Python 3.12, uv, project-local `.venv` | Configured; persistence dependencies locked |
 | Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Initial schema implemented |
-| API and validation | FastAPI, Pydantic 2 | Pydantic execution contract implemented; HTTP API planned |
+| API and validation | FastAPI, Pydantic 2 | Authenticated local API and versioned contracts implemented |
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Planned; environments isolated as required |
 | Web application | Next.js 16, React 19, TypeScript 5, Tailwind 4, shadcn/ui | Planned |
 | Graphs and charts | React Flow, Apache ECharts | Planned |
@@ -69,7 +69,7 @@ uv sync --locked
 
 The repository is private and requires authorized GitHub access. For the existing checkout on the development machine, use `/Users/rishabhjain/Desktop/PipeGuard` and run only `uv sync --locked`.
 
-The command prepares `.venv`; it does not start an application. Docker Desktop is only needed when container-backed services are introduced. See [development setup](docs/development/setup.md) for environment and dependency policies.
+The command prepares `.venv`. The development setup documents database migration, API provisioning and startup. Docker Desktop is only needed when container-backed services are introduced. See [development setup](docs/development/setup.md) for environment and dependency policies.
 
 ## Repository layout
 

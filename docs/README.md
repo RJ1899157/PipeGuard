@@ -26,3 +26,6 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 - [Execution events v1](contracts/execution-events.md): validation, replay, reconciliation and local command.
 - [Execution JSON Schema](contracts/execution-event-v1.schema.json): machine-readable field contract.
+
+- [Local HTTP API](contracts/http-api.md): authentication, endpoints, privileges and verified boundaries.
+- [OpenAPI v1](contracts/http-api-v1.openapi.json): machine-readable HTTP contract.

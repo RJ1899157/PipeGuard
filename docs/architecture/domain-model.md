@@ -104,21 +104,22 @@ Event triggers reject updates to source fields, row deletion, and truncation;
 processing state/error/time may change. Owners and administrators can alter or
 drop these protections: this is not tamper-proof storage. The version 1 ingestion boundary computes normalized payload hashes, requires aware timestamps,
 and accepts only bounded execution fields. Rich-text redaction and parent-cycle validation
-remain prerequisites for future contracts that accept those fields. No untrusted input
-endpoint is exposed by this schema checkpoint.
+remain prerequisites for future contracts that accept those fields. The HTTP boundary authenticates callers, bounds requests and scopes producer access.
 
 The internal [execution ingestion service](../contracts/execution-events.md) preserves
 retry history, rejects conflicting event-ID reuse, handles identical replays and
 projects observations independently of delivery order. Runs and attempts include
 `reconciliation_required` flags for contradictory observations; successful later
-attempts do not erase historical uncertainty. No HTTP ingestion endpoint exists yet.
+attempts do not erase historical uncertainty. The HTTP API now exposes authenticated ingestion with integration-scoped producer access.
 
 The first migration is reversible only for disposable data with an explicit
 `allow_data_loss` override. Normal development uses forward migrations; production
 rollback and retention policies require separate review. Tests create unique
 schemas, migrate them, verify rollback/re-upgrade, and remove only those schemas.
 
+Producer credentials store token hashes and revocation state, scoped to integrations.
+The [local HTTP API](../contracts/http-api.md) now wraps execution ingestion and reads.
+
 Only the PipeGuard database is provisioned now. Airflow and warehouse databases
-and their roles will be created when those services are introduced. The current
-non-superuser owner account is for migrations and checks; the API checkpoint must
-introduce a separate runtime role without schema ownership.
+and their roles will be created when those services are introduced. The non-superuser owner account is for migrations and checks. The API uses a
+separate restricted runtime role without schema ownership.

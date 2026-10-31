@@ -1,7 +1,7 @@
 # Execution event contract v1
 
-Status: implemented as an internal Python service and local command. HTTP transport,
-authentication, producer provisioning, and Airflow/dbt adapters are not implemented.
+Status: implemented as an internal service, local command and authenticated
+[HTTP API](http-api.md). Airflow/dbt adapters are not implemented.
 Use only locally controlled synthetic metadata at this checkpoint.
 
 [JSON Schema](execution-event-v1.schema.json) · [Domain model](../architecture/domain-model.md)
@@ -81,7 +81,7 @@ Known processing failures store safe fixed codes and remain manually retryable.
 Unexpected/database failures roll back projection changes, leaving the committed
 receipt pending for retry. Disabled integrations prevent new receipts and can defer
 processing; re-enabling allows processing to resume. No background retry worker exists.
-Authentication/authorization must wrap this internal service before exposing it over HTTP;
+The HTTP layer authenticates and scopes callers before invoking this internal service;
 knowing an integration UUID is not authentication.
 
 ## Local command
@@ -102,8 +102,8 @@ uv run --env-file .env python scripts/ingest_event.py --process-event STORED_EVE
 
 A rejection or processing failure returns a nonzero exit code. `processed` with a
 reconciliation warning returns success because the observation was retained/applied;
-clients must inspect the warning and current run flags. Integration/job provisioning
-will be exposed at the API checkpoint; this command does not invent trusted producers.
+clients must inspect the warning and current run flags. Use the administrator HTTP endpoints to provision integrations/jobs first; this
+command does not invent trusted producers.
 
 ## Verification
 

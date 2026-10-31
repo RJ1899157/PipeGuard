@@ -1,6 +1,6 @@
 # Architecture overview
 
-**Status:** target architecture with an implemented initial persistence slice. PostgreSQL configuration, six metadata tables, migrations and integration checks exist; the remaining services are planned.
+**Status:** target architecture with an implemented initial persistence slice. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the sample workloads, dashboard and incident services remain planned.
 
 ## Scope
 
