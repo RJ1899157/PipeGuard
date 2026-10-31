@@ -4,6 +4,8 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Start here
 
+[Next-session checkpoint](next-session.md) records the verified state before the break and the requirements that still depend on external resources or a future deployment design.
+
 | Document                                                     | Purpose                                                                                   |
 | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
 | [Project overview](../README.md)                             | Product problem, planned capabilities, technology plan, and current status                |

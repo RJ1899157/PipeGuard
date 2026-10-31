@@ -92,7 +92,7 @@ apps/pipeguard/web/tests/watchdog.test.ts,frontend review,source/command review,
 apps/pipeguard/web/tsconfig.json,frontend review,runtime schema equality and semantic boundary review,655,28,9f75583e8c444090c24b67a4140ccd8e05ba34b601e5798ea557d09e5c5836d3
 compose.yaml,operations and integrating review,source/command review,682,18,1e33e331e46bac21033e9a4ad4659588b6c4ac592ec1a91dc109b49c4157e264
 design-qa.md,operations and integrating review,documentation review,7073,68,62965076a982bb6190691652fb957901ad432a3cb316471fe5ad264741830255
-docs/README.md,operations and integrating review,documentation review,4424,67,707d966da460ee9fa30852e80927b1835dd5823643e125a0127cd225898e3e45
+docs/README.md,operations and integrating review,documentation review,4604,69,90f6dac48fecc5757cd6be07c1d6d670ee96a616b0748a41252e99a681ffa346
 docs/architecture/dashboard-foundation.md,operations and integrating review,documentation review,4845,47,4f0f422688a0e2d55c5a3062d0bfa820f995b413053f95371e8b0112c2d03a7b
 docs/architecture/domain-model.md,operations and integrating review,documentation review,16192,133,be33f1b3067e272ba9e15b90fe2d0a20771f291ea5fd4766ffd448d155129bbc
 docs/architecture/incident-detection.md,operations and integrating review,documentation review,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835
@@ -128,8 +128,9 @@ docs/incident-operations.md,operations and integrating review,documentation revi
 docs/lineage-operations.md,operations and integrating review,documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,operations and integrating review,documentation review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,operations and integrating review,documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
+docs/next-session.md,operations and integrating review,documentation review,4003,31,b073c34c80ac4eef3c50f6995b516e901a5846e82884f734b275e3daa3aea5dd
 docs/roadmap.md,operations and integrating review,documentation review,11046,34,e1a963bd9c4be8c51c7322b7c6637aaff6b7be860981983aec72ec96923a9835
-docs/system-audit.md,operations and integrating review,documentation review,15837,90,5a676fce74932ecad6be37809ebba7d0eb5c7acacc986020a289fcc9b6d96a20
+docs/system-audit.md,operations and integrating review,documentation review,15837,90,a8eb59c83a5c425210e044e38cb338e77c4098e67dde47db2f0b9c78485678c1
 infra/airflow/README.md,workload and operations review,documentation review,12079,151,40fcb566a917d0c65605c3d10429135590b957fb4ce66428bc54badf4fdbee88
 infra/airflow/constraints-3.12.txt,workload and operations review,"structural, resolver, provenance and advisory checks",18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c
 infra/airflow/dags/orders.py,workload and operations review,source/command review,4061,78,37d060cb50f5d5dfe01eeeffd98fe3762fa2f38af092e8610d4991661b8fb332
