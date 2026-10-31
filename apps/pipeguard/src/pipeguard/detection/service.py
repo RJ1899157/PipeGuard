@@ -2,15 +2,17 @@
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 import json
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from pydantic import ValidationError
 from sqlalchemy import or_, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from pipeguard.db.models import (Attempt, IngestedEvent, Integration, Job, Run, MonitorPolicy,
-                                Observation, Incident, IncidentHistory, MonitorHeartbeat, LineageEvent, LineageRun, LineageExpectation)
+from pipeguard.db.models import (
+    IngestedEvent, Integration, Job, Run, MonitorPolicy, Observation, Incident,
+    IncidentHistory, MonitorHeartbeat, LineageEvent, LineageRun, LineageExpectation,
+)
 from pipeguard.ingestion.service import IngestionRejected
 from pipeguard.ingestion.contracts import ExecutionEvent
 

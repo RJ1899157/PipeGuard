@@ -1,8 +1,5 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 from test_api import api, producer
 from pipeguard.detection.service import evaluate_job
-from pipeguard.db.models import Incident
 
 
 def test_incident_scope_acknowledgement_and_quality_receipt(api):

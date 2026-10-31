@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import pytest
 from pipeguard.detection.airflow import AirflowClient, SourceUnavailable, external_id, STATES
 

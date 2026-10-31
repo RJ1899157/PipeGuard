@@ -1,4 +1,3 @@
-from hashlib import sha256
 import json
 from orders_pipeline.quality import extract
 from test_observer import observer

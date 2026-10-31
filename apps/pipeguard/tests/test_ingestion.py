@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from itertools import permutations
-from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -10,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from pipeguard.db.config import database_url
 from pipeguard.db.models import Attempt, IngestedEvent, Integration, Job, Run
-from pipeguard.ingestion.contracts import ExecutionEvent
 from pipeguard.ingestion.service import IngestionRejected, process, receive
 
 NOW = datetime(2026, 10, 31, 10, tzinfo=timezone.utc)

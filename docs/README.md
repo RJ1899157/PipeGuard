@@ -16,7 +16,9 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 ## Dashboard
 
 - [Setup and local access](../apps/pipeguard/web/README.md)
-- [Verification](dashboard-verification.md)
+- [Foundation verification](dashboard-verification.md)
+- [Graph and chart verification](exploration-verification.md)
+- [System audit and interruption recovery](system-audit.md)
 
 ## Sample workloads
 

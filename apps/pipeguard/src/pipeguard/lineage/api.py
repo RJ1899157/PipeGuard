@@ -6,7 +6,7 @@ from pydantic import AwareDatetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from pipeguard.db.models import EvidenceBundle, Incident, Job, LineageEvent, LineageRun, LineageExpectation
+from pipeguard.db.models import EvidenceBundle, Incident, Job, LineageEvent, LineageExpectation
 from pipeguard.lineage.contracts import LineageReport, ExpectationCreate
 from pipeguard.lineage.service import graph, receive, LineageRejected
 from pipeguard.lineage.evidence import capture

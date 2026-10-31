@@ -13,8 +13,7 @@ from sqlalchemy import select, func, text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
-from pipeguard.db.models import (Integration, Job, Incident, IncidentHistory, Observation,
-                                MonitorPolicy, IngestedEvent, MonitorHeartbeat)
+from pipeguard.db.models import Integration, Job, Incident, IncidentHistory, Observation, MonitorPolicy, IngestedEvent
 from pipeguard.detection.contracts import QualityReport
 from pipeguard.detection.service import evaluate_job, receive_quality, observe, coverage
 from pipeguard.detection.worker import cycle

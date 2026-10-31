@@ -4,15 +4,13 @@ from itertools import permutations
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import select,func,text
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import DBAPIError
-from pydantic import ValidationError
 
 from test_api import api,producer
-from pipeguard.db.models import Dataset,DatasetMention,LineageRun,LineageEvent,Incident,Observation,IncidentHistory
+from pipeguard.db.models import Dataset, DatasetMention, LineageRun, LineageEvent
 from pipeguard.lineage.contracts import LineageReport,SCHEMA_URL,PRODUCER
-from pipeguard.detection.service import evaluate_job,observe,digest
+from pipeguard.detection.service import evaluate_job, digest
 from pipeguard.lineage.service import receive
 
 T=datetime(2026,10,31,10,tzinfo=timezone.utc)

@@ -4,11 +4,10 @@ import json
 import os
 from pathlib import Path
 import secrets
-from uuid import uuid4
 
 from fastapi.testclient import TestClient
 import pytest
-from sqlalchemy import create_engine, select, text
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 

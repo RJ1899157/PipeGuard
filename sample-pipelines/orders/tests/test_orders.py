@@ -1,13 +1,12 @@
 from datetime import date
 from decimal import Decimal
 import json
-from pathlib import Path
 
 import psycopg
 from psycopg import sql
 import pytest
 
-from orders_pipeline.loader import HEADERS, InvalidSource, Warehouse, parse_orders, replace_orders
+from orders_pipeline.loader import HEADERS, InvalidSource, parse_orders, replace_orders
 from orders_pipeline.runner import ROOT, run
 
 SOURCE = ROOT / "data/orders.csv"

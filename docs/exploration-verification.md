@@ -16,8 +16,8 @@ Verified on 2026-10-31 with the production build, Node.js 22 and the in-app brow
 
 | Fixture | Nodes / links retained | Graph-ready samples (ms) | Budget |
 | --- | --- | --- | --- |
-| Branching | 200 / 1,000 | 462.2, 517.7, 457.0 | All below 2,000 ms |
-| Cyclic | 200 / 200 | 317.6, 397.4, 292.5 | All below 2,000 ms |
+| Branching | 200 / 1,000 | 493.9, 420.9, 445.4 | All below 2,000 ms |
+| Cyclic | 200 / 200 | 362.9, 367.8, 358.7 | All below 2,000 ms |
 
 The layout condenses strongly connected components before arranging the graph. The cycle now fits the overview instead of producing a roughly 28,000-pixel vertical chain. Fit view, zoom, keyboard nodes and links, textual dependency selection, and exact-link provenance were checked. At 200 nodes, overview labels are necessarily small; zoom and the textual alternative remain required for detailed inspection. These are bounded fixture results, not maximum supported throughput or frame-rate measurements.
 

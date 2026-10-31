@@ -1,14 +1,11 @@
 """Transactional lineage receipt and explicitly scoped, bounded historical graph reads."""
 from collections import deque
-from datetime import datetime, timezone
-from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from pipeguard.db.models import (Dataset, DatasetMention, Integration, Job, LineageRun, LineageEvent,
-                                Observation)
+from pipeguard.db.models import Dataset, DatasetMention, Integration, Job, LineageRun, LineageEvent
 from pipeguard.detection.service import digest, observe, now_utc, _lock_job
 from pipeguard.ingestion.service import IngestionRejected
 from pipeguard.lineage.completeness import missing_metadata

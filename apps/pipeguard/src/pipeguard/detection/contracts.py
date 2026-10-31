@@ -1,5 +1,5 @@
 """Bounded, versioned quality reports. No SQL, result rows, or free-form errors."""
-from datetime import datetime, timezone
+from datetime import timezone
 from typing import Annotated, Literal
 from uuid import UUID
 

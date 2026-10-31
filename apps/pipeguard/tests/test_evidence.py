@@ -1,14 +1,14 @@
 from datetime import datetime,timezone
-from uuid import uuid4,UUID
+from uuid import UUID
 
 import pytest
-from sqlalchemy import select,text,func
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DBAPIError
 
 from test_api import api,producer
 from test_lineage import report,post
-from pipeguard.db.models import Incident,IncidentHistory,Observation,LineageEvent,EvidenceBundle
+from pipeguard.db.models import IncidentHistory
 from pipeguard.detection.service import evaluate_job,digest,observe
 
 
