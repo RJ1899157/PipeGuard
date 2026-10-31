@@ -11,12 +11,22 @@ export function useRead<T>(
     demo && typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("state") || ""
       : "";
+  const fixtures: Record<string, string> =
+    demo && typeof window !== "undefined"
+      ? {
+          graph_fixture:
+            new URLSearchParams(window.location.search).get("graph") || "",
+          quality_fixture:
+            new URLSearchParams(window.location.search).get("quality") || "",
+        }
+      : {};
   const key =
     params === null
       ? null
       : new URLSearchParams({
           kind,
           ...params,
+          ...fixtures,
           ...(scenario ? { scenario } : {}),
         }).toString();
   const identity = `${demo}:${revision}:${key}`;

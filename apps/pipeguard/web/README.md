@@ -1,6 +1,6 @@
 # PipeGuard dashboard
 
-The local monitoring UI uses Next.js 16, React 19, TypeScript and React Flow. It belongs to the monitoring application; it does not execute sample workloads or access their warehouse.
+The local monitoring UI uses Next.js 16, React 19, TypeScript, React Flow and ECharts. It belongs to the monitoring application; it does not execute sample workloads or access their warehouse.
 
 ## Start
 
@@ -19,9 +19,9 @@ The dashboard is a **local owner interface**, not a multi-user authentication se
 ## Available views
 
 - **Overview:** pipeline catalog, monitoring mode and detector status. Instrumentation coverage is not business health.
-- **Pipelines / Lineage:** execution selection, attempt-scoped interactive graph, textual node/link alternative, and expanded attempt history with reported failure reason, projection source and timestamps.
+- **Pipelines / Lineage:** execution selection, attempt-scoped interactive graph, textual node/link alternative, expanded attempt history with reported failure reason, projection source and timestamps, an execution timeline and selected-report quality charts.
 - **Incidents:** paged queue, page-local state filtering, and immutable transition history.
-- **Evidence:** selected-node lineage source references, source/receipt times, payload hashes and the original stored lineage record. This is not a raw-log viewer or AI root-cause determination.
+- **Evidence:** selected-node or selected-dependency lineage source references, source/receipt times, payload hashes and the original stored lineage record. This is not a raw-log viewer or AI root-cause determination.
 
 The browser reads only an allowlisted set of metadata routes through `/api/read`. Upstream URLs and HTTP methods are fixed server-side. Host, Origin and Fetch Metadata checks reject cross-site requests and DNS rebinding hosts. The existing API's Origin rejection remains unchanged. Credentials stay in a `server-only` route handler and are not returned to the browser. Metadata responses use `no-store`; refresh is manual, displayed explicitly. Once the coverage fetch is over 90 seconds old, the UI stops presenting its cached freshness as current.
 
@@ -31,7 +31,7 @@ The initial quality indicator reports whether quality evidence is expected; it d
 
 `/?preview=1` selects clearly labelled demonstration records and makes no dashboard API reads. The normal root URL uses stored live data. Preview records are product fixtures, not personal learning materials.
 
-For reproducible UI-state inspection, preview mode also accepts `state=empty`, `state=stale`, `state=unavailable`, or `state=unauthorized`. These simulate display states only; they do not change the API, incident state, stored evidence or credentials. Without `preview=1`, the state parameter has no effect.
+For reproducible UI-state inspection, preview mode also accepts `state=empty`, `state=stale`, `state=unavailable`, `state=history50`, or `state=unauthorized`. These simulate display states only; they do not change the API, incident state, stored evidence or credentials. Without `preview=1`, the state parameter has no effect.
 
 ```sh
 pnpm --dir apps/pipeguard/web typecheck
@@ -40,4 +40,4 @@ pnpm --dir apps/pipeguard/web build
 pnpm --dir apps/pipeguard/web exec prettier --check app components lib tests proxy.ts next.config.ts
 ```
 
-See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. Stage 9 still includes chart/timeline expansion and representative rendered-graph performance measurements. AI investigation, recovery controls and public hosting are not implemented.
+See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. See [exploration verification](../../../docs/exploration-verification.md) for charts, timeline and measured graph fixtures. AI investigation, recovery controls and public hosting are not implemented.

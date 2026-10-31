@@ -9,6 +9,6 @@ Monitoring application boundary, separate from `sample-pipelines/`.
 - `tests/`: PostgreSQL integration checks using disposable schemas.
 
 Run commands from the repository root; see [development setup](../../docs/development/setup.md).
-The dashboard and incident workflows are not implemented yet. The local HTTP API
+The read-only dashboard, deterministic incidents, quality observations, lineage and immutable evidence are implemented. AI investigation and approved recovery remain planned. The local HTTP API
 is documented in the [HTTP contract](../../docs/contracts/http-api.md).
 See the [execution contract](../../docs/contracts/execution-events.md) for ingestion scope and local commands.

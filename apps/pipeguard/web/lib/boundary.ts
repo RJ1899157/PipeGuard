@@ -27,17 +27,18 @@ export function readPath(query: URLSearchParams): string | null {
   }
   if (kind === "coverage") return "/v1/monitoring/coverage";
   if (!uuid.test(id)) return null;
-  if (kind === "lineage") {
+  if (kind === "lineage" || kind === "quality") {
     const run = query.get("run");
     const attempt = query.get("attempt");
     if (
       !run ||
       run.length > 255 ||
       !attempt ||
-      !/^[1-9][0-9]{0,8}$/.test(attempt)
+      !/^[1-9][0-9]{0,9}$/.test(attempt) ||
+      Number(attempt) > 2147483647
     )
       return null;
-    return `/v1/jobs/${id}/lineage?${new URLSearchParams({ external_run_id: run, attempt_number: attempt })}`;
+    return `/v1/jobs/${id}/${kind === "lineage" ? "lineage" : "quality-reports"}?${new URLSearchParams({ external_run_id: run, attempt_number: attempt, ...(kind === "quality" ? { limit: "50", offset: String(offset) } : {}) })}`;
   }
   if (kind === "lineage-event") return `/v1/lineage-events/${id}`;
   return null;

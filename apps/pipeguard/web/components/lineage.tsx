@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useEffect, useRef, useState, useCallback } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback, memo } from "react";
 import {
   ReactFlow,
   Controls,
@@ -9,6 +9,7 @@ import {
   type NodeProps,
   type ReactFlowInstance,
   type NodeChange,
+  type EdgeChange,
 } from "@xyflow/react";
 import { DatabaseIcon, GearSixIcon } from "@phosphor-icons/react";
 import type { Graph, GraphNode } from "@/lib/types";
@@ -27,15 +28,22 @@ function LineageNode({ data, selected }: NodeProps) {
   );
 }
 const nodeTypes = { lineage: LineageNode };
-export default function Lineage({
+function Lineage({
   graph,
   selected,
   onSelect,
+  selectedEdge,
+  onEdgeSelect,
+  onClear,
 }: {
   graph: Graph;
   selected: string | null;
   onSelect: (id: string) => void;
+  selectedEdge: number | null;
+  onEdgeSelect: (index: number) => void;
+  onClear: () => void;
 }) {
+  const started = useMemo(() => performance.now(), [graph]);
   const container = useRef<HTMLDivElement>(null);
   const [instance, setInstance] = useState<ReactFlowInstance | null>(null);
   useEffect(() => {
@@ -55,9 +63,10 @@ export default function Lineage({
     },
     [onSelect],
   );
+  const positioned = useMemo(() => graphLayout(graph), [graph]);
   const nodes = useMemo(
     () =>
-      graphLayout(graph).map((n) => ({
+      positioned.map((n) => ({
         id: n.id,
         type: "lineage",
         position: n.position,
@@ -65,8 +74,42 @@ export default function Lineage({
         selected: n.id === selected,
         ariaLabel: `${n.kind}: ${n.name}`,
       })),
-    [graph, selected],
+    [positioned, selected],
   );
+  const names = useMemo(
+    () => new Map(graph.nodes.map((n) => [n.id, n.name])),
+    [graph],
+  );
+  useEffect(() => {
+    if (!instance || !container.current) return;
+    const element = container.current;
+    delete element.dataset.readyMs;
+    let frame = 0,
+      tries = 0;
+    const check = () => {
+      const nodes = [
+        ...element.querySelectorAll<HTMLElement>(".react-flow__node"),
+      ];
+      if (
+        nodes.length === graph.nodes.length &&
+        nodes.every((n) => {
+          const bounds = n.getBoundingClientRect();
+          return (
+            bounds.width > 0 &&
+            bounds.height > 0 &&
+            getComputedStyle(n).visibility !== "hidden"
+          );
+        })
+      ) {
+        frame = requestAnimationFrame(() => {
+          element.dataset.readyMs = (performance.now() - started).toFixed(1);
+          element.dataset.nodeCount = String(nodes.length);
+        });
+      } else if (tries++ < 180) frame = requestAnimationFrame(check);
+    };
+    frame = requestAnimationFrame(check);
+    return () => cancelAnimationFrame(frame);
+  }, [instance, graph, started]);
   const edges = useMemo(
     () =>
       graph.edges.map((e, i) => ({
@@ -74,16 +117,27 @@ export default function Lineage({
         source: e.source,
         target: e.target,
         markerEnd: { type: MarkerType.ArrowClosed, color: "#8790a5" },
-        style: { stroke: "#8790a5" },
-        ariaLabel: `${graph.nodes.find((n) => n.id === e.source)?.name} to ${graph.nodes.find((n) => n.id === e.target)?.name}`,
+        selected: i === selectedEdge,
+        style: {
+          stroke: i === selectedEdge ? "#6250df" : "#8790a5",
+          strokeWidth: i === selectedEdge ? 2.5 : 1,
+        },
+        ariaLabel: `${names.get(e.source)} to ${names.get(e.target)}`,
       })),
-    [graph],
+    [graph, names, selectedEdge],
   );
   return (
     <div
       ref={container}
       className="graph-canvas"
       aria-label="Interactive lineage diagram"
+      onKeyDownCapture={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          onClear();
+        }
+      }}
     >
       <ReactFlow
         key={`${graph.as_of}:${graph.nodes.map((n) => n.id).join(",")}`}
@@ -91,17 +145,30 @@ export default function Lineage({
         edges={edges}
         nodeTypes={nodeTypes}
         onInit={setInstance}
+        onPaneClick={onClear}
         onNodesChange={selectionChanged}
+        onEdgesChange={(changes: EdgeChange[]) => {
+          const change = changes.find((c) => c.type === "select" && c.selected);
+          if (change?.type === "select") {
+            const index = Number(change.id.replace("edge-", ""));
+            if (
+              Number.isSafeInteger(index) &&
+              index >= 0 &&
+              index < graph.edges.length
+            )
+              onEdgeSelect(index);
+          }
+        }}
         fitView
         fitViewOptions={{ padding: 0.12 }}
-        minZoom={0.25}
+        minZoom={0.04}
         maxZoom={2}
         nodesDraggable={false}
         nodesConnectable={false}
         edgesReconnectable={false}
         deleteKeyCode={null}
         onNodeClick={(_, n) => onSelect(n.id)}
-        onEdgeClick={(_, e) => onSelect(e.source)}
+        onEdgeClick={(_, e) => onEdgeSelect(Number(e.id.replace("edge-", "")))}
         nodesFocusable
         edgesFocusable
         ariaLabelConfig={{
@@ -113,3 +180,5 @@ export default function Lineage({
     </div>
   );
 }
+
+export default memo(Lineage);

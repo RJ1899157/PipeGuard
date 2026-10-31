@@ -61,3 +61,8 @@ None blocking the initial dashboard foundation. The existing local owner boundar
 - P3: long fully qualified graph labels can wrap over several lines; retain canonical identity in the inspector if adding shorter display labels.
 - P3: the additional real selection controls require some vertical scrolling to reach all evidence actions. They remain keyboard reachable and do not overlap or clip.
 - Representative browser graph performance, quality charts and execution timeline expansion remain Stage 9 work.
+
+
+## Stage 9 audit follow-up — 2026-10-31
+
+The rebuilt production UI was inspected in the in-app browser at 1440, 768 and 390 pixels. Timeline selection, quality report conflicts, graph keyboard selection/clear, exact dependency evidence, incident history boundary pagination and all four navigation views were exercised. Fixed cycle layout, stable selected-link identity, Escape re-selection and accidental timeline spacer hatching. See [exploration verification](docs/exploration-verification.md) and [system audit](docs/system-audit.md) for current evidence and limits. Earlier screenshots above describe the foundation checkpoint, not these new checks.

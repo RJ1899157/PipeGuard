@@ -93,3 +93,27 @@ export type Coverage = {
   unmonitored_job_ids: string[];
   notice: string;
 };
+export type QualityStatus = "pass" | "fail" | "error" | "skipped" | "unknown";
+export type QualityCheck = {
+  rule_id: string;
+  rule_version: string;
+  status: QualityStatus;
+  failures: number | null;
+};
+export type QualityObservation = {
+  id: string;
+  job_id: string;
+  occurred_at: string;
+  received_at: string;
+  payload: {
+    schema_version: 1;
+    event_id: string;
+    integration_id: string;
+    job_id: string;
+    external_run_id: string;
+    attempt_number: number;
+    occurred_at: string;
+    inventory_complete: boolean;
+    checks: QualityCheck[];
+  };
+};

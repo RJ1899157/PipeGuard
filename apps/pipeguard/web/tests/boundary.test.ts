@@ -65,7 +65,7 @@ test("invalid identifiers, bounds and traversal attempts are rejected", () => {
     );
   for (const offset of ["-1", "1.5", "NaN", "100001"])
     assert.equal(readPath(new URLSearchParams({ kind: "jobs", offset })), null);
-  for (const attempt of ["0", "-1", "1.1", "Infinity", "1000000000"])
+  for (const attempt of ["0", "-1", "1.1", "Infinity", "2147483648"])
     assert.equal(
       readPath(
         new URLSearchParams({ kind: "lineage", id, run: "run", attempt }),
@@ -100,4 +100,30 @@ test("execution scope is encoded, never interpreted as a destination", () => {
     "run&attempt_number=999?/#",
   );
   assert.deepEqual(url.searchParams.getAll("attempt_number"), ["2"]);
+});
+test("quality read scope retains pagination and the complete API attempt range", () => {
+  const path = readPath(
+    new URLSearchParams({
+      kind: "quality",
+      id,
+      run: "run-1",
+      attempt: "2147483647",
+      offset: "50",
+    }),
+  );
+  const url = new URL(path!, "http://127.0.0.1:8000");
+  assert.equal(url.pathname, `/v1/jobs/${id}/quality-reports`);
+  assert.equal(url.searchParams.get("attempt_number"), "2147483647");
+  assert.equal(url.searchParams.get("offset"), "50");
+  assert.equal(
+    readPath(
+      new URLSearchParams({
+        kind: "quality",
+        id,
+        run: "run-1",
+        attempt: "2147483648",
+      }),
+    ),
+    null,
+  );
 });

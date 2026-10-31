@@ -86,8 +86,8 @@ inspect run results before treating a refresh as current. Restoring the source a
 rerunning repairs this fixture without deleting failure artifacts.
 
 The runner bounds the dbt subprocess to 120 seconds and connection/lock waits.
-Artifact cleanup/retention is manual at this stage. Model provenance and data-quality
-observations will be integrated with PipeGuard in later checkpoints.
+Artifact cleanup/retention is manual at this stage. Bounded model provenance and data-quality
+observations are integrated with PipeGuard through the durable outbox.
 
 ## Verification
 
@@ -95,7 +95,7 @@ observations will be integrated with PipeGuard in later checkpoints.
 uv run --directory sample-pipelines/orders --locked --env-file .env pytest -q
 ```
 
-31 checks cover exact fixture values, malformed fields/headers, multiline handling,
+The integration suite covers exact fixture values, malformed fields/headers, multiline handling,
 raw replacement idempotency, transactional rollback, source rejection before writes,
 concurrent-load exclusion, refusal of monitoring database access, complete dbt builds,
 duplicate-order fault injection and successful recovery. Full-build checks use unique

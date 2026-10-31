@@ -68,3 +68,61 @@ test("200 node bounded graph has finite distinct positions", () => {
     ),
   );
 });
+
+test("large cycles use a compact grid and keep downstream components ordered", () => {
+  const ids = Array.from({ length: 199 }, (_, i) => `cycle-${i}`);
+  const links: [string, string][] = ids.map((id, i) => [
+    id,
+    ids[(i + 1) % ids.length],
+  ]);
+  links.push([ids[0], "downstream"]);
+  const input = graph([...ids, "downstream"], links);
+  const result = graphLayout(input);
+  assert.equal(result.length, 200);
+  const cycle = result.filter((node) => node.id !== "downstream");
+  const maxX = Math.max(...cycle.map((node) => node.position.x));
+  const maxY = Math.max(...cycle.map((node) => node.position.y));
+  assert.ok(maxX < 1800);
+  assert.ok(maxY < 2100);
+  assert.ok(result.find((node) => node.id === "downstream")!.position.x > maxX);
+  assert.equal(
+    new Set(result.map((node) => JSON.stringify(node.position))).size,
+    200,
+  );
+  assert.deepEqual(
+    graphLayout({
+      ...input,
+      nodes: [...input.nodes].reverse(),
+      edges: [...input.edges].reverse(),
+    }),
+    result,
+  );
+  assert.equal(input.edges.length, 200);
+});
+
+test("multiple cycles, self loops, duplicate links and unknown endpoints remain bounded", () => {
+  const input = graph(
+    ["a", "b", "c", "d", "e", "isolated"],
+    [
+      ["a", "b"],
+      ["b", "a"],
+      ["b", "c"],
+      ["c", "d"],
+      ["d", "c"],
+      ["d", "e"],
+      ["e", "e"],
+      ["a", "b"],
+      ["unknown", "a"],
+    ],
+  );
+  const result = graphLayout(input);
+  const pos = new Map(result.map((node) => [node.id, node.position]));
+  assert.ok(pos.get("c")!.x > Math.max(pos.get("a")!.x, pos.get("b")!.x));
+  assert.ok(pos.get("e")!.x > Math.max(pos.get("c")!.x, pos.get("d")!.x));
+  assert.equal(
+    new Set(result.map((node) => JSON.stringify(node.position))).size,
+    6,
+  );
+  assert.equal(result.length, input.nodes.length);
+  assert.equal(input.edges.length, 9);
+});

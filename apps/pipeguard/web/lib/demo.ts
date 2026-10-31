@@ -1,3 +1,4 @@
+import { qualityFixture, performanceGraph } from "./exploration-fixtures.ts";
 import type {
   Job,
   Run,
@@ -157,6 +158,23 @@ export function demoRead(kind: string, query: URLSearchParams): unknown {
         }
       : demoCoverage;
   if (kind === "incidents") return [demoIncident];
+  if (kind === "history" && scenario === "history50")
+    return Array.from(
+      { length: 50 },
+      (_, i) =>
+        ({
+          id: id(900 + i),
+          action: i % 2 ? "resolved" : "opened",
+          evidence_key: `preview-history-${i}`,
+          evidence: { notice: "Demonstration pagination boundary" },
+          actor: "deterministic_rule",
+          occurred_at: time("09:14:05"),
+          created_at: time("09:14:05"),
+        }) satisfies History,
+    ).slice(
+      Number(query.get("offset") || 0),
+      Number(query.get("offset") || 0) + 50,
+    );
   if (kind === "history")
     return [
       {
@@ -178,7 +196,23 @@ export function demoRead(kind: string, query: URLSearchParams): unknown {
         created_at: time("09:15:10"),
       },
     ] satisfies History[];
-  if (kind === "lineage") return demoGraph(Number(query.get("attempt") || 2));
+  if (kind === "quality")
+    return page(
+      query.get("quality_fixture") === "empty"
+        ? []
+        : qualityFixture(
+            demoJob.id,
+            demoRun.external_run_id,
+            Number(query.get("attempt") || 2),
+            query.get("quality_fixture") === "mixed",
+          ),
+    );
+  if (kind === "lineage")
+    return query.get("graph_fixture") === "stress"
+      ? performanceGraph()
+      : query.get("graph_fixture") === "cycle"
+        ? performanceGraph(true)
+        : demoGraph(Number(query.get("attempt") || 2));
   if (kind === "lineage-event")
     return {
       id: query.get("id"),

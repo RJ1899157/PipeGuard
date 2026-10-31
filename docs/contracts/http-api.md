@@ -3,7 +3,7 @@
 Status: implemented and verified with PostgreSQL using a restricted runtime role.
 The reference launcher binds only to `127.0.0.1:8000`. This is a local synthetic-data
 checkpoint; deployment beyond loopback requires a separate identity, TLS and security
-review. There is no frontend or recovery endpoint yet.
+review. A local read-only dashboard is available; recovery endpoints remain planned.
 
 [OpenAPI contract](http-api-v1.openapi.json) · [Execution events](execution-events.md)
 · [Setup](../development/setup.md)
@@ -57,7 +57,7 @@ Create operations return 201. Event submission returns 202 once its receipt is
 committed. Its body includes the internal `event_id`, `replayed`, `processing_state`
 and optional `warning`. If a database error interrupts projection after receipt,
 202 includes `processing_deferred`; the client can query/retry by the returned ID.
-There is no automatic background retry worker. A processed event can carry a
+The independent monitor retries pending execution receipts during reconciliation. A processed event can carry a
 reconciliation warning; it does not imply the pipeline succeeded or evidence agrees.
 
 List responses include `items`, `limit` (1–100), `offset` (0–100000) and `has_more`.
@@ -76,8 +76,7 @@ exception details. PostgreSQL constraints remain the authority for concurrent
 identity conflicts.
 
 The API bounds actual bodies to 64 KiB including chunked delivery, validates Host
-headers for local use, rejects browser Origin headers until the frontend origin
-policy is introduced, and does not enable CORS. Origin/Host validation does not
+headers for local use, rejects browser Origin headers; the dashboard uses an allowlisted same-origin server broker, and does not enable CORS. Origin/Host validation does not
 replace authentication. The server uses database connection, statement and lock
 timeouts. Public exposure, rate limiting, browser sessions, multi-user audit identity,
 TLS and full production security validation remain later work.

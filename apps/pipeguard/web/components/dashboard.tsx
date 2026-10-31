@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   SquaresFourIcon,
@@ -26,10 +26,11 @@ import type {
   Incident,
   Coverage,
   Graph,
-  Evidence,
   History,
 } from "@/lib/types";
+import { graphEvidence, selectedEdgeIndex } from "@/lib/graph-evidence";
 import { useRead } from "@/lib/use-read";
+import { ExecutionTimeline, QualityResults } from "./analytics";
 const Lineage = dynamic(() => import("./lineage"), {
   ssr: false,
   loading: () => <div className="empty">Loading lineage diagram…</div>,
@@ -54,9 +55,11 @@ function duration(a: Attempt) {
   const ms = Date.parse(a.finished_at) - Date.parse(a.started_at);
   return ms < 0
     ? "Conflicting timestamps"
-    : ms < 60000
-      ? `${(ms / 1000).toFixed(1)}s`
-      : `${(ms / 60000).toFixed(1)} min`;
+    : ms < 1000
+      ? `${ms.toFixed(0)} ms`
+      : ms < 60000
+        ? `${(ms / 1000).toFixed(1)}s`
+        : `${(ms / 60000).toFixed(1)} min`;
 }
 function tone(s: string) {
   return ["succeeded", "resolved", "fresh", "reported_complete"].includes(s)
@@ -181,6 +184,11 @@ export default function Dashboard() {
   const [runOffset, setRunOffset] = useState(0);
   const [attemptOffset, setAttemptOffset] = useState(0);
   const [incidentOffset, setIncidentOffset] = useState(0);
+  const [selectedLink, setLink] = useState<{
+    scope: string;
+    source: string;
+    target: string;
+  } | null>(null);
   const [selectedNode, setNode] = useState<string | null>(null);
   const [selectedIncident, setIncident] = useState("");
   const [historyOffset, setHistoryOffset] = useState(0);
@@ -188,6 +196,7 @@ export default function Dashboard() {
   const [showEvidence, setShowEvidence] = useState(false);
   const [eventId, setEvent] = useState("");
   const evidenceRef = useRef<HTMLElement>(null);
+  const executionView = view === "Pipelines" || view === "Lineage";
   const jobs = useRead<Page<Job>>(
     "jobs",
     ready ? { offset: String(jobOffset) } : null,
@@ -206,7 +215,7 @@ export default function Dashboard() {
     jobs.data?.items[0];
   const runs = useRead<Page<Run>>(
     "runs",
-    job ? { id: job.id, offset: String(runOffset) } : null,
+    executionView && job ? { id: job.id, offset: String(runOffset) } : null,
     demo,
     revision,
   );
@@ -214,7 +223,7 @@ export default function Dashboard() {
     runs.data?.items.find((r) => r.id === runId) || runs.data?.items[0];
   const attempts = useRead<Page<Attempt>>(
     "attempts",
-    run ? { id: run.id, offset: String(attemptOffset) } : null,
+    executionView && run ? { id: run.id, offset: String(attemptOffset) } : null,
     demo,
     revision,
   );
@@ -225,7 +234,7 @@ export default function Dashboard() {
     attempt && run && job ? `${job.id}:${run.id}:${attempt.id}` : "";
   const graph = useRead<Graph>(
     "lineage",
-    attempt && run && job
+    executionView && attempt && run && job
       ? {
           id: job.id,
           run: run.external_run_id,
@@ -237,43 +246,49 @@ export default function Dashboard() {
   );
   const incidents = useRead<Incident[]>(
     "incidents",
-    ready ? { offset: String(incidentOffset) } : null,
+    ready && view === "Incidents" ? { offset: String(incidentOffset) } : null,
     demo,
     revision,
   );
   const incident = incidents.data?.find((i) => i.id === selectedIncident);
   const history = useRead<History[]>(
     "history",
-    incident ? { id: incident.id, offset: String(historyOffset) } : null,
+    view === "Incidents" && incident
+      ? { id: incident.id, offset: String(historyOffset) }
+      : null,
     demo,
     revision,
   );
   const sourceEvent = useRead<Record<string, unknown>>(
     "lineage-event",
-    eventId ? { id: eventId } : null,
+    executionView && eventId ? { id: eventId } : null,
     demo,
     revision,
   );
   useEffect(() => {
     setNode(null);
+    setLink(null);
     setShowEvidence(false);
     setEvent("");
   }, [scope, demo]);
   const node =
-    graph.data?.nodes.find((n) => n.id === selectedNode) ||
-    graph.data?.nodes.find(
-      (n) => n.kind === "dataset" && n.name.includes("stg_orders"),
-    ) ||
-    graph.data?.nodes[0];
-  const references: Evidence[] = [];
-  const seen = new Set<string>();
-  for (const e of graph.data?.edges || [])
-    if (node && (e.source === node.id || e.target === node.id))
-      for (const ref of e.evidence)
-        if (!seen.has(ref.event_id)) {
-          seen.add(ref.event_id);
-          references.push(ref);
-        }
+    selectedNode === ""
+      ? undefined
+      : graph.data?.nodes.find((n) => n.id === selectedNode) ||
+        graph.data?.nodes.find(
+          (n) => n.kind === "dataset" && n.name.includes("stg_orders"),
+        ) ||
+        graph.data?.nodes[0];
+  const edgeIndex = selectedEdgeIndex(
+    graph.data,
+    selectedLink?.scope === scope ? selectedLink : null,
+  );
+  const link = edgeIndex === null ? undefined : graph.data?.edges[edgeIndex];
+  const graphNames = useMemo(
+    () => new Map(graph.data?.nodes.map((n) => [n.id, n.name]) || []),
+    [graph.data],
+  );
+  const references = graphEvidence(graph.data, node?.id, edgeIndex);
   const cov = coverage.data?.jobs.find((c) => c.job_id === job?.id);
   const localFresh =
     coverage.at && Date.now() - Date.parse(coverage.at) > 90000;
@@ -294,6 +309,7 @@ export default function Dashboard() {
     setRunOffset(0);
     setAttemptOffset(0);
     setNode(null);
+    setLink(null);
     setShowEvidence(false);
     setEvent("");
   }
@@ -301,6 +317,27 @@ export default function Dashboard() {
     setShowEvidence(true);
     requestAnimationFrame(() => evidenceRef.current?.focus());
   }
+  const selectGraphNode = useCallback((id: string) => {
+    setNode(id);
+    setLink(null);
+    setEvent("");
+  }, []);
+  const clearGraphSelection = useCallback(() => {
+    setNode("");
+    setLink(null);
+    setEvent("");
+    setShowEvidence(false);
+  }, []);
+  const selectGraphEdge = useCallback(
+    (index: number) => {
+      const edge = graph.data?.edges[index];
+      if (!edge) return;
+      setLink({ scope, source: edge.source, target: edge.target });
+      setNode(edge.source);
+      setEvent("");
+    },
+    [scope, graph.data],
+  );
   const filteredIncidents =
     incidents.data?.filter(
       (i) => incidentFilter === "all" || i.state === incidentFilter,
@@ -341,7 +378,7 @@ export default function Dashboard() {
       </header>
       <main id="main" tabIndex={-1} data-demo={demo}>
         <div className="breadcrumbs">
-          <button onClick={() => setView("Overview")}>Pipelines</button>
+          <button onClick={() => setView("Overview")}>Overview</button>
           <CaretRightIcon size={13} />
           <span>{job?.name || "Select a pipeline"}</span>
           <CaretRightIcon size={13} />
@@ -593,15 +630,15 @@ export default function Dashboard() {
                         <pre>{JSON.stringify(h.evidence, null, 2)}</pre>
                       </details>
                     ))}
-                    {((history.data?.length || 0) === 50 ||
-                      historyOffset > 0) && (
-                      <Pager
-                        offset={historyOffset}
-                        more={(history.data?.length || 0) === 50}
-                        onChange={setHistoryOffset}
-                      />
-                    )}
                   </State>
+                  {((history.data?.length || 0) === 50 ||
+                    historyOffset > 0) && (
+                    <Pager
+                      offset={historyOffset}
+                      more={(history.data?.length || 0) === 50}
+                      onChange={setHistoryOffset}
+                    />
+                  )}
                 </>
               )}
             </aside>
@@ -655,6 +692,7 @@ export default function Dashboard() {
                     onChange={(e) => {
                       setAttempt(e.target.value);
                       setNode(null);
+                      setLink(null);
                       setEvent("");
                     }}
                     disabled={!attempts.data?.items.length}
@@ -761,10 +799,10 @@ export default function Dashboard() {
                             <Lineage
                               graph={graph.data}
                               selected={node?.id || null}
-                              onSelect={(id) => {
-                                setNode(id);
-                                setEvent("");
-                              }}
+                              onSelect={selectGraphNode}
+                              selectedEdge={edgeIndex}
+                              onEdgeSelect={selectGraphEdge}
+                              onClear={clearGraphSelection}
                             />
                             <div
                               className={`notice ${graph.data.coverage === "partial" ? "warning" : ""}`}
@@ -789,8 +827,7 @@ export default function Dashboard() {
                                   <li key={n.id}>
                                     <button
                                       onClick={() => {
-                                        setNode(n.id);
-                                        setEvent("");
+                                        selectGraphNode(n.id);
                                       }}
                                     >
                                       {n.kind}: {n.name}
@@ -802,17 +839,14 @@ export default function Dashboard() {
                               <ul>
                                 {graph.data.edges.map((e, i) => (
                                   <li key={i}>
-                                    {
-                                      graph.data!.nodes.find(
-                                        (n) => n.id === e.source,
-                                      )?.name
-                                    }{" "}
-                                    →{" "}
-                                    {
-                                      graph.data!.nodes.find(
-                                        (n) => n.id === e.target,
-                                      )?.name
-                                    }
+                                    <button
+                                      className="text-button"
+                                      onClick={() => selectGraphEdge(i)}
+                                      aria-label={`Dependency: ${graphNames.get(e.source)} to ${graphNames.get(e.target)}`}
+                                    >
+                                      {graphNames.get(e.source)} →{" "}
+                                      {graphNames.get(e.target)}
+                                    </button>
                                   </li>
                                 ))}
                               </ul>
@@ -821,6 +855,14 @@ export default function Dashboard() {
                         )}
                       </State>
                     </section>
+                    {attempts.data && (
+                      <ExecutionTimeline
+                        attempts={attempts.data.items}
+                        selected={attempt?.id}
+                        hasMore={attempts.data.has_more}
+                        onSelect={setAttempt}
+                      />
+                    )}
                     <section className="panel attempts-panel">
                       <div className="section-heading">
                         <div>
@@ -886,6 +928,7 @@ export default function Dashboard() {
                                   onClick={() => {
                                     setAttempt(a.id);
                                     setNode(null);
+                                    setLink(null);
                                     setEvent("");
                                   }}
                                 >
@@ -924,6 +967,16 @@ export default function Dashboard() {
                         </button>
                       </div>
                     </section>
+                    {job && run && attempt && (
+                      <QualityResults
+                        key={scope}
+                        jobId={job.id}
+                        run={run.external_run_id}
+                        attempt={attempt.attempt_number}
+                        demo={demo}
+                        revision={revision}
+                      />
+                    )}
                   </div>
                   <aside
                     className="panel inspector"
@@ -934,7 +987,9 @@ export default function Dashboard() {
                       <h2>
                         {showEvidence
                           ? "Stored evidence"
-                          : "Dataset / step detail"}
+                          : link
+                            ? "Dependency detail"
+                            : "Dataset / step detail"}
                       </h2>
                       {showEvidence && (
                         <button
@@ -949,10 +1004,23 @@ export default function Dashboard() {
                     <State
                       loading={graph.loading}
                       error={graph.error}
-                      empty={!node}
+                      empty={graph.data?.nodes.length === 0}
                     >
+                      {Boolean(graph.data?.nodes.length) && !node && (
+                        <p className="empty">
+                          Select a dataset, step or dependency to inspect its
+                          evidence.
+                        </p>
+                      )}
                       {node && (
                         <>
+                          {link && (
+                            <p className="notice">
+                              Selected dependency: {graphNames.get(link.source)}{" "}
+                              → {graphNames.get(link.target)}. Source node
+                              below.
+                            </p>
+                          )}
                           <div className="node-title">
                             {node.kind === "dataset" ? (
                               <DatabaseIcon size={32} />
@@ -991,13 +1059,15 @@ export default function Dashboard() {
                           </p>
                           <h3>Evidence sources</h3>
                           <p className="subtle">
-                            Lineage event references for this node. Source time
-                            and receipt time are separate.
+                            Lineage event references for this{" "}
+                            {link ? "dependency" : "node"}. Source time and
+                            receipt time are separate.
                           </p>
                           {references.length === 0 ? (
                             <p className="notice">
-                              No retained edge references for this node. Missing
-                              evidence remains unknown.
+                              No retained edge references for this{" "}
+                              {link ? "dependency" : "node"}. Missing evidence
+                              remains unknown.
                             </p>
                           ) : (
                             references

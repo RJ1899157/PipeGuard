@@ -1,6 +1,6 @@
 # PipeGuard domain model
 
-Status: the initial six-table persistence slice is implemented and verified on PostgreSQL 17. Version 1 execution normalization is implemented; remaining entities and adapter-specific semantics are proposed designs.
+Status: execution ingestion, deterministic incidents, quality observations, lineage and immutable evidence are implemented on PostgreSQL 17. The conceptual table below includes future investigation/recovery entities; the implementation sections identify the current schema.
 
 [Architecture overview](overview.md) · [Documentation index](../README.md) · [Delivery roadmap](../roadmap.md)
 
@@ -41,13 +41,13 @@ IDs are application-generated UUIDs unless an external identifier is explicitly 
 | Run dataset observation | A run consumed or produced a dataset: run, dataset, input/output direction, source event, optional schema snapshot | Carries provenance; preserves historic relationships rather than overwriting a current graph |
 | Quality rule version | A versioned rule definition: dataset, rule key, version, type, configuration | Unique `(dataset_id, rule_key, version)`; results keep their original rule version |
 | Quality result | One evaluation: rule version, evaluation key, optional run, evaluated time, pass/fail/error/unknown, metrics, source event | Unique `(rule_version_id, evaluation_key)`; a check execution error is distinct from a failed data assertion |
-| Incident | An operational issue: dataset/job/run scope, policy version, fingerprint, severity, open/resolved state, acknowledgement fields, timestamps | One active incident per fingerprint; recurrence after resolution creates a new incident |
+| Incident | An operational issue: dataset/job/run scope, policy version, fingerprint, severity, open/resolved state, acknowledgement fields, timestamps | One active incident per fingerprint; recurrence reopens the same deterministic condition incident and appends history |
 | Incident occurrence | A repeated triggering observation: incident, trigger event or quality result, evaluation key, observed time | Unique detector evaluation key per incident; repeated delivery does not inflate occurrence counts |
 | Incident transition | An auditable incident change: incident, previous/new state, actor type/ID, reason, source evaluation, time | Append-only; deterministic recovery observations or recorded human decisions may change state |
 | Evidence artifact | A captured observation: kind, capture time, source locator/event, redacted content or artifact locator, content hash, redaction version | Immutable snapshot; hash demonstrates consistency, not source truth or tamper-proof storage |
 | Incident evidence link | An incident uses an evidence artifact | Unique `(incident_id, evidence_id)`; one artifact may support several incidents |
 
-The first schema slice implements integrations, datasets, jobs, runs, attempts, and ingested events. Quality, incident, evidence, investigation, and recovery tables are introduced at their roadmap stages. Defining them now exposes boundaries without implementing every subsystem upfront.
+The initial schema implemented integrations, datasets, jobs, runs, attempts and ingested events. Subsequent migrations add quality observations, deterministic incidents, lineage and immutable evidence bundles as described below. Investigation and recovery remain planned.
 
 ## Investigation and recovery extension
 
@@ -63,7 +63,7 @@ A recovery proposal stores a typed allowlisted action, target, parameters, expec
 4. Keep event history append-only, with mutable processing metadata kept separately or clearly distinguished. Build current run/incident views as projections from accepted observations. This is an event history plus relational projections, not a commitment to a full event-sourcing framework.
 5. A duplicate transport event has no repeated business effect. Prefer a producer event ID; where none exists, define an adapter-specific canonical envelope and deterministic hash. Do not use the run ID alone because a run produces many events. Distinct producer IDs from different adapters require normalization rules before cross-producer deduplication is safe.
 6. Terminal events received before start events are valid deliveries. Keep both. Update projections using source semantics and available sequence/attempt identity; do not regress a terminal attempt to running because a delayed start arrives. Contradictory terminal observations require explicit reconciliation and visible uncertainty.
-7. Incident fingerprint inputs include environment/integration scope, stable entity identity, policy version, and relevant condition. A partial unique index on unresolved fingerprints prevents two concurrent detections from opening two active incidents. Resolve only through a defined policy or audited human transition. AI hypotheses never resolve an incident.
+7. Incident fingerprint inputs include environment/integration scope, stable entity identity, policy version, and relevant condition. A unique deterministic fingerprint and serialized job evaluation prevent duplicate condition incidents; recurrence appends reopen history. Resolve only through a defined policy or audited human transition. AI hypotheses never resolve an incident.
 8. Ingestion and normalization may occur in separate transactions. Atomically persist receipt and durable processing state first; then normalize domain records and mark the event processed in one transaction. Failures remain retryable. If external side effects are later needed, add an outbox; a DB transaction alone cannot make an HTTP call atomic.
 9. Preserve incident/evidence history when integrations are disabled. Prefer restricted deletion for referenced metadata. Retention and redaction policies need explicit design before real sensitive data is accepted.
 10. Start with indexes for known access paths: runs by `(job_id, started_at)`, event processing status/time, attempts by run, occurrences by incident/time, lineage observations by dataset and run, and active incident filters. PostgreSQL does not automatically index all referencing foreign-key columns. Add indexes based on actual queries and measurements; every index also costs writes and storage.

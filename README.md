@@ -51,7 +51,7 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 | API and validation | FastAPI, Pydantic 2 | Authenticated local API and versioned contracts implemented |
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented |
 | Web application | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local read-only dashboard foundation implemented; pnpm lockfile committed |
-| Graphs and charts | React Flow; Apache ECharts planned | Attempt-scoped 2D graph and textual alternative implemented; charts remain planned |
+| Graphs and charts | React Flow; Apache ECharts | Attempt-scoped graph, execution timeline, quality charts and textual alternatives implemented |
 | Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose, backend/web checks and manual browser verification available; CI planned |
 | Later integrations | Marquez, Prometheus, optional GCP | Deferred |
 

@@ -50,3 +50,25 @@ test("preview failure, empty and stale states are explicit", () => {
   ) as { detector: string };
   assert.equal(coverage.detector, "stale");
 });
+
+test("exact history page boundary produces an empty next page", () => {
+  const first = demoRead(
+    "history",
+    new URLSearchParams({ scenario: "history50", offset: "0" }),
+  ) as unknown[];
+  const second = demoRead(
+    "history",
+    new URLSearchParams({ scenario: "history50", offset: "50" }),
+  ) as unknown[];
+  assert.equal(first.length, 50);
+  assert.deepEqual(second, []);
+  assert.equal(
+    (
+      demoRead(
+        "history",
+        new URLSearchParams({ scenario: "history50", offset: "0" }),
+      ) as unknown[]
+    ).length,
+    50,
+  );
+});

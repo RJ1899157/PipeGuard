@@ -237,13 +237,6 @@ main {
 .title-row .subtle {
   margin-top: 7px;
 }
-.eyebrow {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
 .refresh {
   font-size: 12px;
 }
@@ -376,8 +369,8 @@ main {
   margin: 12px 0 0;
 }
 .lineage-node {
-  width: 120px;
-  min-height: 99px;
+  width: 96px;
+  min-height: 94px;
   background: #f8fafc;
   border: 1px solid #cbd2e1;
   border-radius: 7px;
@@ -387,7 +380,7 @@ main {
   justify-content: center;
   gap: 8px;
   color: #26334d;
-  padding: 12px 7px;
+  padding: 10px 5px;
   box-shadow: 0 1px 2px #17203505;
 }
 .lineage-node.dataset {
@@ -395,13 +388,13 @@ main {
   border-color: #89bca6;
 }
 .lineage-node strong {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   overflow-wrap: anywhere;
   text-align: center;
 }
 .lineage-node span {
-  font-size: 11px;
+  font-size: 10px;
   color: #60708b;
 }
 .lineage-node.selected {
@@ -822,9 +815,6 @@ td button {
   padding-top: 14px;
 }
 @media (min-width: 1500px) {
-  .graph-canvas {
-    height: 280px;
-  }
   .detail-grid {
     grid-template-columns: minmax(0, 1fr) 370px;
   }
@@ -976,9 +966,6 @@ td button {
   }
   .title-row {
     align-items: start;
-  }
-  .eyebrow {
-    font-size: 9px;
   }
   .preview-note {
     font-size: 11px;
@@ -1184,19 +1171,8 @@ td button {
     margin-bottom: 18px;
   }
   .graph-canvas {
-    height: 205px;
+    height: 150px;
   }
-}
-.lineage-node {
-  width: 96px;
-  min-height: 94px;
-  padding: 10px 5px;
-}
-.lineage-node strong {
-  font-size: 12px;
-}
-.lineage-node span {
-  font-size: 10px;
 }
 .lineage-node svg {
   width: 23px;
@@ -1210,9 +1186,6 @@ td button {
   }
   main[data-demo="true"] .scope-controls {
     margin-top: 18px;
-  }
-  .graph-canvas {
-    height: 170px;
   }
   .graph-panel .notice {
     padding: 8px 10px;
@@ -1230,7 +1203,7 @@ td button {
     margin-top: 8px;
   }
   .attempt-details dl {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.35;
     gap: 4px 12px;
   }
@@ -1242,17 +1215,55 @@ td button {
     margin-bottom: 16px;
   }
 }
-/* Failure explanations are primary content; keep them readable at each breakpoint. */
-@media (min-width: 901px) {
-  .attempt-details dl {
-    font-size: 13px;
-  }
-  .graph-canvas {
-    height: 150px;
-  }
-}
+/* Failure explanations remain readable on narrow screens. */
 @media (max-width: 600px) {
   .attempt-details dl {
     font-size: 12px;
   }
+}
+.analytics-panel {
+  padding-bottom: 12px;
+}
+.analytics-panel > .small-note {
+  margin: 0 20px 12px;
+}
+.analytics-chart {
+  width: 100%;
+  min-width: 0;
+  margin-top: 12px;
+}
+.quality-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 18px 20px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.quality-picker select {
+  width: 100%;
+  font-size: 12px;
+}
+.quality-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 4px 20px 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.quality-provenance {
+  padding: 12px 20px;
+  background: #fafbff;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.analytics-panel table td:first-child {
+  max-width: 300px;
+  overflow-wrap: anywhere;
+}
+.analytics-panel table small {
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
