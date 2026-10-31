@@ -110,3 +110,7 @@ provision an integration and job, issue a producer token, record start/failure/r
 success, confirm preserved failure history, replay an event, and revoke the token.
 The synthetic smoke integration was disabled afterward and its history retained.
 This does not establish production security, browser usability or performance.
+
+## Incident and quality extension
+
+The API now includes immutable monitor-policy creation, quality-report receipt, scoped incident/history/evidence reads and administrator acknowledgement. Coverage inspection reports global/per-job detector staleness and unmonitored jobs. Acknowledgement does not resolve or approve recovery. Attempts expose `projection_source`; Airflow backfill can add `blocked`, `skipped` and `waiting` outcomes. See [operations](../incident-operations.md), [quality contract](quality-reports.md) and the checked-in OpenAPI document.

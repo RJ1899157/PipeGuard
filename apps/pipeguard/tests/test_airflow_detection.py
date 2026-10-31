@@ -67,3 +67,61 @@ def test_payload_allowlist_drops_conf_sql_logs_and_secrets():
         return original(path)|{'conf':{'password':'SECRET_MARKER'},'executor_config':{'token':'SECRET_MARKER'},'note':'SECRET_MARKER'}
     client.get=get
     assert 'SECRET_MARKER' not in str(client.scan('dag','task'))
+
+
+@pytest.mark.parametrize('code,expected',[(401,'source_authentication_failed'),(403,'source_authentication_failed'),(404,'source_http_error'),(500,'source_http_error')])
+def test_http_errors_are_safe_and_expire_bad_tokens(code,expected):
+    from urllib.error import HTTPError
+    client=AirflowClient('pipeguard_observer','SECRET_PASSWORD');client._token='SECRET_TOKEN'
+    class Offline:
+        def open(self,*args,**kwargs):raise HTTPError('SECRET_URL',code,'SECRET_BODY',{},None)
+    client._opener=Offline()
+    with pytest.raises(SourceUnavailable,match=expected) as error:client._request('/api/v2/dags')
+    assert 'SECRET' not in str(error.value)
+    if code in (401,403):assert client._token is None
+
+
+@pytest.mark.parametrize('fault',['timeout','unreachable','invalid_json','oversize'])
+def test_transport_and_payload_failures_are_explicit(fault):
+    from urllib.error import URLError
+    client=AirflowClient('pipeguard_observer','unused')
+    class Result:
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+        def read(self,*args):return b'{' if fault=='invalid_json' else b'x'*2_000_001
+    class Opener:
+        def open(self,*args,**kwargs):
+            if fault=='timeout':raise TimeoutError('SECRET')
+            if fault=='unreachable':raise URLError('SECRET')
+            return Result()
+    client._opener=Opener()
+    with pytest.raises(SourceUnavailable) as error:client._request('/api/v2/dags')
+    assert 'SECRET' not in str(error.value)
+
+
+def test_expired_token_refreshes_once_and_persistent_denial_is_bounded():
+    client=AirflowClient('pipeguard_observer','unused');client._token='expired'
+    calls=[]
+    def request(path,body=None):
+        calls.append(path)
+        if path=='/auth/token':return {'access_token':'fresh'}
+        if client._token=='expired':
+            client._token=None
+            raise SourceUnavailable('source_authentication_failed')
+        return {'ok':True}
+    client._request=request
+    assert client.get('/read-only')=={'ok':True}
+    assert calls==['/read-only','/auth/token','/read-only']
+    calls.clear()
+    def denied(path,body=None):
+        calls.append(path)
+        if path=='/auth/token':return {'access_token':'fresh'}
+        raise SourceUnavailable('source_authentication_failed')
+    client._request=denied
+    with pytest.raises(SourceUnavailable):client.get('/forbidden')
+    assert len(calls)==3
+
+
+def test_huge_try_number_reports_gap_without_allocating_a_range():
+    with pytest.raises(SourceUnavailable,match='incomplete_history'):
+        Fake(number=2147483647).scan('dag','task')

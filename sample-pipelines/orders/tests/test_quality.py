@@ -5,10 +5,10 @@ from test_observer import observer
 
 
 def files(path,status='pass',include=True):
-    manifest={'metadata':{'dbt_version':'1.12.6'},'nodes':{'test.orders.unique':{
+    manifest={'metadata':{'dbt_version':'1.12.6','invocation_id':'same-invocation'},'nodes':{'test.orders.unique':{
         'resource_type':'test','raw_code':'SECRET_SQL','config':{},'depends_on':{'nodes':[]}}},
         'macros':{'macro.test':{'macro_sql':'SECRET_MACRO'}}}
-    results={'results':[{'unique_id':'test.orders.unique','status':status,'failures':0,'message':'SECRET_ERROR'}] if include else []}
+    results={'metadata':{'invocation_id':'same-invocation'},'results':[{'unique_id':'test.orders.unique','status':status,'failures':0,'message':'SECRET_ERROR'}] if include else []}
     (path/'manifest.json').write_text(json.dumps(manifest));(path/'run_results.json').write_text(json.dumps(results))
 
 
@@ -49,3 +49,22 @@ def test_quality_outbox_survives_outage_and_uses_quality_endpoint(observer,monke
     quality={'inventory_complete':True,'checks':[{'rule_id':'orders.unique','rule_version':'a'*64,'status':'fail'}]}
     assert observer.emit_quality('quality-run',1,quality)
     assert opener.requests[0].full_url.endswith('/v1/quality-reports')
+
+
+def test_mixed_invocations_and_duplicate_results_cannot_claim_complete(tmp_path):
+    files(tmp_path)
+    p=tmp_path/'run_results.json';data=json.loads(p.read_text())
+    data['metadata']['invocation_id']='different';p.write_text(json.dumps(data))
+    result=extract(tmp_path)
+    assert not result['inventory_complete'] and result['checks'][0]['status']=='unknown'
+    files(tmp_path);data=json.loads(p.read_text());data['results'].append(data['results'][0])
+    p.write_text(json.dumps(data));result=extract(tmp_path)
+    assert not result['inventory_complete'] and result['checks'][0]['status']=='unknown'
+
+
+def test_oversized_or_wrong_shape_artifacts_are_incomplete(tmp_path):
+    files(tmp_path)
+    with (tmp_path/'manifest.json').open('wb') as stream:stream.truncate(20_000_001)
+    assert extract(tmp_path)=={'checks':[],'inventory_complete':False}
+    files(tmp_path);(tmp_path/'manifest.json').write_text('{"nodes":[]}')
+    assert not extract(tmp_path)['inventory_complete']

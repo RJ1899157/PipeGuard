@@ -229,3 +229,212 @@ time.sleep(120)
             assert s.scalar(select(IngestedEvent.processing_state).where(IngestedEvent.integration_id==ids[0]))=="processed"
     finally:
         if child.poll() is None: child.kill();child.wait(timeout=5)
+
+
+def test_quality_failure_without_execution_still_opens_quality_incident(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    receive_quality(c,report(ids,'orphan',1,'fail'))
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=3))
+    conditions={r.condition for r in incidents(c,ids[1]) if r.state=='open'}
+    assert conditions >= {'quality_failure','execution_evidence_missing'}
+
+
+def test_attempt_gap_is_visible_and_late_history_recovers_coverage(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids,'retry',attempt=2,state='succeeded',seconds=2))
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=3))
+    assert any(r.condition=='attempt_history_gap' and r.state=='open' for r in incidents(c,ids[1]))
+    send(c,event(ids,'late-failure',state='failed',seconds=1))
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=4))
+    states={r.condition:r.state for r in incidents(c,ids[1])}
+    assert states['attempt_history_gap']=='resolved' and states['execution_failure']=='resolved'
+
+
+def test_changed_inventory_is_visible_even_when_remaining_rules_pass(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    receive_quality(c,report(ids,'first',1,'pass'))
+    changed=report(ids,'changed',2,'pass').model_dump(mode='json')
+    changed['checks'][0]['rule_id']='different.check'
+    receive_quality(c,QualityReport.model_validate(changed))
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=4))
+    assert any(r.condition=='quality_inventory_changed' and r.state=='open' for r in incidents(c,ids[1]))
+
+
+def test_source_projection_handles_lost_terminal_then_late_producer(migrated_database):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run,Attempt
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids))
+    snapshots=[(T+timedelta(seconds=2),dict(external_run_id='run',attempt_number=1,state='failed',
+                  started_at=T.isoformat(),finished_at=(T+timedelta(seconds=2)).isoformat()))]
+    reconcile(c,ids[1],snapshots)
+    with Session(c) as s:
+        attempt=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
+        assert attempt.state=='failed' and attempt.projection_source=='airflow' and attempt.error_code=='unknown'
+    # A late start with a different workload boundary does not fabricate a timestamp conflict.
+    send(c,event(ids,'late-start',seconds=1))
+    send(c,event(ids,'late-terminal',state='failed',seconds=3))
+    reconcile(c,ids[1],snapshots)
+    with Session(c) as s:
+        attempt=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
+        assert attempt.state=='failed' and attempt.projection_source=='producer'
+        assert attempt.finished_at==T+timedelta(seconds=3) and not attempt.reconciliation_required
+
+
+@pytest.mark.parametrize('state',['queued','running','waiting','skipped','blocked','cancelled','unknown'])
+def test_source_only_states_create_explicit_execution_history(migrated_database,state):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run,Attempt
+    c,_=migrated_database;ids=setup(c)
+    reconcile(c,ids[1],[(T,dict(external_run_id='source-only',attempt_number=1,state=state,
+                                started_at=T.isoformat(),finished_at=None))])
+    with Session(c) as s:
+        run=s.scalar(select(Run).where(Run.job_id==ids[1]))
+        assert run.state==state
+        assert s.scalar(select(Attempt).where(Attempt.run_id==run.id)).projection_source=='airflow'
+
+
+def test_source_disagreement_does_not_erase_producer_evidence(migrated_database):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run
+    c,_=migrated_database;ids=setup(c)
+    receipt=send(c,event(ids,'success',state='succeeded'))
+    reconcile(c,ids[1],[(T,dict(external_run_id='run',attempt_number=1,state='failed',started_at=None,finished_at=T.isoformat()))])
+    with Session(c) as s:
+        run=s.scalar(select(Run).where(Run.job_id==ids[1]))
+        assert run.reconciliation_required and run.state=='unknown'
+        assert s.get(IngestedEvent,receipt.event_id).payload['state']=='succeeded'
+
+
+def test_concurrent_evaluators_do_not_duplicate_incident_or_history(migrated_database):
+    from concurrent.futures import ThreadPoolExecutor
+    from sqlalchemy import create_engine
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids,state='failed'));c.commit()
+    schema=c.scalar(text('SELECT current_schema()'));c.commit()
+    engine=create_engine(os.environ['PIPEGUARD_DATABASE_URL'],hide_parameters=True,
+                         connect_args={'options':f'-csearch_path={schema} -clock_timeout=5000'})
+    try:
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(lambda _:evaluate_job(engine,ids[1],at=T+timedelta(seconds=2)),range(8)))
+        with Session(c) as s:
+            rows=list(s.scalars(select(Incident).where(Incident.job_id==ids[1])))
+            assert len(rows)==1
+            assert s.scalar(select(func.count()).select_from(IncidentHistory).where(IncidentHistory.incident_id==rows[0].id))==2
+    finally:engine.dispose()
+
+
+def test_future_clock_and_disabled_integration_are_not_healthy(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids,seconds=3600))
+    evaluate_job(c,ids[1],at=T)
+    assert any(r.condition=='clock_skew' for r in incidents(c,ids[1]))
+    with Session(c) as s,s.begin():s.get(Integration,ids[0]).enabled=False
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=1))
+    assert any(r.condition=='monitoring_disabled' and r.state=='open' for r in incidents(c,ids[1]))
+
+
+def test_expected_run_missing_boundary_and_explicit_activity(migrated_database):
+    c,_=migrated_database;ids=setup(c,expected_interval_seconds=60)
+    with Session(c) as s:created=s.scalar(select(MonitorPolicy.created_at).where(MonitorPolicy.job_id==ids[1]))
+    evaluate_job(c,ids[1],at=created+timedelta(seconds=119))
+    assert incidents(c,ids[1])==[]
+    evaluate_job(c,ids[1],at=created+timedelta(seconds=120))
+    assert any(r.condition=='expected_run_missing' and r.state=='open' for r in incidents(c,ids[1]))
+    data=event(ids)|{'occurred_at':(created+timedelta(seconds=121)).isoformat()}
+    send(c,data);evaluate_job(c,ids[1],at=created+timedelta(seconds=122))
+    assert next(r for r in incidents(c,ids[1]) if r.condition=='expected_run_missing').state=='resolved'
+
+
+def test_detector_crash_rolls_back_incident_and_heartbeat_does_not_advance(migrated_database,monkeypatch):
+    import pipeguard.detection.service as service
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids,state='failed'))
+    def crash(*args,**kwargs):raise RuntimeError('injected_detector_crash')
+    monkeypatch.setattr(service,'_history',crash)
+    with pytest.raises(RuntimeError):cycle(c)
+    assert incidents(c,ids[1])==[]
+    assert coverage(c)['detector']=='stale'
+
+
+def test_combined_execution_quality_and_source_failure_matrix(migrated_database):
+    from itertools import product
+    c,_=migrated_database
+    for execution,quality,source,replay in product(('succeeded','failed','running'),('pass','fail','unknown'),('complete','incomplete'),(False,True)):
+        ids=setup(c,airflow_dag_id='dag',airflow_task_id='task')
+        data=event(ids,state=execution)
+        send(c,data)
+        if replay:send(c,data)
+        receive_quality(c,report(ids,'quality',1,quality))
+        with Session(c) as s,s.begin():
+            observe(s,ids[1],'airflow','source_scan',{'status':source},T,key='scan')
+        evaluate_job(c,ids[1],at=T+timedelta(seconds=2))
+        open_conditions={r.condition for r in incidents(c,ids[1]) if r.state=='open'}
+        assert ('execution_failure' in open_conditions)==(execution=='failed')
+        assert ('quality_failure' in open_conditions)==(quality!='pass')
+        assert ('source_coverage' in open_conditions)==(source!='complete')
+
+
+def test_one_broken_job_does_not_starve_other_jobs(migrated_database,monkeypatch):
+    import pipeguard.detection.worker as worker
+    c,_=migrated_database;bad=setup(c);good=setup(c)
+    send(c,event(good,state='failed'))
+    original=worker._job_cycle
+    def broken(bind,client,policy):
+        if policy.job_id==bad[1]:raise RuntimeError('controlled_broken_job')
+        return original(bind,client,policy)
+    monkeypatch.setattr(worker,'_job_cycle',broken)
+    with pytest.raises(RuntimeError,match='incomplete'):worker.cycle(c)
+    assert any(r.condition=='execution_failure' for r in incidents(c,good[1]))
+    statuses={row['job_id']:row['detector_status'] for row in coverage(c)['jobs']}
+    assert statuses[str(bad[1])]=='stale' and statuses[str(good[1])]=='fresh'
+    assert coverage(c)['detector']=='stale'
+
+
+def test_worker_retains_partial_failure_evidence_when_source_scan_fails(migrated_database):
+    from pipeguard.detection.airflow import SourceUnavailable
+    c,_=migrated_database;ids=setup(c,airflow_dag_id='dag',airflow_task_id='task')
+    class Partial:
+        run_facts=[]
+        partial=[(T,dict(external_run_id='partial',attempt_number=1,state='failed',started_at=None,finished_at=T.isoformat()))]
+        def scan(self,*args):raise SourceUnavailable('source_incomplete_history')
+    cycle(c,Partial())
+    conditions={r.condition for r in incidents(c,ids[1]) if r.state=='open'}
+    assert conditions >= {'source_coverage','execution_failure'}
+    assert coverage(c)['detector']=='fresh'
+
+
+def test_disappearing_previously_seen_source_history_is_a_coverage_fault(migrated_database):
+    c,_=migrated_database;ids=setup(c,airflow_dag_id='dag',airflow_task_id='task')
+    class Source:
+        is_paused=False;run_facts=[]
+        values=[(T,dict(external_run_id='seen',attempt_number=1,state='succeeded',started_at=T.isoformat(),finished_at=T.isoformat()))]
+        def scan(self,*args):return self.values
+    client=Source();cycle(c,client)
+    client.values=[];cycle(c,client)
+    assert any(r.condition=='source_coverage' and r.state=='open' for r in incidents(c,ids[1]))
+
+
+def test_invalid_stored_contract_does_not_poison_pending_queue(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    with Session(c) as s,s.begin():
+        bad=IngestedEvent(integration_id=ids[0],deduplication_key='invalid',event_type='attempt.failed',schema_version=1,
+                          occurred_at=T,payload={'job_id':str(ids[1]),'external_run_id':'bad-near-valid','attempt_number':1},payload_hash='a'*64,
+                          canonicalization_version='execution-json-v1',redaction_version='allowlisted-fields-v1')
+        s.add(bad);s.flush();bad_id=bad.id
+    good=receive(c,event(ids))
+    cycle(c)
+    with Session(c) as s:
+        assert s.get(IngestedEvent,bad_id).processing_error=='invalid_stored_event'
+        assert s.get(IngestedEvent,good.event_id).processing_state=='processed'
+    assert any(r.condition=='ingestion_backlog' for r in incidents(c,ids[1]))
+
+
+def test_failed_dag_with_skipped_task_is_not_a_success(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    with Session(c) as s,s.begin():
+        observe(s,ids[1],'airflow','airflow_run',{'external_run_id':'dag-failure','state':'failed'},T)
+        observe(s,ids[1],'airflow','airflow_attempt',{'external_run_id':'dag-failure','attempt_number':1,'state':'skipped'},T)
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=2))
+    assert any(r.condition=='orchestrator_run_failure' and r.state=='open' for r in incidents(c,ids[1]))
+    assert not any(r.condition=='execution_failure' for r in incidents(c,ids[1]))

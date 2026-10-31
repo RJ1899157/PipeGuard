@@ -66,16 +66,27 @@ class AirflowClient:
         except (ValueError, TypeError):
             raise SourceUnavailable("source_invalid_response") from None
 
+    def _authenticate(self):
+        answer = self._request("/auth/token", {"username": self._username, "password": self._password})
+        if not isinstance(answer, dict) or not isinstance(answer.get("access_token"), str):
+            raise SourceUnavailable("source_authentication_failed")
+        self._token = answer["access_token"]
+
     def get(self, path):
         if not self._token:
-            answer = self._request("/auth/token", {"username": self._username, "password": self._password})
-            if not isinstance(answer.get("access_token"), str):
-                raise SourceUnavailable("source_authentication_failed")
-            self._token = answer["access_token"]
-        return self._request(path)
+            self._authenticate()
+        try:
+            return self._request(path)
+        except SourceUnavailable as error:
+            if str(error) != "source_authentication_failed":
+                raise
+            # Expiring bearer tokens are normal. Refresh once; persistent denial is a coverage fault.
+            self._authenticate()
+            return self._request(path)
 
     def scan(self, dag_id, task_id):
         self.partial = []
+        self.run_facts = []
         try:
             return self._scan(dag_id, task_id)
         except (KeyError, ValueError, TypeError, AttributeError):
@@ -86,12 +97,14 @@ class AirflowClient:
         dag_path = "/api/v2/dags/" + quote(dag_id, safe="")
         snapshots, seen = self.partial, set()
         health = self.get("/api/v2/monitor/health")
+        unhealthy = False
         for component in ("metadatabase", "scheduler", "dag_processor"):
             if health[component]["status"] != "healthy":
-                raise SourceUnavailable("source_component_unhealthy")
+                unhealthy = True
         dag = self.get(dag_path)
-        if dag.get("has_import_errors"):
-            raise SourceUnavailable("source_dag_import_error")
+        import_errors = dag["has_import_errors"]
+        if type(import_errors) is not bool:
+            raise SourceUnavailable("source_invalid_response")
         self.is_paused = dag["is_paused"]
         if type(self.is_paused) is not bool:
             raise SourceUnavailable("source_invalid_response")
@@ -106,6 +119,13 @@ class AirflowClient:
                 if run_id in seen:
                     raise SourceUnavailable("source_unstable_pagination")
                 seen.add(run_id)
+                run_time = run.get("end_date") or run.get("start_date") or run.get("queued_at") or run.get("run_after")
+                if not run_time:
+                    raise SourceUnavailable("source_missing_timestamp")
+                self.run_facts.append((timestamp(run_time), {
+                    "external_run_id": external_id(dag_id, run_id, task_id),
+                    "dag_id": dag_id, "dag_run_id": run_id,
+                    "state": STATES.get(run.get("state"), "unknown")}))
                 path = dag_path + "/dagRuns/" + quote(run_id, safe="") + "/taskInstances/" + quote(task_id, safe="")
                 current = self.get(path)
                 if current.get("map_index", -1) != -1:
@@ -122,7 +142,7 @@ class AirflowClient:
                     # Current try takes precedence over its historical snapshot.
                     by_number[number] = entry
                 positive = {n for n in by_number if n > 0}
-                if positive and set(range(1, max(positive) + 1)) - positive:
+                if positive and len(positive) != max(positive):
                     raise SourceUnavailable("source_incomplete_history")
                 for number, entry in sorted(by_number.items()):
                     state = STATES.get(entry["state"], "unknown")
@@ -140,6 +160,10 @@ class AirflowClient:
                         "raw_state": entry["state"]}))
             offset += len(runs)
             if offset >= total:
+                if unhealthy:
+                    raise SourceUnavailable("source_component_unhealthy")
+                if import_errors:
+                    raise SourceUnavailable("source_dag_import_error")
                 return snapshots
             if not runs:
                 raise SourceUnavailable("source_incomplete_pagination")

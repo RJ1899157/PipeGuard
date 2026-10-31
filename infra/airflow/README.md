@@ -115,3 +115,7 @@ observations. A polling reconciler using Airflow's public API is not implemented
 there is no false claim of complete capture of every scheduler/worker failure.
 OpenLineage, quality-result contracts, deterministic incidents and recovery actions
 are later stages. See the sample README for durable event delivery semantics.
+
+## Independent monitoring
+
+The incident worker uses a dedicated `pipeguard_observer:viewer` account and public Airflow APIs. It reads DAG runs, native try history and health without access to the Airflow database. Source coverage becomes explicitly incomplete on authentication, transport, health, history or pagination failures. See [incident operations](../../docs/incident-operations.md) and [failure coverage](../../docs/failure-coverage.md).

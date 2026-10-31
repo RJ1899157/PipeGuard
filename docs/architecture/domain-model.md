@@ -123,3 +123,7 @@ The [local HTTP API](../contracts/http-api.md) now wraps execution ingestion and
 The PipeGuard and sample warehouse databases are now provisioned with separate roles.
 Airflow now has its own metadata database and role, separate from monitoring and the warehouse. The non-superuser owner account is for migrations and checks. The API uses a
 separate restricted runtime role without schema ownership.
+
+## Incident and monitoring additions
+
+`monitor_policies` declare immutable per-job expectations. `observations` retain allowlisted quality, orchestration and coverage evidence. `incidents` hold deterministic current condition state; `incident_history` retains occurrence/lifecycle/acknowledgement provenance. `monitor_heartbeats` record successful global and per-job evaluations. Attempt projections identify whether workload or Airflow supplied the boundary through `projection_source`. See [detection architecture](incident-detection.md).

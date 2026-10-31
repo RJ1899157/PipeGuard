@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 from uuid import UUID
 
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
@@ -80,7 +81,11 @@ def process(bind, event_id: UUID) -> ProcessingResult:
             stored.processing_state = "failed"
             stored.processing_error = "unsupported_event_contract"
             return ProcessingResult(stored.id, "failed", stored.processing_error)
-        event = ExecutionEvent.model_validate(stored.payload)
+        try:
+            event = ExecutionEvent.model_validate(stored.payload)
+        except ValidationError:
+            stored.processing_state, stored.processing_error = "failed", "invalid_stored_event"
+            return ProcessingResult(stored.id, "failed", stored.processing_error)
         integration = session.scalar(select(Integration).where(
             Integration.id == event.integration_id).with_for_update(read=True))
         job = session.get(Job, event.job_id)
@@ -105,7 +110,17 @@ def process(bind, event_id: UUID) -> ProcessingResult:
                                       state="unknown", reconciliation_required=False)
                     session.add(attempt)
                     attempts.append(attempt)
-                _apply(attempt, event)
+                if attempt.projection_source == "airflow":
+                    if event.state != "running":
+                        # Producer timestamps describe workload boundaries, not scheduler boundaries.
+                        # Preserve independent source facts in observations; do not compare their timestamps.
+                        attempt.state, attempt.started_at, attempt.finished_at = "unknown", None, None
+                        attempt.error_code, attempt.reconciliation_required = None, False
+                        attempt.projection_source = "producer"
+                        _apply(attempt, event)
+                    # A delayed start cannot regress a terminal orchestrator observation.
+                else:
+                    _apply(attempt, event)
                 latest = max(attempts, key=lambda a: a.attempt_number)
                 run.state = latest.state
                 run.reconciliation_required = any(a.reconciliation_required for a in attempts)
@@ -119,7 +134,7 @@ def process(bind, event_id: UUID) -> ProcessingResult:
         return ProcessingResult(stored.id, stored.processing_state, stored.processing_error)
 
 
-TERMINAL = {"succeeded", "failed", "cancelled"}
+TERMINAL = {"succeeded", "failed", "cancelled", "blocked", "skipped"}
 
 
 def _apply(attempt: Attempt, event: ExecutionEvent) -> None:

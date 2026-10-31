@@ -2,7 +2,7 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, seven SQLAlchemy metadata models (including producer credentials), Alembic
+The project includes PostgreSQL 17, twelve SQLAlchemy metadata models (including producer credentials and incident/coverage evidence), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
 The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. There is no dashboard or incident engine yet.
 
@@ -137,3 +137,7 @@ No browser, performance or production-security verification is claimed. See the 
 The sample checkpoint now passes 31 workload checks, including repeated dbt builds, an injected uniqueness failure and recovery. Both database access directions were verified: workload credentials cannot connect to monitoring, and monitoring runtime credentials cannot connect to the warehouse.
 
 The orchestration checkpoint includes the 31 workload checks above and a real native Airflow failure/retry success flow, verified through PipeGuard HTTP reads. Airflow runtime configuration remains in ignored `.env.airflow` and `data/local/airflow`.
+
+## Incident worker
+
+After the API and Airflow are available, follow [incident monitoring operations](../incident-operations.md) to provision a dedicated read-only observer, enroll the job and start the detector using private `.env.monitoring`. Review [failure coverage](../failure-coverage.md) before interpreting monitoring confidence.

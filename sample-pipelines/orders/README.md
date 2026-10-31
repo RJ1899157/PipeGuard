@@ -160,3 +160,7 @@ terminal-before-start replay retained the failed outcome. Unit checks cover stab
 identity/timestamps, offline retention/replay, private error allowlisting, destination
 restrictions and credential filtering before dbt. The native Airflow retry was also
 verified end to end through PipeGuard's API.
+
+## Quality observations
+
+A completed dbt build produces a bounded quality report from matching manifest/run-results invocation IDs. The durable outbox includes rule identifiers, content fingerprints, outcomes and completeness; SQL, data rows and error messages stay local. Missing or ambiguous artifacts do not count as passes. Replaying events also replays quality reports. See the [quality contract](../../docs/contracts/quality-reports.md) and [failure matrix](../../docs/failure-coverage.md).

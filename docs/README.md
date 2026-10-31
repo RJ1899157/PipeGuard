@@ -36,3 +36,10 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 ## Orchestration
 
 - [Local Airflow](../infra/airflow/README.md): isolated installation, private configuration, DAG controls and verified retry behaviour.
+
+## Incident monitoring
+
+- [Detection architecture](architecture/incident-detection.md): deterministic rules, immutable evidence, source authority and recovery semantics.
+- [Operations](incident-operations.md): worker setup, API inspection, scope and heartbeat behavior.
+- [Failure coverage](failure-coverage.md): scenario matrix, verification methods and residual limits.
+- [Quality report v1](contracts/quality-reports.md): rule outcomes, inventory and replay contract.

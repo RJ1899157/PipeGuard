@@ -1,6 +1,6 @@
 # Architecture overview
 
-**Status:** target architecture with an implemented initial persistence slice. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; dashboard and incident services remain planned.
+**Status:** target architecture with an implemented initial persistence slice. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; quality reports, deterministic incident services and independent source reconciliation are implemented; dashboard, lineage, AI investigation and approved recovery remain planned.
 
 ## Scope
 

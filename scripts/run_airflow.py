@@ -46,6 +46,8 @@ def main():
     except KeyboardInterrupt:
         return 0
     finally:
+        signal.signal(signal.SIGINT,signal.SIG_IGN)
+        signal.signal(signal.SIGTERM,signal.SIG_IGN)
         for process in processes:
             if process.poll() is None:
                 os.killpg(process.pid,signal.SIGTERM)

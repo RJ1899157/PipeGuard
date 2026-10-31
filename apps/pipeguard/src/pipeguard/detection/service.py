@@ -4,6 +4,7 @@ from hashlib import sha256
 import json
 from uuid import UUID
 
+from pydantic import ValidationError
 from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
@@ -11,6 +12,7 @@ from sqlalchemy.orm import Session
 from pipeguard.db.models import (Attempt, IngestedEvent, Integration, Job, Run, MonitorPolicy,
                                 Observation, Incident, IncidentHistory, MonitorHeartbeat)
 from pipeguard.ingestion.service import IngestionRejected
+from pipeguard.ingestion.contracts import ExecutionEvent
 
 
 def _lock_job(session, job_id):
@@ -126,7 +128,11 @@ def evaluate_job(bind, job_id, *, at=None):
         # Detect failures from source evidence too, including events that failed projection.
         facts = {}
         for event in events:
-            p = event.payload
+            try:
+                p = ExecutionEvent.model_validate(event.payload).model_dump(mode="json")
+            except ValidationError:
+                # Retain processing failure/backlog provenance without interpreting invalid source fields.
+                continue
             if p.get("external_run_id") and p.get("attempt_number"):
                 facts.setdefault(p["external_run_id"], []).append({
                     "attempt": p["attempt_number"], "state": p["state"], "time": event.occurred_at,
@@ -142,12 +148,34 @@ def evaluate_job(bind, job_id, *, at=None):
             _condition(session, policy, "execution_evidence_missing", run_id,
                        [_ref(report, "observations")] if run_id not in facts else [],
                        ("execution:" + run_id, {"evidence": facts[run_id][0]["ref"][1]}) if run_id in facts else None, at)
+        for report in [o for o in observations if o.kind == "quality_report"]:
+            run_id = report.payload["external_run_id"]
+            if run_id not in facts:
+                facts[run_id] = [{"attempt": report.payload["attempt_number"], "state": "unknown",
+                                  "time": report.occurred_at, "ref": _ref(report, "observations"),
+                                  "source": "quality_only", "error_code": None}]
+        dag_facts = {}
         for row in observations:
-            if row.kind == "source_configuration" and row.payload["is_paused"] and policy.expected_interval_seconds:
-                _condition(session, policy, "scheduled_source_paused", "job", [_ref(row, "observations")], None, at)
+            if row.kind == "airflow_run":
+                dag_facts.setdefault(row.payload["external_run_id"], []).append(row)
+        for run_id, rows in dag_facts.items():
+            bad = [_ref(r, "observations") for r in rows if r.payload["state"] == "failed"]
+            latest_dag = rows[-1]
+            _condition(session, policy, "orchestrator_run_failure", run_id, bad,
+                       _ref(latest_dag, "observations") if latest_dag.payload["state"] == "succeeded" else None, at)
         configurations = [o for o in observations if o.kind == "source_configuration"]
-        if configurations and not configurations[-1].payload["is_paused"]:
-            _condition(session, policy, "scheduled_source_paused", "job", [], _ref(configurations[-1], "observations"), at)
+        if configurations and policy.expected_interval_seconds:
+            current = configurations[-1]
+            _condition(session, policy, "scheduled_source_paused", "job",
+                       [_ref(o, "observations") for o in configurations if o.payload["is_paused"]],
+                       _ref(current, "observations") if not current.payload["is_paused"] else None, at)
+        inventories = [o for o in observations if o.kind == "quality_report" and o.payload["inventory_complete"]]
+        if inventories:
+            baseline = {c["rule_id"] for c in inventories[0].payload["checks"]}
+            changed = [o for o in inventories if {c["rule_id"] for c in o.payload["checks"]} != baseline]
+            current = inventories[-1]
+            _condition(session, policy, "quality_inventory_changed", "job", [_ref(o, "observations") for o in changed],
+                       _ref(current, "observations") if {c["rule_id"] for c in current.payload["checks"]} == baseline else None, at, "warning")
         source_status = [o for o in observations if o.kind == "source_scan"]
         current_scan = source_status[-1] if source_status else None
         source_good = bool(current_scan and current_scan.payload["status"] == "complete"
@@ -161,6 +189,13 @@ def evaluate_job(bind, job_id, *, at=None):
             future = [e["ref"] for e in entries if e["time"] > at + timedelta(seconds=60)]
             _condition(session, policy, "clock_skew", run_id, future, None, at, "warning")
             max_attempt = max(e["attempt"] for e in entries)
+            numbers = {e["attempt"] for e in entries}
+            missing_count = max_attempt - len(numbers)
+            _condition(session, policy, "attempt_history_gap", run_id,
+                       [(f"attempt-gap:{run_id}:{max_attempt}:{len(numbers)}",
+                         {"highest_attempt": max_attempt, "observed_attempts": len(numbers), "missing_count": missing_count})]
+                       if missing_count else [],
+                       (f"attempt-history:{run_id}:{max_attempt}", {"highest_attempt": max_attempt}) if not missing_count else None, at, "warning")
             latest = [e for e in entries if e["attempt"] == max_attempt]
             terminals = {e["state"] for e in latest if e["state"] in {"succeeded", "failed", "cancelled", "blocked", "skipped"}}
             all_conflicts = []
@@ -178,7 +213,7 @@ def evaluate_job(bind, job_id, *, at=None):
                         "attempt": e["attempt"], "source": e["source"]})
                         for e in entries if e["state"] in {"failed", "cancelled", "blocked"}]
             successes = [e for e in latest if e["state"] == "succeeded"]
-            recovery = successes[-1]["ref"] if successes and terminals == {"succeeded"} and not all_conflicts else None
+            recovery = successes[-1]["ref"] if successes and terminals == {"succeeded"} and not all_conflicts and not future else None
             _condition(session, policy, "execution_failure", run_id, failures, recovery, at)
             unknown = [e["ref"] for e in latest if e["state"] == "unknown"]
             _condition(session, policy, "unknown_execution_state", run_id, unknown,
@@ -189,7 +224,7 @@ def evaluate_job(bind, job_id, *, at=None):
             _condition(session, policy, "missing_terminal", run_id,
                        [(f"timeout:{run_id}:{max_attempt}", {"attempt": max_attempt, "basis": latest[0]["ref"][1],
                          "deadline": (start + timedelta(seconds=policy.timeout_seconds)).isoformat()})] if stale else [],
-                       latest[-1]["ref"] if terminals and not all_conflicts else None, at)
+                       latest[-1]["ref"] if terminals and not all_conflicts and not future else None, at)
             reports = [o for o in observations if o.kind == "quality_report" and
                        o.payload["external_run_id"] == run_id]
             checks = {}
@@ -203,7 +238,7 @@ def evaluate_job(bind, job_id, *, at=None):
                 contradictory = len({c["status"] for r, c in values
                                      if r.payload["attempt_number"] == last_report.payload["attempt_number"]}) > 1
                 bad_checks = [_ref(r, "observations") for r, c in values if c["status"] != "pass"]
-                recovered = _ref(last_report, "observations") if last_check["status"] == "pass" and not contradictory else None
+                recovered = _ref(last_report, "observations") if last_check["status"] == "pass" and not contradictory and last_report.occurred_at <= at + timedelta(seconds=60) else None
                 _condition(session, policy, "quality_failure", run_id + ":" + digest([rule, version]),
                            bad_checks, recovered, at)
                 if contradictory:
@@ -224,7 +259,7 @@ def evaluate_job(bind, job_id, *, at=None):
                    (e.processing_state == "failed" or at - e.received_at >= timedelta(seconds=60))]
         processed = [e for e in events if e.processing_state == "processed"]
         _condition(session, policy, "ingestion_backlog", "job", [_ref(e, "ingested_events") for e in backlog],
-                   processed[-1] and _ref(processed[-1], "ingested_events") if not backlog and processed else None, at)
+                   _ref(processed[-1], "ingested_events") if not backlog and processed else None, at)
         if policy.expected_interval_seconds:
             # Watches start at creation; historical runs cannot pretend to be fresh activity.
             times = [policy.created_at] + [e["time"] for entries in facts.values() for e in entries
@@ -243,7 +278,13 @@ def coverage(bind, at=None):
         heartbeat = session.scalar(select(MonitorHeartbeat).where(MonitorHeartbeat.name == "detector"))
         policies = set(session.scalars(select(MonitorPolicy.job_id)))
         jobs = list(session.scalars(select(Job)))
-        return {"detector": "fresh" if heartbeat and at-heartbeat.completed_at < timedelta(seconds=90) else "stale",
+        heartbeats = {h.name: h.completed_at for h in session.scalars(select(MonitorHeartbeat))}
+        return {"detector": "fresh" if heartbeat and timedelta(0) <= at-heartbeat.completed_at < timedelta(seconds=90) else "stale",
                 "last_completed_at": heartbeat.completed_at if heartbeat else None,
+                "jobs": [{"job_id": str(j.id), "detector_status": (
+                    "unmonitored" if j.id not in policies else
+                    "fresh" if "job:" + str(j.id) in heartbeats and
+                    timedelta(0) <= at-heartbeats["job:" + str(j.id)] < timedelta(seconds=90) else "stale")}
+                    for j in jobs],
                 "unmonitored_job_ids": [str(j.id) for j in jobs if j.id not in policies],
                 "notice": "Database, API, host and detector outages require an independent external watchdog."}

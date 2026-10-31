@@ -50,6 +50,7 @@ class AttemptView(Contract):
     run_id: UUID
     attempt_key: str
     attempt_number: int
+    projection_source: str
     state: str
     reconciliation_required: bool
     started_at: datetime | None

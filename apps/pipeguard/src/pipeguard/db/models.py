@@ -54,7 +54,7 @@ class Job(Record, Base):
     kind: Mapped[str] = mapped_column(String(100))
 
 
-STATES = "state IN ('unknown', 'queued', 'running', 'succeeded', 'failed', 'cancelled')"
+STATES = "state IN ('unknown', 'queued', 'running', 'succeeded', 'failed', 'cancelled', 'blocked', 'skipped', 'waiting')"
 
 
 class Run(Record, Base):
@@ -83,6 +83,7 @@ class Attempt(Record, Base):
     __table_args__ = (
         UniqueConstraint("run_id", "attempt_key", "attempt_number"),
         CheckConstraint("attempt_number >= 1", name="positive_number"),
+        CheckConstraint("projection_source IN ('producer', 'airflow')", name="projection_source"),
         CheckConstraint(STATES, name="state"),
     )
     run_id: Mapped[UUID] = mapped_column(ForeignKey("runs.id", ondelete="RESTRICT"))
@@ -92,6 +93,7 @@ class Attempt(Record, Base):
     reconciliation_required: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     started_at: Mapped[datetime | None]
     finished_at: Mapped[datetime | None]
+    projection_source: Mapped[str] = mapped_column(String(20), server_default="producer")
     # Reported errors are evidence, not a verified root-cause diagnosis.
     error_code: Mapped[str | None] = mapped_column(String(255))
     error_message: Mapped[str | None] = mapped_column(Text)

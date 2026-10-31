@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "QualityCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "rule_version": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rule Version",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "error",
+            "skipped",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "failures": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failures"
+        }
+      },
+      "required": [
+        "rule_id",
+        "rule_version",
+        "status"
+      ],
+      "title": "QualityCheck",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "event_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "integration_id": {
+      "format": "uuid",
+      "title": "Integration Id",
+      "type": "string"
+    },
+    "job_id": {
+      "format": "uuid",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "external_run_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "External Run Id",
+      "type": "string"
+    },
+    "attempt_number": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "inventory_complete": {
+      "title": "Inventory Complete",
+      "type": "boolean"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/QualityCheck"
+      },
+      "maxItems": 100,
+      "title": "Checks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "integration_id",
+    "job_id",
+    "external_run_id",
+    "attempt_number",
+    "occurred_at",
+    "inventory_complete",
+    "checks"
+  ],
+  "title": "QualityReport",
+  "type": "object"
+}
