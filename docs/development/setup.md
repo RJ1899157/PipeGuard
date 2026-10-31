@@ -110,7 +110,7 @@ stored data and is not part of routine shutdown.
 
 Python dependencies remain in `.venv`; future JavaScript dependencies belong in
 local `node_modules`, and Airflow constraints must remain isolated as necessary.
-Repository identity and commit rules are in [AGENTS.md](../../AGENTS.md).
+GitHub changes and commits use the repository owner, `RJ1899157`.
 
 The persistence, ingestion and API checkpoint passed 74 automated tests against local
 PostgreSQL, including CLI and restricted-role HTTP checks, plus Alembic metadata

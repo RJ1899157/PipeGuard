@@ -81,7 +81,6 @@ PipeGuard/
 │   ├── architecture/       # System boundaries and domain model
 │   ├── development/        # Local setup and dependency policies
 │   └── roadmap.md          # Delivery stages and acceptance criteria
-├── AGENTS.md               # Project and GitHub identity rules
 ├── .python-version         # Python minor-version selection
 ├── pyproject.toml          # Python project metadata
 └── uv.lock                 # Dependency resolution
@@ -91,4 +90,4 @@ PipeGuard/
 
 Deterministic policies control incident state. AI suggestions must be tied to evidence and cannot approve or execute recovery. Secrets stay outside source control, and monitored workloads remain independent of the monitoring application.
 
-All repository changes are owned by **RJ1899157**. See [AGENTS.md](AGENTS.md) for author, committer, and account verification requirements.
+All repository changes are owned by **RJ1899157**.

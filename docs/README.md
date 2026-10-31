@@ -11,7 +11,6 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 | [Domain model](architecture/domain-model.md) | Entity identity, relationships, event handling, and persistence invariants |
 | [Development setup](development/setup.md) | Repository access, Python environment, dependencies, and verification status |
 | [Delivery roadmap](roadmap.md) | Thirteen delivery stages with outputs and acceptance criteria |
-| [Project guidance](../AGENTS.md) | Working conventions and required GitHub identity |
 
 ## Documentation conventions
 
