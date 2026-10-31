@@ -1,5 +1,7 @@
 # Graph and chart exploration verification
 
+**Follow-up:** [2026-11-01 hardening verification](hardening-verification.md) adds captured pagination, complete filtered-history conflict summaries and searchable graph text. Results below describe the initial checkpoint.
+
 ## Checkpoint scope
 
 Stage 9 adds an execution-attempt timeline and selected-report quality charts to the approved dashboard layout. Deterministic incident state and recovery permissions are unchanged. The additive quality-history API preserves every report; source timestamps and receipt timestamps remain separate.
@@ -14,10 +16,10 @@ Fixtures are available only through explicitly labelled preview data: `/?preview
 
 Verified on 2026-10-31 with the production build, Node.js 22 and the in-app browser at 1440 × 1024.
 
-| Fixture | Nodes / links retained | Graph-ready samples (ms) | Budget |
-| --- | --- | --- | --- |
-| Branching | 200 / 1,000 | 493.9, 420.9, 445.4 | All below 2,000 ms |
-| Cyclic | 200 / 200 | 362.9, 367.8, 358.7 | All below 2,000 ms |
+| Fixture   | Nodes / links retained | Graph-ready samples (ms) | Budget             |
+| --------- | ---------------------- | ------------------------ | ------------------ |
+| Branching | 200 / 1,000            | 493.9, 420.9, 445.4      | All below 2,000 ms |
+| Cyclic    | 200 / 200              | 362.9, 367.8, 358.7      | All below 2,000 ms |
 
 The layout condenses strongly connected components before arranging the graph. The cycle now fits the overview instead of producing a roughly 28,000-pixel vertical chain. Fit view, zoom, keyboard nodes and links, textual dependency selection, and exact-link provenance were checked. At 200 nodes, overview labels are necessarily small; zoom and the textual alternative remain required for detailed inspection. These are bounded fixture results, not maximum supported throughput or frame-rate measurements.
 
@@ -35,4 +37,4 @@ The layout condenses strongly connected components before arranging the graph. T
 
 21 frontend tests, strict TypeScript unused checks, formatting and the production build passed. Backend contract checks validate the checked-in OpenAPI and event schemas against runtime models. The complete cross-system results and limitations are in [system audit](system-audit.md).
 
-Fresh synthetic screenshots are retained in [audit screenshots](audit/). This is targeted keyboard/responsive verification, not a formal accessibility certification. Offset pagination remains susceptible to concurrent insert movement; conflict notices cover loaded reports, not reports on unvisited pages.
+Fresh synthetic screenshots are retained in [audit screenshots](audit/). This is targeted keyboard/responsive verification, not a formal accessibility certification. The original checkpoint used live offset pagination and page-limited conflict notices; both are superseded by the linked hardening follow-up.

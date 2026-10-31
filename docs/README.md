@@ -4,14 +4,14 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Start here
 
-| Document | Purpose |
-| --- | --- |
-| [Project overview](../README.md) | Product problem, planned capabilities, technology plan, and current status |
-| [Architecture overview](architecture/overview.md) | Service boundaries, data ownership, metadata flow, and deployment scope |
-| [Domain model](architecture/domain-model.md) | Entity identity, relationships, event handling, and persistence invariants |
+| Document                                                     | Purpose                                                                                   |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| [Project overview](../README.md)                             | Product problem, planned capabilities, technology plan, and current status                |
+| [Architecture overview](architecture/overview.md)            | Service boundaries, data ownership, metadata flow, and deployment scope                   |
+| [Domain model](architecture/domain-model.md)                 | Entity identity, relationships, event handling, and persistence invariants                |
 | [Dashboard foundation](architecture/dashboard-foundation.md) | Design checkpoint, graph technology decision, display invariants and planned verification |
-| [Development setup](development/setup.md) | Repository access, Python environment, dependencies, and verification status |
-| [Delivery roadmap](roadmap.md) | Thirteen delivery stages with outputs and acceptance criteria |
+| [Development setup](development/setup.md)                    | Repository access, Python environment, dependencies, and verification status              |
+| [Delivery roadmap](roadmap.md)                               | Thirteen delivery stages with outputs and acceptance criteria                             |
 
 ## Dashboard
 
@@ -19,6 +19,13 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 - [Foundation verification](dashboard-verification.md)
 - [Graph and chart verification](exploration-verification.md)
 - [System audit and interruption recovery](system-audit.md)
+- [Pre-investigation hardening verification](hardening-verification.md)
+- [Local resilience and backup/restore](local-resilience.md)
+
+## Operations and security
+
+- [Container security triage](container-security.md): installed-package advisories, release classifications and unresolved upstream risks.
+- [Local resilience operations](local-resilience.md): watcher, private backups, restore verification and limits.
 
 ## Sample workloads
 

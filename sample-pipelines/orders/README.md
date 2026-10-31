@@ -8,22 +8,22 @@ producer adapter now reports execution observations to PipeGuard; the
 
 ## Layout and outputs
 
-| Surface | Responsibility |
-| --- | --- |
-| `data/orders.csv` | Deterministic synthetic source; no real customer data |
-| `src/orders_pipeline/` | Strict source validation, transactional replacement and runner |
-| `dbt/models/sources.yml` | Source definition and source quality assertions |
-| `staging.stg_orders` | Standardized rows, UTC order date and calculated order total |
-| `analytics.orders` | Order-level table, including cancelled orders |
-| `analytics.daily_revenue` | Completed-order counts and revenue grouped by UTC date |
-| `target/<invocation>/` | Ignored per-run dbt logs, manifest, run results and summary |
+| Surface                   | Responsibility                                                 |
+| ------------------------- | -------------------------------------------------------------- |
+| `data/orders.csv`         | Deterministic synthetic source; no real customer data          |
+| `src/orders_pipeline/`    | Strict source validation, transactional replacement and runner |
+| `dbt/models/sources.yml`  | Source definition and source quality assertions                |
+| `staging.stg_orders`      | Standardized rows, UTC order date and calculated order total   |
+| `analytics.orders`        | Order-level table, including cancelled orders                  |
+| `analytics.daily_revenue` | Completed-order counts and revenue grouped by UTC date         |
+| `target/<invocation>/`    | Ignored per-run dbt logs, manifest, run results and summary    |
 
 The supplied fixture contains five orders. Expected `daily_revenue` output:
 
-| UTC date | Completed orders | Revenue |
-| --- | ---: | ---: |
-| 2026-10-01 | 2 | 139.98 |
-| 2026-10-02 | 2 | 41.00 |
+| UTC date   | Completed orders | Revenue |
+| ---------- | ---------------: | ------: |
+| 2026-10-01 |                2 |  139.98 |
+| 2026-10-02 |                2 |   41.00 |
 
 The cancelled order is excluded from revenue. Totals use PostgreSQL numeric values,
 not floating-point arithmetic. Revenue is expressed in fixture monetary units;
@@ -74,7 +74,7 @@ are rejected to avoid unintentionally erasing the current raw dataset.
 Raw replacement uses one transaction: a failed insert restores the prior snapshot.
 Repeated successful runs replace rows and rebuild models rather than appending
 copies. A database-scoped advisory lock spans raw loading and the dbt subprocess;
-a competing run fails safely on the configured lock timeout instead of interleaving.
+a competing run fails safely on the configured lock timeout instead of interleaving. A stable owner-private lock shared across checkouts is inherited by dbt, preserving local exclusion if its parent is SIGKILLed. Host/database identity is normalized; other hosts/accounts and direct writers require separate fencing.
 
 Source row shape validation and business-quality validation are distinct. Repeated
 order IDs can be valid CSV rows but fail dbt's uniqueness checks. dbt also checks
@@ -168,3 +168,5 @@ A completed dbt build produces a bounded quality report from matching manifest/r
 ## Lineage observations
 
 The adapter journals a bounded OpenLineage 2.0.2 profile alongside execution and quality events. It derives declared dataset dependencies from matching dbt artifacts and reports loader input/output boundaries separately. Expected step inventories prevent partial delivery from appearing complete. Source paths, SQL, rows, credentials and free-form errors are excluded. Failed early attempts retain explicit metadata gaps. See [contract](../../docs/contracts/lineage-events.md) and [operations](../../docs/lineage-operations.md).
+
+Private logical backup/restore verification is documented in [local resilience](../../docs/local-resilience.md). The workload remains a monitored sample with separate raw/dbt transactions, not an atomic whole-warehouse publication system.

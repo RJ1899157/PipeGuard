@@ -22,3 +22,7 @@ Machine-readable schema: [quality report v1](quality-report-v1.schema.json). Run
 `GET /v1/jobs/{job_id}/quality-reports` returns immutable quality-report observations in receipt order (newest first), with stable UUID tie-breaking. Authentication and job/integration scope are required; inaccessible and nonexistent jobs both return 404. Optional `external_run_id` and `attempt_number` filters select an execution scope. `limit` (1–100) and `offset` (0–100000) return the standard `items`, `limit`, `offset`, `has_more` page envelope.
 
 Each item includes its observation UUID, job UUID, source `occurred_at`, `received_at`, and the validated quality-report payload. Reports are not collapsed into a latest-pass projection: contradictory results, late deliveries and earlier attempts remain independently inspectable. Empty history means no retained report in that scope, not passing quality. No raw SQL, warehouse rows or arbitrary error text is exposed.
+
+## Complete-history read summary
+
+The quality-history API returns `summary.report_count`, `conflicting_rule_count`, `has_conflicts` and `scope=filtered_history`. Rule identities include external run, attempt, rule ID and version. This summary examines every report matching the filters, rather than just the displayed page. A snapshot capture freezes rows and summary together; later reports appear on Refresh. The dashboard labels this scope explicitly. See [HTTP contract](http-api.md#captured-list-reads) for bounded capture/expiry behavior.

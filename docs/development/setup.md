@@ -145,3 +145,7 @@ After the API and Airflow are available, follow [incident monitoring operations]
 ## Lineage and evidence
 
 See [lineage operations](../lineage-operations.md) for migration, explicit delivery expectations and immutable incident snapshots. The orders adapter uses its existing isolated environment; no Marquez service or cloud account is required.
+
+## Current hardening checkpoint
+
+The historical test counts above describe their original checkpoints. See [current hardening verification](../hardening-verification.md) for the latest integrated checks and [local resilience](../local-resilience.md) for independent watcher installation, dedicated credentials, private backups, restore drills and interrupted-drill inspection. No public deployment or off-host monitoring is configured.

@@ -34,24 +34,24 @@ Interactive documentation routes are disabled.
 
 ## Operations
 
-| Method and path | Access | Behaviour |
-| --- | --- | --- |
-| `GET /health/live` | Public | Process liveness |
-| `GET /health/ready` | Administrator | Database availability |
-| `GET /v1/openapi.json` | Administrator | OpenAPI schema |
-| `POST /v1/integrations` | Administrator | Create producer integration |
-| `GET /v1/integrations` | Administrator | Paginated integration catalog |
-| `POST /v1/integrations/{id}/disable` | Administrator | Disable integration and future producer authentication |
-| `POST /v1/jobs` | Administrator | Create job under an enabled integration |
-| `GET /v1/jobs` | Administrator or scoped producer | Paginated job catalog |
-| `POST /v1/integrations/{id}/credentials` | Administrator | Issue producer token once |
-| `POST /v1/credentials/{id}/revoke` | Administrator | Revoke producer token |
-| `POST /v1/events` | Administrator or scoped producer | Commit observation, then attempt projection |
-| `GET /v1/events/{id}` | Administrator or scoped producer | Read observation status/times without raw payload |
-| `POST /v1/events/{id}/process` | Administrator or scoped producer | Retry stored observation processing |
-| `GET /v1/runs` | Administrator or scoped producer | Paginated runs; optional `job_id` filter |
-| `GET /v1/runs/{id}` | Administrator or scoped producer | Current outcome and uncertainty flag |
-| `GET /v1/runs/{id}/attempts` | Administrator or scoped producer | Paginated attempt history and bounded error categories |
+| Method and path                          | Access                           | Behaviour                                              |
+| ---------------------------------------- | -------------------------------- | ------------------------------------------------------ |
+| `GET /health/live`                       | Public                           | Process liveness                                       |
+| `GET /health/ready`                      | Administrator                    | Database availability                                  |
+| `GET /v1/openapi.json`                   | Administrator                    | OpenAPI schema                                         |
+| `POST /v1/integrations`                  | Administrator                    | Create producer integration                            |
+| `GET /v1/integrations`                   | Administrator                    | Paginated integration catalog                          |
+| `POST /v1/integrations/{id}/disable`     | Administrator                    | Disable integration and future producer authentication |
+| `POST /v1/jobs`                          | Administrator                    | Create job under an enabled integration                |
+| `GET /v1/jobs`                           | Administrator or scoped producer | Paginated job catalog                                  |
+| `POST /v1/integrations/{id}/credentials` | Administrator                    | Issue producer token once                              |
+| `POST /v1/credentials/{id}/revoke`       | Administrator                    | Revoke producer token                                  |
+| `POST /v1/events`                        | Administrator or scoped producer | Commit observation, then attempt projection            |
+| `GET /v1/events/{id}`                    | Administrator or scoped producer | Read observation status/times without raw payload      |
+| `POST /v1/events/{id}/process`           | Administrator or scoped producer | Retry stored observation processing                    |
+| `GET /v1/runs`                           | Administrator or scoped producer | Paginated runs; optional `job_id` filter               |
+| `GET /v1/runs/{id}`                      | Administrator or scoped producer | Current outcome and uncertainty flag                   |
+| `GET /v1/runs/{id}/attempts`             | Administrator or scoped producer | Paginated attempt history and bounded error categories |
 
 Create operations return 201. Event submission returns 202 once its receipt is
 committed. Its body includes the internal `event_id`, `replayed`, `processing_state`
@@ -117,3 +117,9 @@ The API now includes immutable monitor-policy creation, quality-report receipt, 
 ## Lineage and evidence extension
 
 The API includes scoped lineage receipt/history/traversal, administrator lineage-delivery expectations and immutable incident evidence captures. The graph is an observed historical union with event and receipt cutoffs, not an implicit current deployment snapshot. See the [lineage contract](lineage-events.md), [architecture](../architecture/lineage-evidence.md) and checked-in OpenAPI document.
+
+## Captured list reads
+
+Integrations, jobs, runs, attempts, monitor policies, incidents, incident history and quality reports accept optional `snapshot=new` to capture bounded typed responses. Reuse the returned `snapshot.token` with the same filters and another offset to read the same captured values and membership. Every request still authenticates. Tokens bind to principal/integration, route and filters. Response metadata includes `captured_at`, `expires_at` and `total_count`. Legacy requests without snapshots retain live offset behavior. Incidents/history/policies return a Page envelope only in snapshot mode; other list routes already use Page.
+
+Snapshots expire after five minutes or process restart, cap at 5,000 rows/8 MiB each and 128 entries/64 MiB aggregate serialized content, and admit two captures concurrently. They do not retain long-lived database transactions. Expiry/unavailable/scope mismatch returns 410, capacity 413 and busy 503. No fallback silently mixes pages. Quality responses include a summary of report count and rule/version conflicts across all reports matching the filters, even outside the displayed page; captured rows and summary share one short repeatable-read transaction.

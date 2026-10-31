@@ -22,10 +22,10 @@ PipeGuard's planned workflow is:
 
 ## System boundaries
 
-| System | Responsibility | Location |
-| --- | --- | --- |
-| PipeGuard application | Monitoring metadata, incident policies, evidence, investigation, approval workflows, and dashboard | `apps/pipeguard/` |
-| Monitored sample pipelines | Source ingestion, business-data transformations, quality checks, and controlled fault injection | `sample-pipelines/` |
+| System                     | Responsibility                                                                                     | Location            |
+| -------------------------- | -------------------------------------------------------------------------------------------------- | ------------------- |
+| PipeGuard application      | Monitoring metadata, incident policies, evidence, investigation, approval workflows, and dashboard | `apps/pipeguard/`   |
+| Monitored sample pipelines | Source ingestion, business-data transformations, quality checks, and controlled fault injection    | `sample-pipelines/` |
 
 Sample pipelines emit observations consumed by PipeGuard. Business data stays in their warehouse; monitoring records belong to PipeGuard. See the [architecture overview](docs/architecture/overview.md) for planned service and database boundaries.
 
@@ -44,16 +44,16 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 
 ## Technology plan
 
-| Layer | Target technologies | Current state |
-| --- | --- | --- |
-| Python environment | Python 3.12, uv, project-local `.venv` | Configured; persistence dependencies locked |
-| Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Initial schema implemented |
-| API and validation | FastAPI, Pydantic 2 | Authenticated local API and versioned contracts implemented |
-| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented |
-| Web application | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local read-only dashboard foundation implemented; pnpm lockfile committed |
-| Graphs and charts | React Flow; Apache ECharts | Attempt-scoped graph, execution timeline, quality charts and textual alternatives implemented |
-| Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose, backend/web checks and manual browser verification available; CI planned |
-| Later integrations | Marquez, Prometheus, optional GCP | Deferred |
+| Layer                     | Target technologies                                            | Current state                                                                                 |
+| ------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Python environment        | Python 3.12, uv, project-local `.venv`                         | Configured; persistence dependencies locked                                                   |
+| Persistence               | PostgreSQL 17, SQLAlchemy 2, Alembic                           | Initial schema implemented                                                                    |
+| API and validation        | FastAPI, Pydantic 2                                            | Authenticated local API and versioned contracts implemented                                   |
+| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage                        | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented  |
+| Web application           | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local read-only dashboard foundation implemented; pnpm lockfile committed                     |
+| Graphs and charts         | React Flow; Apache ECharts                                     | Attempt-scoped graph, execution timeline, quality charts and textual alternatives implemented |
+| Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | PostgreSQL Compose, backend/web checks and manual browser verification available; CI planned  |
+| Later integrations        | Marquez, Prometheus, optional GCP                              | Deferred                                                                                      |
 
 Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.
 
@@ -93,3 +93,7 @@ PipeGuard/
 Deterministic policies control incident state. AI suggestions must be tied to evidence and cannot approve or execute recovery. Secrets stay outside source control, and monitored workloads remain independent of the monitoring application.
 
 All repository changes are owned by **RJ1899157**.
+
+## Local hardening and operations
+
+[Hardening verification](docs/hardening-verification.md) records independent local service monitoring, dedicated minimal credentials, verified database restore drills, consistent captured pagination, full-scope quality conflict summaries and measured query improvements. [Operating procedures](docs/local-resilience.md) describe the supported local boundaries and recovery checks.
