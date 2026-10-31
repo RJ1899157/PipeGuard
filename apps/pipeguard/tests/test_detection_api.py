@@ -45,3 +45,22 @@ def test_invalid_quality_is_rejected_without_input_leak(api):
     body={k:v for k,v in event.items() if k!='state'}|{'inventory_complete':True,'checks':[],'sql':'SECRET'}
     response=client.post('/v1/quality-reports',headers=headers,json=body)
     assert response.status_code==422 and 'SECRET' not in response.text
+
+
+def test_event_only_enrollment_removes_gap_without_inventing_capabilities(api):
+    from pipeguard.detection.worker import cycle
+    client,admin,engine,_=api
+    headers,event,_=producer(api)
+    job=event['job_id']
+    assert job in client.get('/v1/monitoring/coverage',headers=admin).json()['unmonitored_job_ids']
+    assert client.post('/v1/monitor-policies',headers=admin,json={
+        'job_id':job,'quality_required':False,'timeout_seconds':300}).status_code==201
+    cycle(engine)
+    body=client.get('/v1/monitoring/coverage',headers=admin).json()
+    assert body['unmonitored_job_ids']==[]
+    row=next(j for j in body['jobs'] if j['job_id']==job)
+    assert row['detector_status']=='fresh' and row['mode']=='event_only'
+    assert row['quality_expected'] is False and row['activity_interval_seconds'] is None
+    assert client.post('/v1/events',headers=headers,json=event|{'state':'failed'}).status_code==202
+    cycle(engine)
+    assert any(i['condition']=='execution_failure' for i in client.get('/v1/incidents',headers=headers).json())

@@ -55,3 +55,13 @@ uv run --directory sample-pipelines/orders --env-file .env pytest -q
 ```
 
 See [detection architecture](architecture/incident-detection.md) for authority and limitations. The final security/performance stage remains required.
+
+## Enroll an event-only job
+
+For a producer with no orchestrator or quality reports, explicitly enroll its execution-event coverage:
+
+```sh
+uv run --env-file .env python scripts/enroll_monitor.py --job-id JOB_UUID --timeout-seconds 300
+```
+
+Use `--quality-required`, paired `--airflow-dag-id` / `--airflow-task-id`, and `--expected-interval-seconds` only when those expectations exist. Enrollment does not invent an independent source or infer an unscheduled job should run periodically. Coverage reports the monitoring mode and configured expectations. Repeating an identical enrollment is safe; a conflicting immutable policy requires review.

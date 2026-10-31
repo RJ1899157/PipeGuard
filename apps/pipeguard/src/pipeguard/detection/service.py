@@ -276,12 +276,16 @@ def coverage(bind, at=None):
     at = at or now_utc()
     with Session(bind) as session:
         heartbeat = session.scalar(select(MonitorHeartbeat).where(MonitorHeartbeat.name == "detector"))
-        policies = set(session.scalars(select(MonitorPolicy.job_id)))
+        policies = {p.job_id: p for p in session.scalars(select(MonitorPolicy))}
         jobs = list(session.scalars(select(Job)))
         heartbeats = {h.name: h.completed_at for h in session.scalars(select(MonitorHeartbeat))}
         return {"detector": "fresh" if heartbeat and timedelta(0) <= at-heartbeat.completed_at < timedelta(seconds=90) else "stale",
                 "last_completed_at": heartbeat.completed_at if heartbeat else None,
-                "jobs": [{"job_id": str(j.id), "detector_status": (
+                "jobs": [{"job_id": str(j.id),
+                    "mode": "unmonitored" if j.id not in policies else "airflow_reconciled" if policies[j.id].airflow_dag_id else "event_only",
+                    "quality_expected": policies[j.id].quality_required if j.id in policies else None,
+                    "activity_interval_seconds": policies[j.id].expected_interval_seconds if j.id in policies else None,
+                    "detector_status": (
                     "unmonitored" if j.id not in policies else
                     "fresh" if "job:" + str(j.id) in heartbeats and
                     timedelta(0) <= at-heartbeats["job:" + str(j.id)] < timedelta(seconds=90) else "stale")}

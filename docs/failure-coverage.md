@@ -78,6 +78,6 @@ The full orders build currently reports three transformed models and fourteen qu
 - Live Airflow `milestone_incident_retry`: Airflow success; PipeGuard success without reconciliation flag; attempt 1 failed (`source_unavailable`), attempt 2 succeeded; fourteen passing checks with complete inventory; execution incident resolved and retained.
 - Dedicated Airflow viewer denied an attempted write. Live API schema matched the checked-in OpenAPI document.
 - Private runtime configurations checked for owner-only permissions. Generated local logs/artifacts were checked against actual configured credentials; no matches. This targeted check is not a full security audit.
-- One legacy synthetic HTTP smoke-test job remains explicitly unmonitored in coverage. The active orders/Airflow job has an explicit watch; the legacy catalog entry is not silently counted as healthy.
+- The legacy synthetic HTTP smoke-test job is now enrolled with an explicit event-only watch. All existing jobs are enrolled. Coverage distinguishes event-only monitoring from independent Airflow reconciliation and declares quality/schedule expectations.
 
 The monitoring suite emits an upstream Starlette/HTTPX test-client deprecation warning. It does not fail the checks; the final dependency/security checkpoint remains planned.
