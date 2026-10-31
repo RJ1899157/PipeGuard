@@ -1,12 +1,14 @@
 """Backfill missing execution boundaries from independently stored orchestrator evidence."""
 from datetime import datetime
 
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from pipeguard.db.models import Attempt, IngestedEvent, Job, Run
 from pipeguard.ingestion.service import TERMINAL
+from pipeguard.ingestion.contracts import ExecutionEvent
 
 
 def _time(value):
@@ -19,6 +21,13 @@ def reconcile(bind, job_id, snapshots):
         events = list(session.scalars(select(IngestedEvent).where(
             IngestedEvent.integration_id == job.integration_id,
             IngestedEvent.payload["job_id"].as_string() == str(job_id))))
+        by_attempt = {}
+        for event in events:
+            try:
+                payload = ExecutionEvent.model_validate(event.payload).model_dump(mode="json")
+            except ValidationError:
+                continue
+            by_attempt.setdefault((payload.get("external_run_id"), payload.get("attempt_number")), []).append(payload)
         for _, p in snapshots:
             session.execute(insert(Run).values(job_id=job_id, external_run_id=p["external_run_id"])
                             .on_conflict_do_nothing(index_elements=["job_id", "external_run_id"]))
@@ -33,9 +42,7 @@ def reconcile(bind, job_id, snapshots):
                 attempt = Attempt(run_id=run.id, attempt_key="job", attempt_number=p["attempt_number"],
                                   projection_source="airflow", state="unknown", reconciliation_required=False)
                 session.add(attempt); attempts.append(attempt)
-            producer = [e.payload for e in events if e.payload.get("job_id") == str(job_id)
-                        and e.payload.get("external_run_id") == p["external_run_id"]
-                        and e.payload.get("attempt_number") == p["attempt_number"]]
+            producer = by_attempt.get((p["external_run_id"], p["attempt_number"]), [])
             producer_terminal = {e["state"] for e in producer if e.get("state") in TERMINAL}
             if p["state"] in TERMINAL and producer_terminal and producer_terminal != {p["state"]}:
                 attempt.reconciliation_required = True

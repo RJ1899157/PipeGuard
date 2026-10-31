@@ -75,8 +75,8 @@ def _job_cycle(bind, client, policy):
                     _observe_source_state(session, policy.job_id, "airflow_run", payload, when)
                 for when, payload in snapshots:
                     observe(session, policy.job_id, "airflow", "airflow_attempt", payload, when)
-                known = {o.payload["external_run_id"] for o in session.scalars(select(Observation).where(
-                    Observation.job_id == policy.job_id, Observation.kind == "airflow_attempt"))}
+                known = set(session.scalars(select(Observation.payload["external_run_id"].as_string()).where(
+                    Observation.job_id == policy.job_id, Observation.kind == "airflow_attempt").distinct()))
                 current = {p["external_run_id"] for _, p in snapshots}
                 status = {"status": "incomplete", "error_code": "source_history_disappeared"} if known - current else {"status": "complete"}
                 _observe_source_state(session, policy.job_id, "source_configuration",

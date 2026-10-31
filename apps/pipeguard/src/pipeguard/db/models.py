@@ -65,6 +65,7 @@ class Run(Record, Base):
         CheckConstraint("parent_run_id IS NULL OR parent_run_id <> id", name="not_own_parent"),
         CheckConstraint("data_interval_end >= data_interval_start", name="interval_order"),
         Index("ix_runs_job_started", "job_id", "started_at"),
+        Index("ix_runs_job_created", "job_id", "created_at", "id"),
         Index("ix_runs_parent", "parent_run_id"),
     )
     job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
@@ -108,6 +109,7 @@ class IngestedEvent(Record, Base):
         CheckConstraint("jsonb_typeof(payload) = 'object'", name="payload_object"),
         CheckConstraint("processing_state IN ('pending', 'processed', 'failed')", name="processing_state"),
         Index("ix_events_processing_received", "processing_state", "received_at"),
+        Index("ix_events_integration_job", "integration_id", text("(payload ->> 'job_id')")),
     )
     integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="RESTRICT"))
     deduplication_key: Mapped[str] = mapped_column(String(512))
@@ -161,6 +163,13 @@ class Observation(Record, Base):
         UniqueConstraint("job_id", "source", "deduplication_key"),
         CheckConstraint("jsonb_typeof(payload) = 'object'", name="payload_object"),
         Index("ix_observations_job_time", "job_id", "occurred_at"),
+        Index("ix_observations_job_kind_created", "job_id", "kind", "created_at", "occurred_at", "id"),
+        Index("ix_observations_quality_scope", "job_id", text("(payload ->> 'external_run_id')"),
+              text("((payload ->> 'attempt_number')::integer)"), "created_at", "id",
+              postgresql_where=text("source = 'quality' AND kind = 'quality_report'")),
+        Index("ix_observations_airflow_run", "job_id", text("(payload ->> 'external_run_id')"),
+              "created_at", "occurred_at", "id",
+              postgresql_where=text("source = 'airflow' AND kind = 'airflow_run'")),
     )
     job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
     source: Mapped[str] = mapped_column(String(30))
@@ -177,6 +186,7 @@ class Incident(Record, Base):
         CheckConstraint("state IN ('open', 'resolved')", name="state"),
         CheckConstraint("severity IN ('warning', 'critical')", name="severity"),
         Index("ix_incidents_state_job", "state", "job_id"),
+        Index("ix_incidents_created", text("created_at DESC"), "id"),
     )
     job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
     condition: Mapped[str] = mapped_column(String(60))
@@ -189,7 +199,8 @@ class Incident(Record, Base):
 
 class IncidentHistory(Record, Base):
     __tablename__ = "incident_history"
-    __table_args__ = (UniqueConstraint("incident_id", "evidence_key", "action"),)
+    __table_args__ = (UniqueConstraint("incident_id", "evidence_key", "action"),
+                      Index("ix_incident_history_received", "incident_id", "created_at", "id"))
     incident_id: Mapped[UUID] = mapped_column(ForeignKey("incidents.id", ondelete="RESTRICT"))
     action: Mapped[str] = mapped_column(String(30))
     evidence_key: Mapped[str] = mapped_column(String(255))

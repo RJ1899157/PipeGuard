@@ -1,11 +1,13 @@
 """Authenticated, scoped incident reads; policy creation and acknowledgement are admin-only."""
 from datetime import datetime
-from typing import Annotated
+import json
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import select
+from sqlalchemy import column, func, select, true
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
 from pipeguard.db.models import Job, MonitorPolicy, Incident, IncidentHistory, Observation
@@ -59,6 +61,30 @@ class QualityReportView(View):
     payload: QualityReport
 
 
+class QualitySummary(View):
+    report_count: int
+    conflicting_rule_count: int
+    has_conflicts: bool
+    scope: Literal["filtered_history"] = "filtered_history"
+
+
+class QualityReportPage(Page[QualityReportView]):
+    summary: QualitySummary
+
+
+def quality_summary(session, filters):
+    """Count contradictory same-rule/version/attempt outcomes across every scoped receipt."""
+    checks = func.jsonb_array_elements(Observation.payload["checks"]).table_valued(column("value", JSONB)).alias("quality_check")
+    value = checks.c.value
+    identity = (Observation.payload["external_run_id"].as_string(), Observation.payload["attempt_number"].as_integer(),
+                value["rule_id"].as_string(), value["rule_version"].as_string())
+    conflicts = select(*identity).select_from(Observation).join(checks, true()).where(*filters).group_by(*identity).having(
+                func.count(func.distinct(value["status"].as_string())) > 1)
+    count = session.scalar(select(func.count()).select_from(conflicts.subquery()))
+    return {"report_count": session.scalar(select(func.count()).select_from(Observation).where(*filters)),
+            "conflicting_rule_count": count, "has_conflicts": count > 0, "scope": "filtered_history"}
+
+
 class PolicyView(View):
     id: UUID
     job_id: UUID
@@ -71,11 +97,12 @@ class PolicyView(View):
     created_at: datetime
 
 
-def install_routes(app, engine, authenticate, administrator):
+def install_routes(app, engine, authenticate, administrator, snapshots):
     Caller = Annotated[object, Depends(authenticate)]
     Admin = Annotated[object, Depends(administrator)]
     Limit = Annotated[int, Query(ge=1, le=100)]
     Offset = Annotated[int, Query(ge=0, le=100000)]
+    Snapshot = Annotated[str | None, Query(max_length=128)]
 
     def job_scope(statement, principal):
         return statement if principal.admin else statement.where(Job.integration_id == principal.integration_id)
@@ -102,8 +129,14 @@ def install_routes(app, engine, authenticate, administrator):
             session.flush()
             return PolicyView.model_validate(row)
 
-    @app.get("/v1/monitor-policies", response_model=list[PolicyView])
-    def policies(principal: Caller, limit: Limit = 50, offset: Offset = 0):
+    @app.get("/v1/monitor-policies", response_model=list[PolicyView] | Page[PolicyView])
+    def policies(principal: Caller, limit: Limit = 50, offset: Offset = 0, snapshot: Snapshot = None):
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    return ([PolicyView.model_validate(x) for x in session.scalars(job_scope(
+                        select(MonitorPolicy).join(Job), principal).order_by(MonitorPolicy.created_at, MonitorPolicy.id).limit(cap))], {})
+            return snapshots.page(principal, ("policies",), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             rows = session.scalars(job_scope(select(MonitorPolicy).join(Job), principal)
                                    .order_by(MonitorPolicy.created_at, MonitorPolicy.id).limit(limit).offset(offset))
@@ -113,33 +146,62 @@ def install_routes(app, engine, authenticate, administrator):
     def monitor_coverage(principal: Admin):
         return coverage(engine)
 
-    @app.get("/v1/jobs/{job_id}/quality-reports", response_model=Page[QualityReportView])
+    @app.get("/v1/jobs/{job_id}/quality-reports", response_model=QualityReportPage)
     def quality_reports(job_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0,
                         external_run_id: Identifier | None = None,
-                        attempt_number: Annotated[int | None, Query(ge=1, le=2147483647)] = None):
-        with Session(engine) as session:
+                        attempt_number: Annotated[int | None, Query(ge=1, le=2147483647)] = None,
+                        snapshot: Snapshot = None):
+        filters = [Observation.job_id == job_id, Observation.source == "quality", Observation.kind == "quality_report"]
+        if external_run_id is not None:
+            filters.append(Observation.payload["external_run_id"].as_string() == external_run_id)
+        if attempt_number is not None:
+            filters.append(Observation.payload["attempt_number"].as_integer() == attempt_number)
+        def load(cap):
+            with engine.connect().execution_options(isolation_level="REPEATABLE READ") as connection, Session(connection) as session:
+                check_scope(session)
+                views, size = [], 0
+                rows = session.scalars(select(Observation).where(*filters)
+                    .order_by(Observation.created_at.desc(), Observation.id.desc()).limit(cap)
+                    .execution_options(yield_per=50))
+                for row in rows:
+                    view = QualityReportView(id=row.id, job_id=row.job_id, occurred_at=row.occurred_at,
+                        received_at=row.created_at, payload=row.payload)
+                    size += len(json.dumps(view.model_dump(mode="json"), separators=(",", ":")).encode())
+                    if size > snapshots.max_bytes:
+                        raise HTTPException(413, "snapshot_capacity_exceeded")
+                    views.append(view)
+                return views, {"summary": quality_summary(session, filters)}
+        def check_scope(session):
             scoped_job = session.scalar(job_scope(select(Job).where(Job.id == job_id), principal))
             if scoped_job is None:
                 raise HTTPException(404, "job_not_found")
-            query = select(Observation).where(Observation.job_id == job_id,
-                Observation.source == "quality", Observation.kind == "quality_report")
-            if external_run_id is not None:
-                query = query.where(Observation.payload["external_run_id"].as_string() == external_run_id)
-            if attempt_number is not None:
-                query = query.where(Observation.payload["attempt_number"].as_integer() == attempt_number)
+        if snapshot is not None:
+            return snapshots.page(principal, ("quality", str(job_id), external_run_id, attempt_number),
+                                  snapshot, load, limit=limit, offset=offset)
+        with engine.connect().execution_options(isolation_level="REPEATABLE READ") as connection, Session(connection) as session:
+            check_scope(session)
+            query = select(Observation).where(*filters)
             rows = list(session.scalars(query.order_by(Observation.created_at.desc(), Observation.id.desc())
                                        .limit(limit + 1).offset(offset)))
-            return Page[QualityReportView](items=[QualityReportView(id=row.id, job_id=row.job_id,
+            return QualityReportPage(items=[QualityReportView(id=row.id, job_id=row.job_id,
                 occurred_at=row.occurred_at, received_at=row.created_at, payload=row.payload)
-                for row in rows[:limit]], limit=limit, offset=offset, has_more=len(rows) > limit)
+                for row in rows[:limit]], limit=limit, offset=offset, has_more=len(rows) > limit,
+                summary=quality_summary(session, filters))
 
-    @app.get("/v1/incidents", response_model=list[IncidentView])
-    def incidents(principal: Caller, limit: Limit = 50, offset: Offset = 0, state: str | None = None):
+    @app.get("/v1/incidents", response_model=list[IncidentView] | Page[IncidentView])
+    def incidents(principal: Caller, limit: Limit = 50, offset: Offset = 0, state: str | None = None,
+                  snapshot: Snapshot = None):
         if state is not None and state not in ("open", "resolved"):
             raise HTTPException(422, "invalid_request")
         query = job_scope(select(Incident).join(Job), principal)
         if state:
             query = query.where(Incident.state == state)
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    return ([IncidentView.model_validate(x) for x in session.scalars(query
+                        .order_by(Incident.created_at.desc(), Incident.id).limit(cap))], {})
+            return snapshots.page(principal, ("incidents", state), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             return [IncidentView.model_validate(row) for row in session.scalars(query.order_by(
                 Incident.created_at.desc(), Incident.id).limit(limit).offset(offset))]
@@ -149,8 +211,17 @@ def install_routes(app, engine, authenticate, administrator):
         with Session(engine) as session:
             return IncidentView.model_validate(scoped_incident(session, incident_id, principal))
 
-    @app.get("/v1/incidents/{incident_id}/history", response_model=list[HistoryView])
-    def history(incident_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0):
+    @app.get("/v1/incidents/{incident_id}/history", response_model=list[HistoryView] | Page[HistoryView])
+    def history(incident_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0,
+                snapshot: Snapshot = None):
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    scoped_incident(session, incident_id, principal)
+                    return ([HistoryView.model_validate(x) for x in session.scalars(select(IncidentHistory)
+                        .where(IncidentHistory.incident_id == incident_id)
+                        .order_by(IncidentHistory.created_at, IncidentHistory.id).limit(cap))], {})
+            return snapshots.page(principal, ("history", str(incident_id)), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             scoped_incident(session, incident_id, principal)
             return [HistoryView.model_validate(row) for row in session.scalars(select(IncidentHistory).where(

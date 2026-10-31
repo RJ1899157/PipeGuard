@@ -58,6 +58,16 @@
               }
             }
           },
+          "410": {
+            "description": "Gone",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "413": {
             "description": "Request Entity Too Large",
             "content": {
@@ -136,6 +146,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -252,6 +272,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -316,6 +346,23 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -368,6 +415,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -472,6 +529,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -575,6 +642,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -639,6 +716,23 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -691,6 +785,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -797,6 +901,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -900,6 +1014,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -990,6 +1114,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -1108,6 +1242,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -1211,6 +1355,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -1294,6 +1448,23 @@
               ],
               "title": "Job Id"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -1346,6 +1517,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -1452,6 +1633,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -1528,6 +1719,23 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -1580,6 +1788,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -1669,6 +1887,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -1785,6 +2013,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -1849,6 +2087,23 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -1857,10 +2112,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PolicyView"
-                  },
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PolicyView"
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/Page_PolicyView_"
+                    }
+                  ],
                   "title": "Response Policies V1 Monitor Policies Get"
                 }
               }
@@ -1905,6 +2167,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -1984,6 +2256,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -2110,6 +2392,23 @@
               ],
               "title": "Attempt Number"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -2118,7 +2417,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Page_QualityReportView_"
+                  "$ref": "#/components/schemas/QualityReportPage"
                 }
               }
             }
@@ -2162,6 +2461,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -2245,6 +2554,23 @@
               ],
               "title": "State"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -2253,10 +2579,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/IncidentView"
-                  },
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/IncidentView"
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/Page_IncidentView_"
+                    }
+                  ],
                   "title": "Response Incidents V1 Incidents Get"
                 }
               }
@@ -2301,6 +2634,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -2407,6 +2750,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -2483,6 +2836,23 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "snapshot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot"
+            }
           }
         ],
         "responses": {
@@ -2491,10 +2861,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/HistoryView"
-                  },
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HistoryView"
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/Page_HistoryView_"
+                    }
+                  ],
                   "title": "Response History V1 Incidents  Incident Id  History Get"
                 }
               }
@@ -2539,6 +2916,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -2642,6 +3029,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -2748,6 +3145,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -2836,6 +3243,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -2952,6 +3369,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -3040,6 +3467,16 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Gone",
             "content": {
               "application/json": {
                 "schema": {
@@ -3155,6 +3592,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -3378,6 +3825,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -3481,6 +3938,16 @@
             },
             "description": "Conflict"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
           "413": {
             "content": {
               "application/json": {
@@ -3583,6 +4050,16 @@
               }
             },
             "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
           },
           "413": {
             "content": {
@@ -4449,6 +4926,16 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -4460,6 +4947,90 @@
           "has_more"
         ],
         "title": "Page[AttemptView]"
+      },
+      "Page_HistoryView_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryView"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "Page[HistoryView]"
+      },
+      "Page_IncidentView_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IncidentView"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "Page[IncidentView]"
       },
       "Page_IntegrationView_": {
         "properties": {
@@ -4481,6 +5052,16 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -4513,6 +5094,16 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -4525,11 +5116,11 @@
         ],
         "title": "Page[JobView]"
       },
-      "Page_QualityReportView_": {
+      "Page_PolicyView_": {
         "properties": {
           "items": {
             "items": {
-              "$ref": "#/components/schemas/QualityReportView"
+              "$ref": "#/components/schemas/PolicyView"
             },
             "type": "array",
             "title": "Items"
@@ -4545,6 +5136,16 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -4555,7 +5156,7 @@
           "offset",
           "has_more"
         ],
-        "title": "Page[QualityReportView]"
+        "title": "Page[PolicyView]"
       },
       "Page_RunView_": {
         "properties": {
@@ -4577,6 +5178,16 @@
           "has_more": {
             "type": "boolean",
             "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -4852,6 +5463,52 @@
         ],
         "title": "QualityReport"
       },
+      "QualityReportPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QualityReportView"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SnapshotMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "$ref": "#/components/schemas/QualitySummary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset",
+          "has_more",
+          "summary"
+        ],
+        "title": "QualityReportPage"
+      },
       "QualityReportView": {
         "properties": {
           "id": {
@@ -4887,6 +5544,35 @@
           "payload"
         ],
         "title": "QualityReportView"
+      },
+      "QualitySummary": {
+        "properties": {
+          "report_count": {
+            "type": "integer",
+            "title": "Report Count"
+          },
+          "conflicting_rule_count": {
+            "type": "integer",
+            "title": "Conflicting Rule Count"
+          },
+          "has_conflicts": {
+            "type": "boolean",
+            "title": "Has Conflicts"
+          },
+          "scope": {
+            "type": "string",
+            "const": "filtered_history",
+            "title": "Scope",
+            "default": "filtered_history"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report_count",
+          "conflicting_rule_count",
+          "has_conflicts"
+        ],
+        "title": "QualitySummary"
       },
       "RunEvent": {
         "properties": {
@@ -5015,6 +5701,37 @@
           "finished_at"
         ],
         "title": "RunView"
+      },
+      "SnapshotMetadata": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "token",
+          "expires_at",
+          "captured_at",
+          "total_count"
+        ],
+        "title": "SnapshotMetadata"
       },
       "StepRef": {
         "properties": {

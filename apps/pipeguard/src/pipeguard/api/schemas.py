@@ -86,8 +86,16 @@ class EventAccepted(Contract):
 T = TypeVar("T")
 
 
+class SnapshotMetadata(Contract):
+    token: str
+    expires_at: datetime
+    captured_at: datetime
+    total_count: int
+
+
 class Page(Contract, Generic[T]):
     items: list[T]
     limit: int
     offset: int
     has_more: bool
+    snapshot: SnapshotMetadata | None = None

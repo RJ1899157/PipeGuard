@@ -553,3 +553,40 @@ def test_source_scan_window_uses_latest_receipt_without_deleting_cited_history(m
         assert s.get(Observation, failed_id).payload == {'status': 'incomplete'}
         assert any(h.evidence.get('id') == str(failed_id) for h in s.scalars(
             select(IncidentHistory).where(IncidentHistory.incident_id == incident.id)))
+
+
+def test_evaluation_prefetch_avoids_per_run_and_per_condition_selects(migrated_database):
+    from sqlalchemy import event as sql_event
+    c, _ = migrated_database
+    ids = setup(c)
+    for number in range(20):
+        send(c, event(ids, key='success-' + str(number), run='run-' + str(number), state='succeeded'))
+    queries = []
+    def count_select(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().upper().startswith('SELECT'):
+            queries.append(statement)
+    sql_event.listen(c, 'before_cursor_execute', count_select)
+    try:
+        evaluate_job(c, ids[1], at=T + timedelta(seconds=1))
+    finally:
+        sql_event.remove(c, 'before_cursor_execute', count_select)
+    assert len(queries) <= 12
+    assert incidents(c, ids[1]) == []
+
+
+def test_reconciliation_ignores_invalid_stored_producer_contracts(migrated_database):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run, Attempt
+    c, _ = migrated_database
+    ids = setup(c)
+    with Session(c) as s, s.begin():
+        s.add(IngestedEvent(integration_id=ids[0], deduplication_key='invalid-producer',
+            event_type='attempt.succeeded', schema_version=1, occurred_at=T,
+            payload={'job_id': str(ids[1]), 'external_run_id': [], 'attempt_number': []},
+            payload_hash='a' * 64, canonicalization_version='execution-json-v1',
+            redaction_version='allowlisted-fields-v1', processing_state='failed'))
+    reconcile(c, ids[1], [(T, {'external_run_id': 'source-run', 'attempt_number': 1,
+        'state': 'failed', 'started_at': T.isoformat(), 'finished_at': T.isoformat()})])
+    with Session(c) as s:
+        attempt = s.scalar(select(Attempt).join(Run).where(Run.job_id == ids[1]))
+        assert attempt.state == 'failed' and attempt.projection_source == 'airflow'

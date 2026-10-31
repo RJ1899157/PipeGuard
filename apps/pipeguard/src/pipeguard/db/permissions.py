@@ -37,5 +37,5 @@ def verify_runtime_access(connection):
     connection.execute(text("SELECT id FROM integrations LIMIT 0"))
     connection.execute(text("SELECT id FROM producer_credentials LIMIT 0"))
     revision = connection.scalar(text("SELECT version_num FROM alembic_version"))
-    if revision != "a71e3fbc477c":
+    if revision != "bd47c5a01e29":
         raise RuntimeError("Apply the API schema migration before starting the server")

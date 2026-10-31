@@ -82,7 +82,8 @@ def _history(session, incident, action, key, evidence, occurred_at, actor="detec
 
 def _condition(session, policy, condition, subject, bad, recovery, at, severity="critical"):
     """bad/recovery contain stable evidence keys + provenance. Recovery must be explicit."""
-    incident = session.scalar(select(Incident).where(
+    cached = session.info.get("job_incidents")
+    incident = cached.get((condition, subject)) if cached is not None else session.scalar(select(Incident).where(
         Incident.job_id == policy.job_id, Incident.condition == condition, Incident.subject == subject))
     if not bad and incident is None:
         return
@@ -91,6 +92,8 @@ def _condition(session, policy, condition, subject, bad, recovery, at, severity=
                             policy_version=policy.version, severity=severity, state="open", last_evaluated_at=at)
         session.add(incident)
         session.flush()
+        if cached is not None:
+            cached[(condition, subject)] = incident
         _history(session, incident, "opened", bad[0][0], bad[0][1], at)
     for key, evidence in bad:
         _history(session, incident, "observed", key, evidence, at)
@@ -121,6 +124,8 @@ def evaluate_job(bind, job_id, *, at=None):
             return
         job = session.get(Job, job_id)
         integration = session.get(Integration, job.integration_id)
+        session.info["job_incidents"] = {(i.condition, i.subject): i for i in session.scalars(
+            select(Incident).where(Incident.job_id == job_id))}
         if not integration.enabled:
             # Disabling the producer must never silently close existing incidents.
             _condition(session, policy, "monitoring_disabled", "job",
@@ -137,6 +142,7 @@ def evaluate_job(bind, job_id, *, at=None):
         events = list(session.scalars(select(IngestedEvent).where(
             IngestedEvent.integration_id == job.integration_id,
             IngestedEvent.payload["job_id"].as_string() == str(job_id))))
+        runs = {run.external_run_id: run for run in session.scalars(select(Run).where(Run.job_id == job_id))}
         # Detect failures from source evidence too, including events that failed projection.
         facts = {}
         for event in events:
@@ -207,24 +213,26 @@ def evaluate_job(bind, job_id, *, at=None):
         for run_id, entries in sorted(facts.items()):
             future = [e["ref"] for e in entries if e["time"] > at + timedelta(seconds=60)]
             _condition(session, policy, "clock_skew", run_id, future, None, at, "warning")
-            max_attempt = max(e["attempt"] for e in entries)
-            numbers = {e["attempt"] for e in entries}
+            entries_by_attempt = {}
+            for entry in entries:
+                entries_by_attempt.setdefault(entry["attempt"], []).append(entry)
+            max_attempt = max(entries_by_attempt)
+            numbers = set(entries_by_attempt)
             missing_count = max_attempt - len(numbers)
             _condition(session, policy, "attempt_history_gap", run_id,
                        [(f"attempt-gap:{run_id}:{max_attempt}:{len(numbers)}",
                          {"highest_attempt": max_attempt, "observed_attempts": len(numbers), "missing_count": missing_count})]
                        if missing_count else [],
                        (f"attempt-history:{run_id}:{max_attempt}", {"highest_attempt": max_attempt}) if not missing_count else None, at, "warning")
-            latest = [e for e in entries if e["attempt"] == max_attempt]
+            latest = entries_by_attempt[max_attempt]
             terminals = {e["state"] for e in latest if e["state"] in {"succeeded", "failed", "cancelled", "blocked", "skipped"}}
             all_conflicts = []
-            for number in {e["attempt"] for e in entries}:
-                values = [e for e in entries if e["attempt"] == number]
+            for values in entries_by_attempt.values():
                 outcomes = {e["state"] for e in values if e["state"] in {"succeeded", "failed", "cancelled", "blocked", "skipped"}}
                 if len(outcomes) > 1:
                     all_conflicts.extend(e["ref"] for e in values)
             # Timestamp conflicts within the producer are also projection uncertainty.
-            run = session.scalar(select(Run).where(Run.job_id == job_id, Run.external_run_id == run_id))
+            run = runs.get(run_id)
             if run and run.reconciliation_required:
                 all_conflicts.append(_ref(run, "runs"))
             _condition(session, policy, "conflicting_evidence", run_id, all_conflicts, None, at)
@@ -244,8 +252,7 @@ def evaluate_job(bind, job_id, *, at=None):
                        [(f"timeout:{run_id}:{max_attempt}", {"attempt": max_attempt, "basis": latest[0]["ref"][1],
                          "deadline": (start + timedelta(seconds=policy.timeout_seconds)).isoformat()})] if stale else [],
                        latest[-1]["ref"] if terminals and not all_conflicts and not future else None, at)
-            reports = [o for o in observations if o.kind == "quality_report" and
-                       o.payload["external_run_id"] == run_id]
+            reports = reports_by_run.get(run_id, [])
             checks = {}
             for report in reports:
                 for check in report.payload["checks"]:
@@ -309,7 +316,7 @@ def evaluate_job(bind, job_id, *, at=None):
                        if recovery_event else None, at, "warning")
         expectation = session.scalar(select(LineageExpectation).where(LineageExpectation.job_id == job_id))
         if expectation:
-            new_runs = session.scalars(select(Run).where(Run.job_id == job_id, Run.created_at >= expectation.created_at))
+            new_runs = [run for run in runs.values() if run.created_at >= expectation.created_at]
             for execution in new_runs:
                 entries = facts.get(execution.external_run_id, [])
                 highest = max([e["attempt"] for e in entries] or [1])
@@ -368,4 +375,4 @@ def coverage(bind, at=None):
                     timedelta(0) <= at-heartbeats["job:" + str(j.id)] < timedelta(seconds=90) else "stale")}
                     for j in jobs],
                 "unmonitored_job_ids": [str(j.id) for j in jobs if j.id not in policies],
-                "notice": "Database, API, host and detector outages require an independent external watchdog."}
+                "notice": "Use the independent local watcher for service outages. Total host loss requires a watcher on another device."}

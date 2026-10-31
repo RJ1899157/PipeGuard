@@ -22,6 +22,7 @@ from pipeguard.api.schemas import (
     IntegrationView, JobCreate, JobView, Page, RunView,
 )
 from pipeguard.api.settings import Settings
+from pipeguard.api.pagination import SnapshotStore
 from pipeguard.db.models import Attempt, IngestedEvent, Integration, Job, ProducerCredential, Run
 from pipeguard.db.permissions import verify_runtime_access
 from pipeguard.ingestion.contracts import ExecutionEvent
@@ -76,6 +77,7 @@ def create_app(settings: Settings | None = None, *, engine=None):
     engine = engine or create_engine(settings.database_url, hide_parameters=True, pool_pre_ping=True,
                                       connect_args={"connect_timeout": 5, "options": "-cstatement_timeout=10000 -clock_timeout=5000"})
     admin_hash = sha256(settings.admin_token.encode()).hexdigest()
+    snapshots = SnapshotStore()
 
     @asynccontextmanager
     async def lifespan(app):
@@ -89,7 +91,7 @@ def create_app(settings: Settings | None = None, *, engine=None):
                 engine.dispose()
 
     app = FastAPI(title="PipeGuard API", version="0.1.0", lifespan=lifespan,
-                  responses={code: {"model": ErrorResponse} for code in (401, 403, 404, 409, 413, 422, 503)},
+                  responses={code: {"model": ErrorResponse} for code in (401, 403, 404, 409, 410, 413, 422, 503)},
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(RequestBoundary)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
@@ -184,7 +186,14 @@ def create_app(settings: Settings | None = None, *, engine=None):
             return IntegrationView.model_validate(record)
 
     @app.get("/v1/integrations", response_model=Page[IntegrationView])
-    def integrations(principal: Admin, limit: Limit = 50, offset: Offset = 0):
+    def integrations(principal: Admin, limit: Limit = 50, offset: Offset = 0,
+                     snapshot: Annotated[str | None, Query(max_length=128)] = None):
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    return ([IntegrationView.model_validate(x) for x in session.scalars(select(Integration)
+                        .order_by(Integration.created_at, Integration.id).limit(cap))], {})
+            return snapshots.page(principal, ("integrations",), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             records = list(session.scalars(select(Integration).order_by(Integration.created_at, Integration.id).limit(limit+1).offset(offset)))
             return Page[IntegrationView](items=[IntegrationView.model_validate(x) for x in records[:limit]], limit=limit, offset=offset, has_more=len(records)>limit)
@@ -210,10 +219,17 @@ def create_app(settings: Settings | None = None, *, engine=None):
             return JobView.model_validate(record)
 
     @app.get("/v1/jobs", response_model=Page[JobView])
-    def jobs(principal: Caller, limit: Limit = 50, offset: Offset = 0):
+    def jobs(principal: Caller, limit: Limit = 50, offset: Offset = 0,
+             snapshot: Annotated[str | None, Query(max_length=128)] = None):
         statement = select(Job)
         if not principal.admin:
             statement = statement.where(Job.integration_id == principal.integration_id)
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    return ([JobView.model_validate(x) for x in session.scalars(statement
+                        .order_by(Job.created_at, Job.id).limit(cap))], {})
+            return snapshots.page(principal, ("jobs",), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             records = list(session.scalars(statement.order_by(Job.created_at, Job.id).limit(limit+1).offset(offset)))
             return Page[JobView](items=[JobView.model_validate(x) for x in records[:limit]], limit=limit, offset=offset, has_more=len(records)>limit)
@@ -264,12 +280,19 @@ def create_app(settings: Settings | None = None, *, engine=None):
         return {"event_id": str(outcome.event_id), "processing_state": outcome.processing_state, "warning": outcome.error}
 
     @app.get("/v1/runs", response_model=Page[RunView])
-    def runs(principal: Caller, limit: Limit = 50, offset: Offset = 0, job_id: UUID | None = None):
+    def runs(principal: Caller, limit: Limit = 50, offset: Offset = 0, job_id: UUID | None = None,
+             snapshot: Annotated[str | None, Query(max_length=128)] = None):
         statement = select(Run).join(Job)
         if not principal.admin:
             statement = statement.where(Job.integration_id == principal.integration_id)
         if job_id is not None:
             statement = statement.where(Job.id == job_id)
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    return ([RunView.model_validate(x) for x in session.scalars(statement
+                        .order_by(Run.created_at.desc(), Run.id.desc()).limit(cap))], {})
+            return snapshots.page(principal, ("runs", str(job_id)), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             records = list(session.scalars(statement.order_by(Run.created_at.desc(), Run.id.desc()).limit(limit+1).offset(offset)))
             return Page[RunView](items=[RunView.model_validate(x) for x in records[:limit]], limit=limit, offset=offset, has_more=len(records)>limit)
@@ -280,14 +303,22 @@ def create_app(settings: Settings | None = None, *, engine=None):
             return RunView.model_validate(scoped_run(session, run_id, principal))
 
     @app.get("/v1/runs/{run_id}/attempts", response_model=Page[AttemptView])
-    def attempts(run_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0):
+    def attempts(run_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0,
+                 snapshot: Annotated[str | None, Query(max_length=128)] = None):
+        if snapshot is not None:
+            def load(cap):
+                with Session(engine) as session:
+                    scoped_run(session, run_id, principal)
+                    return ([AttemptView.model_validate(x) for x in session.scalars(select(Attempt)
+                        .where(Attempt.run_id == run_id).order_by(Attempt.attempt_number, Attempt.id).limit(cap))], {})
+            return snapshots.page(principal, ("attempts", str(run_id)), snapshot, load, limit=limit, offset=offset)
         with Session(engine) as session:
             scoped_run(session, run_id, principal)
             records = list(session.scalars(select(Attempt).where(Attempt.run_id == run_id).order_by(Attempt.attempt_number, Attempt.id).limit(limit+1).offset(offset)))
             return Page[AttemptView](items=[AttemptView.model_validate(x) for x in records[:limit]], limit=limit, offset=offset, has_more=len(records)>limit)
 
     from pipeguard.detection.api import install_routes
-    install_routes(app, engine, authenticate, administrator)
+    install_routes(app, engine, authenticate, administrator, snapshots)
     from pipeguard.lineage.api import install_routes as install_lineage_routes
     install_lineage_routes(app, engine, authenticate)
     return app
