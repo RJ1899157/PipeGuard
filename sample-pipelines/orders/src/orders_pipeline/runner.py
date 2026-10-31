@@ -1,4 +1,5 @@
 """Run source validation, raw replacement, and dbt build under one workload lock."""
+from datetime import datetime, timezone
 import argparse
 import json
 import os
@@ -10,6 +11,7 @@ from uuid import uuid4
 from orders_pipeline.loader import InvalidSource, WAREHOUSE_LOCK, Warehouse, parse_orders, replace_orders
 from orders_pipeline.observer import Observer
 from orders_pipeline.quality import extract
+from orders_pipeline.lineage import extract as extract_lineage, gap as lineage_gap
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,7 +30,9 @@ def run(source: Path, settings: Warehouse):
     }
     with settings.connect() as connection:
         connection.execute("SELECT pg_advisory_lock(%s)", (WAREHOUSE_LOCK,))
+        load_started_at = datetime.now(timezone.utc).isoformat()
         replace_orders(connection, rows, settings.prefix)
+        load_finished_at = datetime.now(timezone.utc).isoformat()
         # The session lock spans raw replacement and dbt's independently committed models.
         command = [str(Path(sys.executable).with_name("dbt")), "build", "--project-dir", str(ROOT / "dbt"),
                    "--profiles-dir", str(ROOT / "dbt"), "--target-path", str(artifacts),
@@ -37,7 +41,8 @@ def run(source: Path, settings: Warehouse):
             result = subprocess.run(command, env=environment, stdout=log, stderr=subprocess.STDOUT,
                                     timeout=120, check=False)
     summary = {"invocation": invocation, "rows_loaded": len(rows), "dbt_succeeded": result.returncode == 0,
-               "artifacts": str(artifacts.relative_to(ROOT))}
+               "artifacts": str(artifacts.relative_to(ROOT)),
+               "load_started_at": load_started_at, "load_finished_at": load_finished_at}
     (artifacts / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     return summary
 
@@ -57,11 +62,14 @@ def execute(source, settings, observer=None, run_id=None, attempt=1, simulate_fi
             code = "source_unavailable"
         if observer:
             observer.emit(run_id, attempt, "failed", code)
+            observer.emit_lineage(run_id, attempt, lineage_gap(run_id, attempt))
         raise
     state = "succeeded" if summary["dbt_succeeded"] else "failed"
     if observer:
         if summary.get("artifacts"):
             delivery.append(observer.emit_quality(run_id, attempt, extract(ROOT / summary["artifacts"])))
+            delivery.append(observer.emit_lineage(run_id, attempt,
+                extract_lineage(ROOT / summary["artifacts"], run_id, attempt, summary, settings.prefix)))
         delivery.append(observer.emit(run_id, attempt, state, None if state == "succeeded" else "validation_failed"))
     return summary | {"external_run_id": run_id, "attempt_number": attempt,
                       "monitoring": "disabled" if observer is None else ("acknowledged" if all(delivery) else "pending")}

@@ -288,4 +288,6 @@ def create_app(settings: Settings | None = None, *, engine=None):
 
     from pipeguard.detection.api import install_routes
     install_routes(app, engine, authenticate, administrator)
+    from pipeguard.lineage.api import install_routes as install_lineage_routes
+    install_lineage_routes(app, engine, authenticate)
     return app

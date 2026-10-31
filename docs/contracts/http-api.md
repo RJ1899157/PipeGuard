@@ -114,3 +114,7 @@ This does not establish production security, browser usability or performance.
 ## Incident and quality extension
 
 The API now includes immutable monitor-policy creation, quality-report receipt, scoped incident/history/evidence reads and administrator acknowledgement. Coverage inspection reports global/per-job detector staleness and unmonitored jobs. Acknowledgement does not resolve or approve recovery. Attempts expose `projection_source`; Airflow backfill can add `blocked`, `skipped` and `waiting` outcomes. See [operations](../incident-operations.md), [quality contract](quality-reports.md) and the checked-in OpenAPI document.
+
+## Lineage and evidence extension
+
+The API includes scoped lineage receipt/history/traversal, administrator lineage-delivery expectations and immutable incident evidence captures. The graph is an observed historical union with event and receipt cutoffs, not an implicit current deployment snapshot. See the [lineage contract](lineage-events.md), [architecture](../architecture/lineage-evidence.md) and checked-in OpenAPI document.

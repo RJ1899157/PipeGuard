@@ -127,3 +127,7 @@ separate restricted runtime role without schema ownership.
 ## Incident and monitoring additions
 
 `monitor_policies` declare immutable per-job expectations. `observations` retain allowlisted quality, orchestration and coverage evidence. `incidents` hold deterministic current condition state; `incident_history` retains occurrence/lifecycle/acknowledgement provenance. `monitor_heartbeats` record successful global and per-job evaluations. Attempt projections identify whether workload or Airflow supplied the boundary through `projection_source`. See [detection architecture](incident-detection.md).
+
+## Lineage and evidence additions
+
+`lineage_runs` binds logical step UUIDs to monitored execution attempts. `lineage_events` retains canonical source claims; `dataset_mentions` indexes their input/output assertions. `lineage_expectations` declares required delivery for newly observed runs. `evidence_bundles` retains immutable scoped incident snapshots. Dataset identities and these records are append-only. See [lineage and evidence architecture](lineage-evidence.md) for the distinction between declared dependencies, reported outcomes and verified business truth.

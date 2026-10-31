@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 import json
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import ValidationError
 from sqlalchemy import select, text
@@ -10,7 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from pipeguard.db.models import (Attempt, IngestedEvent, Integration, Job, Run, MonitorPolicy,
-                                Observation, Incident, IncidentHistory, MonitorHeartbeat)
+                                Observation, Incident, IncidentHistory, MonitorHeartbeat, LineageEvent, LineageRun, LineageExpectation)
 from pipeguard.ingestion.service import IngestionRejected
 from pipeguard.ingestion.contracts import ExecutionEvent
 
@@ -98,7 +98,10 @@ def _condition(session, policy, condition, subject, bad, recovery, at, severity=
         return
     if incident.state != desired:
         evidence = recovery if recovery else bad[-1]
-        _history(session, incident, desired, evidence[0], evidence[1], at)
+        # State comparison is serialized by the per-job transaction lock. Replay cannot
+        # add transitions; a genuinely later reopening needs a distinct immutable history row.
+        transition_key = "transition:" + str(uuid4())
+        _history(session, incident, desired, transition_key, evidence[1], at)
         incident.state = desired
     incident.last_evaluated_at = at
 
@@ -252,6 +255,62 @@ def evaluate_job(bind, job_id, *, at=None):
                            [(f"quality-due:{run_id}:{max_attempt}", {"attempt": max_attempt})]
                            if quality_due and not complete else [],
                            _ref(complete[-1], "observations") if complete else None, at)
+        lineage_rows = list(session.execute(select(LineageEvent, LineageRun).join(LineageRun).where(LineageRun.job_id == job_id)
+                                            .order_by(LineageEvent.occurred_at, LineageEvent.created_at, LineageEvent.id)))
+        lineage_by_run = {}
+        for event, binding in lineage_rows:
+            lineage_by_run.setdefault(binding.external_run_id, []).append((event, binding))
+        for run_id, values in lineage_by_run.items():
+            highest = max([b.attempt_number for _, b in values] + [e["attempt"] for e in facts.get(run_id, [])])
+            latest_steps = {}
+            for event, binding in values:
+                if binding.attempt_number == highest:
+                    latest_steps[binding.id] = event
+            failures = [("lineage_events:" + str(e.id), {"table": "lineage_events", "id": str(e.id)})
+                        for e, _ in values if e.payload["coverage"] == "partial"]
+            outcomes = {}
+            for event, binding in values:
+                if event.event_type in {"COMPLETE", "FAIL", "ABORT"}:
+                    outcomes.setdefault(binding.id, []).append(event)
+            for binding_id, terminal_events in outcomes.items():
+                contradictory = len({e.event_type for e in terminal_events}) > 1
+                _condition(session, policy, "lineage_conflict", run_id + ":" + str(binding_id),
+                           [("lineage_events:" + str(e.id), {"table": "lineage_events", "id": str(e.id)}) for e in terminal_events]
+                           if contradictory else [], None, at)
+            from pipeguard.lineage.completeness import missing_metadata
+            latest_payloads = [e.payload for e,b in values if b.attempt_number == highest]
+            completeness_gaps = missing_metadata(latest_payloads)
+            if any(digest(e.payload) != e.payload_hash for e,b in values if b.attempt_number == highest):
+                completeness_gaps.add("source_hash_mismatch")
+            if completeness_gaps and not failures:
+                basis_event = values[-1][0]
+                failures = [("lineage-inventory:" + digest([str(basis_event.id), highest, sorted(completeness_gaps)]), {"table":"lineage_events", "id":str(basis_event.id),
+                                                                         "missing_metadata":sorted(completeness_gaps)})]
+            complete = bool(latest_steps) and not completeness_gaps
+            recovery_event = list(latest_steps.values())[-1] if complete else None
+            _condition(session, policy, "lineage_partial", run_id, failures,
+                       ("lineage_events:" + str(recovery_event.id), {"table": "lineage_events", "id": str(recovery_event.id)})
+                       if recovery_event else None, at, "warning")
+        expectation = session.scalar(select(LineageExpectation).where(LineageExpectation.job_id == job_id))
+        if expectation:
+            new_runs = session.scalars(select(Run).where(Run.job_id == job_id, Run.created_at >= expectation.created_at))
+            for execution in new_runs:
+                entries = facts.get(execution.external_run_id, [])
+                highest = max([e["attempt"] for e in entries] or [1])
+                terminal_entries = [e for e in entries if e["attempt"] == highest and
+                                    e["state"] in {"succeeded","failed","cancelled","blocked","skipped"}]
+                values = [(e,b) for e,b in lineage_by_run.get(execution.external_run_id, []) if b.attempt_number == highest]
+                from pipeguard.lineage.completeness import missing_metadata
+                complete = bool(values) and not missing_metadata([e.payload for e,b in values]) and all(
+                    digest(e.payload) == e.payload_hash for e,b in values)
+                deadline = (max(e["time"] for e in terminal_entries) + timedelta(seconds=expectation.grace_seconds)) if terminal_entries else None
+                due = bool(deadline and at >= deadline)
+                _condition(session, policy, "lineage_missing", execution.external_run_id,
+                           [("lineage-due:" + str(execution.id) + ":" + str(highest),
+                             {"table":"runs", "id":str(execution.id), "expectation_id":str(expectation.id),
+                              "deadline":deadline.isoformat()})] if due and not complete else [],
+                           ("lineage_events:" + str(values[-1][0].id), {"table":"lineage_events", "id":str(values[-1][0].id)})
+                           if complete else None, at, "warning")
         for row in observations:
             if row.kind == "delivery_conflict":
                 _condition(session, policy, "delivery_conflict", str(row.id), [_ref(row, "observations")], None, at)
@@ -278,11 +337,13 @@ def coverage(bind, at=None):
         heartbeat = session.scalar(select(MonitorHeartbeat).where(MonitorHeartbeat.name == "detector"))
         policies = {p.job_id: p for p in session.scalars(select(MonitorPolicy))}
         jobs = list(session.scalars(select(Job)))
+        lineage_expected = set(session.scalars(select(LineageExpectation.job_id)))
         heartbeats = {h.name: h.completed_at for h in session.scalars(select(MonitorHeartbeat))}
         return {"detector": "fresh" if heartbeat and timedelta(0) <= at-heartbeat.completed_at < timedelta(seconds=90) else "stale",
                 "last_completed_at": heartbeat.completed_at if heartbeat else None,
                 "jobs": [{"job_id": str(j.id),
                     "mode": "unmonitored" if j.id not in policies else "airflow_reconciled" if policies[j.id].airflow_dag_id else "event_only",
+                    "lineage_expected": j.id in lineage_expected,
                     "quality_expected": policies[j.id].quality_required if j.id in policies else None,
                     "activity_interval_seconds": policies[j.id].expected_interval_seconds if j.id in policies else None,
                     "detector_status": (

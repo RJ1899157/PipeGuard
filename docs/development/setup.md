@@ -2,7 +2,7 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, twelve SQLAlchemy metadata models (including producer credentials and incident/coverage evidence), Alembic
+The project includes PostgreSQL 17, seventeen SQLAlchemy metadata models (including incident, lineage and evidence records), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
 The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. There is no dashboard or incident engine yet.
 
@@ -141,3 +141,7 @@ The orchestration checkpoint includes the 31 workload checks above and a real na
 ## Incident worker
 
 After the API and Airflow are available, follow [incident monitoring operations](../incident-operations.md) to provision a dedicated read-only observer, enroll the job and start the detector using private `.env.monitoring`. Review [failure coverage](../failure-coverage.md) before interpreting monitoring confidence.
+
+## Lineage and evidence
+
+See [lineage operations](../lineage-operations.md) for migration, explicit delivery expectations and immutable incident snapshots. The orders adapter uses its existing isolated environment; no Marquez service or cloud account is required.

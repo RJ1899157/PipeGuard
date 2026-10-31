@@ -72,6 +72,16 @@ class Observer:
                      occurred_at=datetime.now(timezone.utc).isoformat(), **quality)
         return self.publish(event)
 
+    def emit_lineage(self, run_id, attempt, entries):
+        delivered = []
+        for entry in entries:
+            identity = entry["event"]["run"]["runId"] + ":" + entry["event"]["eventType"]
+            key = "lineage." + sha256(identity.encode()).hexdigest()
+            report = dict(schema_version=1, event_id=key, integration_id=self.integration_id,
+                          job_id=self.job_id, external_run_id=run_id, attempt_number=attempt, **entry)
+            delivered.append(self.publish(report))
+        return bool(delivered) and all(delivered)
+
     def publish(self, event):
         key = event["event_id"]
         path = self.directory / (key + ".json")
@@ -86,7 +96,12 @@ class Observer:
                 os.link(temporary, path)
             except FileExistsError:
                 previous = json.loads(path.read_text())
-                if {k: v for k, v in previous.items() if k != "occurred_at"} != {k: v for k, v in event.items() if k != "occurred_at"}:
+                def content(value):
+                    result = {k: v for k, v in value.items() if k != "occurred_at"}
+                    if "event" in result:
+                        result["event"] = {k: v for k, v in result["event"].items() if k != "eventTime"}
+                    return result
+                if content(previous) != content(event):
                     raise ValueError("Conflicting local observation identity")
         finally:
             temporary.unlink(missing_ok=True)
@@ -100,7 +115,7 @@ class Observer:
             payload = json.loads(path.read_text())
             if payload["integration_id"] != self.integration_id or payload["job_id"] != self.job_id:
                 return False
-            request = Request(self.base_url.rstrip("/") + ("/v1/quality-reports" if "checks" in payload else "/v1/events"), data=json.dumps(payload).encode(),
+            request = Request(self.base_url.rstrip("/") + ("/v1/lineage-events" if "event" in payload else "/v1/quality-reports" if "checks" in payload else "/v1/events"), data=json.dumps(payload).encode(),
                               headers={"Authorization": "Bearer " + self.token, "Content-Type": "application/json"}, method="POST")
             opener = build_opener(ProxyHandler({}), NoRedirect())
             with opener.open(request, timeout=5) as response:

@@ -438,3 +438,19 @@ def test_failed_dag_with_skipped_task_is_not_a_success(migrated_database):
     evaluate_job(c,ids[1],at=T+timedelta(seconds=2))
     assert any(r.condition=='orchestrator_run_failure' and r.state=='open' for r in incidents(c,ids[1]))
     assert not any(r.condition=='execution_failure' for r in incidents(c,ids[1]))
+
+
+def test_repeated_reopen_and_recovery_preserve_every_lifecycle_transition(migrated_database):
+    c,_=migrated_database;ids=setup(c)
+    send(c,event(ids,'failure',state='failed',seconds=1))
+    evaluate_job(c,ids[1],at=T+timedelta(seconds=2))
+    for number in range(2,5):
+        send(c,event(ids,'start-'+str(number),attempt=number,state='running',seconds=number*10))
+        evaluate_job(c,ids[1],at=T+timedelta(seconds=number*10))
+        send(c,event(ids,'success-'+str(number),attempt=number,state='succeeded',seconds=number*10+1))
+        evaluate_job(c,ids[1],at=T+timedelta(seconds=number*10+2))
+    incident=next(i for i in incidents(c,ids[1]) if i.condition=='execution_failure')
+    with Session(c) as s:
+        actions=list(s.scalars(select(IncidentHistory.action).where(IncidentHistory.incident_id==incident.id)))
+    assert actions.count('opened')==1 and actions.count('open')==2 and actions.count('resolved')==3
+    assert actions.count('observed')==1 and incident.state=='resolved'

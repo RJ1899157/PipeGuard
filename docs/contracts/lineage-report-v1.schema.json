@@ -1,0 +1,271 @@
+{
+  "$defs": {
+    "ArtifactHashes": {
+      "additionalProperties": false,
+      "properties": {
+        "manifest": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Manifest"
+        },
+        "run_results": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Results"
+        }
+      },
+      "title": "ArtifactHashes",
+      "type": "object"
+    },
+    "DatasetRef": {
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Namespace",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.:/+\\-]*$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "namespace",
+        "name"
+      ],
+      "title": "DatasetRef",
+      "type": "object"
+    },
+    "OpenLineageRun": {
+      "additionalProperties": false,
+      "properties": {
+        "runId": {
+          "format": "uuid",
+          "title": "Runid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "runId"
+      ],
+      "title": "OpenLineageRun",
+      "type": "object"
+    },
+    "RunEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "eventTime": {
+          "format": "date-time",
+          "title": "Eventtime",
+          "type": "string"
+        },
+        "producer": {
+          "const": "https://github.com/RJ1899157/PipeGuard",
+          "title": "Producer",
+          "type": "string"
+        },
+        "schemaURL": {
+          "const": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent",
+          "title": "Schemaurl",
+          "type": "string"
+        },
+        "eventType": {
+          "enum": [
+            "START",
+            "RUNNING",
+            "COMPLETE",
+            "FAIL",
+            "ABORT",
+            "OTHER"
+          ],
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "run": {
+          "$ref": "#/$defs/OpenLineageRun"
+        },
+        "job": {
+          "$ref": "#/$defs/StepRef"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/DatasetRef"
+          },
+          "maxItems": 32,
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "$ref": "#/$defs/DatasetRef"
+          },
+          "maxItems": 32,
+          "title": "Outputs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "eventTime",
+        "producer",
+        "schemaURL",
+        "eventType",
+        "run",
+        "job",
+        "inputs",
+        "outputs"
+      ],
+      "title": "RunEvent",
+      "type": "object"
+    },
+    "StepRef": {
+      "additionalProperties": false,
+      "properties": {
+        "namespace": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.:/+\\-]*$",
+          "title": "Namespace",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.:/+\\-]*$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "namespace",
+        "name"
+      ],
+      "title": "StepRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "event_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "integration_id": {
+      "format": "uuid",
+      "title": "Integration Id",
+      "type": "string"
+    },
+    "job_id": {
+      "format": "uuid",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "external_run_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "External Run Id",
+      "type": "string"
+    },
+    "attempt_number": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "expected_steps": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/StepRef"
+      },
+      "maxItems": 32,
+      "title": "Expected Steps",
+      "type": "array"
+    },
+    "basis": {
+      "enum": [
+        "declared_dbt",
+        "producer_reported"
+      ],
+      "title": "Basis",
+      "type": "string"
+    },
+    "coverage": {
+      "enum": [
+        "complete",
+        "partial"
+      ],
+      "title": "Coverage",
+      "type": "string"
+    },
+    "missing_metadata": {
+      "default": [],
+      "items": {
+        "enum": [
+          "artifacts_unavailable",
+          "artifact_mismatch",
+          "unresolved_dependency",
+          "unsupported_resource",
+          "incomplete_results",
+          "adapter_limit",
+          "invalid_artifacts"
+        ],
+        "type": "string"
+      },
+      "maxItems": 7,
+      "title": "Missing Metadata",
+      "type": "array"
+    },
+    "artifact_hashes": {
+      "$ref": "#/$defs/ArtifactHashes",
+      "default": {
+        "manifest": null,
+        "run_results": null
+      }
+    },
+    "event": {
+      "$ref": "#/$defs/RunEvent"
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "integration_id",
+    "job_id",
+    "external_run_id",
+    "attempt_number",
+    "basis",
+    "coverage",
+    "event"
+  ],
+  "title": "LineageReport",
+  "type": "object"
+}

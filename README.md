@@ -2,11 +2,11 @@
 
 **Data pipeline observability, evidence-grounded investigation, and human-approved recovery.**
 
-PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It will collect execution metadata, quality results, and lineage; detect incidents through deterministic rules; and present supporting evidence alongside AI-generated hypotheses.
+PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It collects execution metadata, quality results and bounded dataset lineage, detects incidents through deterministic rules and preserves supporting evidence. AI-generated hypotheses remain a later stage.
 
-> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. The dashboard, AI investigation and approved recovery remain planned.
+> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. Dataset lineage, historical graph traversal and immutable incident evidence bundles are implemented through a bounded OpenLineage profile. The dashboard, AI investigation and approved recovery remain planned.
 
-[Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md) · [Incident operations](docs/incident-operations.md) · [Failure coverage](docs/failure-coverage.md)
+[Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md) · [Incident operations](docs/incident-operations.md) · [Failure coverage](docs/failure-coverage.md) · [Lineage and evidence](docs/architecture/lineage-evidence.md)
 
 ## Problem and intended workflow
 

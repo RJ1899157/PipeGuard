@@ -203,3 +203,72 @@ class MonitorHeartbeat(Record, Base):
     __table_args__ = (UniqueConstraint("name"),)
     name: Mapped[str] = mapped_column(String(100))
     completed_at: Mapped[datetime]
+
+
+class LineageRun(Record, Base):
+    """A logical step run mapped explicitly to a monitored job execution attempt."""
+    __tablename__ = "lineage_runs"
+    __table_args__ = (
+        UniqueConstraint("integration_id", "run_uuid"),
+        UniqueConstraint("job_id", "external_run_id", "attempt_number", "step_namespace", "step_name"),
+        CheckConstraint("attempt_number >= 1", name="positive_number"),
+        Index("ix_lineage_runs_job_external", "job_id", "external_run_id"),
+    )
+    integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="RESTRICT"))
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    external_run_id: Mapped[str] = mapped_column(String(255))
+    attempt_number: Mapped[int] = mapped_column(Integer)
+    run_uuid: Mapped[UUID]
+    step_namespace: Mapped[str] = mapped_column(String(255))
+    step_name: Mapped[str] = mapped_column(String(255))
+
+
+class LineageEvent(Record, Base):
+    __tablename__ = "lineage_events"
+    __table_args__ = (
+        UniqueConstraint("integration_id", "event_key"),
+        CheckConstraint("event_type IN ('START','RUNNING','COMPLETE','FAIL','ABORT','OTHER')", name="event_type"),
+        CheckConstraint("payload_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        Index("ix_lineage_events_run_time", "lineage_run_id", "occurred_at"),
+    )
+    integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="RESTRICT"))
+    lineage_run_id: Mapped[UUID] = mapped_column(ForeignKey("lineage_runs.id", ondelete="RESTRICT"))
+    event_key: Mapped[str] = mapped_column(String(255))
+    event_type: Mapped[str] = mapped_column(String(20))
+    occurred_at: Mapped[datetime]
+    payload: Mapped[dict[str, Any]]
+    payload_hash: Mapped[str] = mapped_column(String(64))
+
+
+class DatasetMention(Record, Base):
+    """Bipartite input/output assertions, each linked to its immutable source event."""
+    __tablename__ = "dataset_mentions"
+    __table_args__ = (
+        UniqueConstraint("event_id", "dataset_id", "role"),
+        CheckConstraint("role IN ('input','output')", name="role"),
+        Index("ix_dataset_mentions_dataset", "dataset_id"),
+    )
+    event_id: Mapped[UUID] = mapped_column(ForeignKey("lineage_events.id", ondelete="RESTRICT"))
+    dataset_id: Mapped[UUID] = mapped_column(ForeignKey("datasets.id", ondelete="RESTRICT"))
+    role: Mapped[str] = mapped_column(String(10))
+
+
+class EvidenceBundle(Record, Base):
+    __tablename__ = "evidence_bundles"
+    __table_args__ = (
+        UniqueConstraint("incident_id", "payload_hash"),
+        CheckConstraint("payload_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+    )
+    incident_id: Mapped[UUID] = mapped_column(ForeignKey("incidents.id", ondelete="RESTRICT"))
+    payload: Mapped[dict[str, Any]]
+    payload_hash: Mapped[str] = mapped_column(String(64))
+
+
+class LineageExpectation(Record, Base):
+    """Explicit enrollment for detecting absent lineage on newly observed executions."""
+    __tablename__ = "lineage_expectations"
+    __table_args__ = (UniqueConstraint("job_id"),
+                     CheckConstraint("grace_seconds BETWEEN 1 AND 604800", name="grace"))
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    grace_seconds: Mapped[int] = mapped_column(Integer)
+    version: Mapped[str] = mapped_column(String(100), server_default="lineage-v1")

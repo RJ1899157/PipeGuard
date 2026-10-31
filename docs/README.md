@@ -43,3 +43,10 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 - [Operations](incident-operations.md): worker setup, API inspection, scope and heartbeat behavior.
 - [Failure coverage](failure-coverage.md): scenario matrix, verification methods and residual limits.
 - [Quality report v1](contracts/quality-reports.md): rule outcomes, inventory and replay contract.
+
+## Lineage and evidence
+
+- [Architecture](architecture/lineage-evidence.md): dataset identity, step inventory, historical graph semantics and evidence provenance.
+- [Contract](contracts/lineage-events.md): bounded OpenLineage profile and authenticated APIs.
+- [Operations](lineage-operations.md): enrollment, delivery, replay and snapshot capture.
+- [Verification](lineage-verification.md): failure scenarios and live checkpoint evidence.

@@ -77,6 +77,7 @@ def test_first_failure_precedes_work_and_retry_can_succeed(monkeypatch):
     import orders_pipeline.runner as runner
     observed=[]
     class Recording:
+        def emit_lineage(self,*args): return True
         def emit(self,*args):
             observed.append(args)
             return True
@@ -96,6 +97,7 @@ def test_first_failure_precedes_work_and_retry_can_succeed(monkeypatch):
 def test_monitoring_http_outage_does_not_change_business_success(monkeypatch):
     import orders_pipeline.runner as runner
     class Offline:
+        def emit_lineage(self,*args): return False
         def emit(self,*args): return False
     monkeypatch.setattr(runner,"run",lambda *args:{"dbt_succeeded":True})
     result=execute(None,None,Offline(),"offline",1)

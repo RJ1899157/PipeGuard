@@ -164,3 +164,7 @@ verified end to end through PipeGuard's API.
 ## Quality observations
 
 A completed dbt build produces a bounded quality report from matching manifest/run-results invocation IDs. The durable outbox includes rule identifiers, content fingerprints, outcomes and completeness; SQL, data rows and error messages stay local. Missing or ambiguous artifacts do not count as passes. Replaying events also replays quality reports. See the [quality contract](../../docs/contracts/quality-reports.md) and [failure matrix](../../docs/failure-coverage.md).
+
+## Lineage observations
+
+The adapter journals a bounded OpenLineage 2.0.2 profile alongside execution and quality events. It derives declared dataset dependencies from matching dbt artifacts and reports loader input/output boundaries separately. Expected step inventories prevent partial delivery from appearing complete. Source paths, SQL, rows, credentials and free-form errors are excluded. Failed early attempts retain explicit metadata gaps. See [contract](../../docs/contracts/lineage-events.md) and [operations](../../docs/lineage-operations.md).
