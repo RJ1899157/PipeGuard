@@ -1,6 +1,6 @@
 # Architecture overview
 
-**Status:** proposed architecture. The current repository contains environment configuration and design documents only.
+**Status:** target architecture with an implemented initial persistence slice. PostgreSQL configuration, six metadata tables, migrations and integration checks exist; the remaining services are planned.
 
 ## Scope
 

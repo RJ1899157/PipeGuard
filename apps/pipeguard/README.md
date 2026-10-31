@@ -1,3 +1,10 @@
 # PipeGuard application
 
-This directory is reserved for the monitoring application: API, web interface, incident workflows, evidence handling, and integrations. It is intentionally separate from `sample-pipelines/`.
+Monitoring application boundary, separate from `sample-pipelines/`.
+
+- `src/pipeguard/db/`: SQLAlchemy metadata models and explicit database configuration.
+- `migrations/`: reviewed Alembic schema revisions and event-history protection.
+- `tests/`: PostgreSQL integration checks using disposable schemas.
+
+Run commands from the repository root; see [development setup](../../docs/development/setup.md).
+The API, dashboard, event normalization and incident workflows are not implemented yet.

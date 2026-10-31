@@ -1,6 +1,6 @@
 # PipeGuard domain model
 
-Status: proposed logical design, ready for schema implementation. No database or migration exists yet.
+Status: the initial six-table persistence slice is implemented and verified on PostgreSQL 17. The remaining entities and event normalization behaviour are proposed designs.
 
 [Architecture overview](overview.md) · [Documentation index](../README.md) · [Delivery roadmap](../roadmap.md)
 
@@ -34,8 +34,8 @@ IDs are application-generated UUIDs unless an external identifier is explicitly 
 | Integration | One configured producer or adapter in an environment: name, kind, environment, secret reference, enabled | Unique integration name per environment; credentials stay outside metadata payloads |
 | Dataset | A logical data asset: namespace, name, kind | Unique `(namespace, name)`; examples include a file and a warehouse table |
 | Job | A reusable computation: integration, namespace, name, kind | Unique `(integration_id, namespace, name)`; a DAG, task, or dbt model can each be a job |
-| Run | One execution of a job: external run ID, optional parent run, state projection, data interval, started/finished times | Unique `(integration_id, external_run_id)`; belongs to one job; parent references another run |
-| Attempt | One execution attempt within a run: external task-instance key, attempt number, state, times | Unique `(run_id, attempt_key, attempt_number)`; retries add attempts |
+| Run | One execution of a job: external run ID, optional parent run, state projection, data interval, started/finished times | Unique `(job_id, external_run_id)`; producer scope is inherited through the job; parent references another run |
+| Attempt | One execution attempt within a run: external task-instance key, attempt number, state, times, redacted reported error code/message | Unique `(run_id, attempt_key, attempt_number)`; retries add attempts |
 | Ingested event | A received observation: integration, deduplication key, schema version, occurred/received times, redacted payload, payload hash, processing state | Unique `(integration_id, deduplication_key)`; append-only source record; normalization may link it to a run/attempt |
 | Dataset schema snapshot | A recorded schema at an observation time: dataset, schema hash, canonical column description, source event | Referenced by event/evidence; identical schemas can be deduplicated by dataset and hash |
 | Run dataset observation | A run consumed or produced a dataset: run, dataset, input/output direction, source event, optional schema snapshot | Carries provenance; preserves historic relationships rather than overwriting a current graph |
@@ -90,3 +90,35 @@ Verify against PostgreSQL 17: migration into an empty DB; duplicate external-ID 
 - PostgreSQL JSON types: https://www.postgresql.org/docs/17/datatype-json.html
 - PostgreSQL date/time types: https://www.postgresql.org/docs/17/datatype-datetime.html
 - OpenLineage dataset, job, and run object model: https://openlineage.io/docs/spec/object-model/
+
+## Initial schema implementation
+
+Revision `825e5c183adc` implements integrations, datasets, jobs, runs, attempts,
+and ingested events. Run identities are scoped to jobs because different jobs
+can share an upstream run identifier. A dataset namespace must identify its
+source/environment to avoid accidental cross-environment merging.
+
+PostgreSQL constraints enforce external identities, foreign keys, valid states,
+positive attempt/schema numbers, JSON object payloads, and SHA-256 hex format.
+Event triggers reject updates to source fields, row deletion, and truncation;
+processing state/error/time may change. Owners and administrators can alter or
+drop these protections: this is not tamper-proof storage. Payload hash correctness,
+redaction, timezone-aware input validation, parent-cycle validation, and event
+normalization will be enforced at the ingestion boundary. No untrusted input
+endpoint is exposed by this schema checkpoint.
+
+The tests store failed and successful attempts under a successful run, and retain
+out-of-order observations with their source timestamps. They do not yet implement
+or prove automatic projection reconciliation or idempotent ingestion responses.
+A unique constraint rejects duplicate event keys; the next ingestion checkpoint
+must return the existing observation on exact replay and reject conflicting reuse.
+
+The first migration is reversible only for disposable data with an explicit
+`allow_data_loss` override. Normal development uses forward migrations; production
+rollback and retention policies require separate review. Tests create unique
+schemas, migrate them, verify rollback/re-upgrade, and remove only those schemas.
+
+Only the PipeGuard database is provisioned now. Airflow and warehouse databases
+and their roles will be created when those services are introduced. The current
+non-superuser owner account is for migrations and checks; the API checkpoint must
+introduce a separate runtime role without schema ownership.

@@ -4,7 +4,7 @@
 
 PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It will collect execution metadata, quality results, and lineage; detect incidents through deterministic rules; and present supporting evidence alongside AI-generated hypotheses.
 
-> **Status: foundation and architecture design.** The repository contains the Python environment configuration, application boundaries, and proposed domain model. No runnable monitoring application, database schema, pipeline, or dashboard has been implemented yet.
+> **Status: initial persistence implemented.** PostgreSQL storage, six metadata models, a versioned migration, and database integration checks are available. Event ingestion, the API, sample pipelines, incident processing, and dashboard remain planned.
 
 [Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md)
 
@@ -46,13 +46,13 @@ These are delivery targets, not currently available features. The [roadmap](docs
 
 | Layer | Target technologies | Current state |
 | --- | --- | --- |
-| Python environment | Python 3.12, uv, project-local `.venv` | Configured; no application dependencies declared |
-| Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Proposed |
+| Python environment | Python 3.12, uv, project-local `.venv` | Configured; persistence dependencies locked |
+| Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Initial schema implemented |
 | API and validation | FastAPI, Pydantic 2 | Planned |
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Planned; environments isolated as required |
 | Web application | Next.js 16, React 19, TypeScript 5, Tailwind 4, shadcn/ui | Planned |
 | Graphs and charts | React Flow, Apache ECharts | Planned |
-| Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | Planned |
+| Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose and persistence tests available; browser tests and CI planned |
 | Later integrations | Marquez, Prometheus, optional GCP | Deferred |
 
 Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.

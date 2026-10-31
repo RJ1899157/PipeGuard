@@ -2,12 +2,12 @@
 
 This roadmap records product delivery milestones. Stage numbers correspond to the original thirteen-week plan; they are not fixed calendar deadlines or a claim that a stage is complete.
 
-**Current state:** foundation setup complete; logical data model proposed; implementation paused pending the owner's instruction to resume. Documentation maintenance may continue independently.
+**Current state:** initial persistence slice implemented and PostgreSQL-verified. Next: validated event ingestion and state projection behaviour, followed by API contracts.
 
 | Stage | Scope | Expected output | Acceptance criteria | State |
 | --- | --- | --- | --- | --- |
-| 1 | Repository and environment foundation | Desktop checkout, local Python environment, dependency metadata, application/workload boundaries, project guidance, GitHub connection | Environment synchronizes; repository belongs to RJ1899157; commits have the required author and committer | Foundation complete; container setup deferred until needed |
-| 2 | Persistence and domain model | PostgreSQL schema, SQLAlchemy models, Alembic migrations | Disposable-DB migration; constraints, rollback, external identity, and retry-history checks | Logical design proposed; implementation pending |
+| 1 | Repository and environment foundation | Desktop checkout, local Python environment, dependency metadata, application/workload boundaries, project guidance, GitHub connection | Environment synchronizes; repository belongs to RJ1899157; commits have the required author and committer | Complete; PostgreSQL container introduced in Stage 2 |
+| 2 | Persistence and domain model | PostgreSQL schema, SQLAlchemy models, Alembic migrations | Disposable-DB migration; constraints, rollback, external identity, and retry-history checks | Six-table schema and migration verified; replay handling and projection reconciliation pending |
 | 3 | API and contracts | Versioned APIs, validation models, pagination, error responses, OpenAPI | Contract validation and database transaction checks | Planned |
 | 4 | Independent sample pipeline | Reproducible source ingestion, raw/staging/mart transformations, dbt checks | Known outputs, malformed-input handling, and idempotent reruns | Planned |
 | 5 | Orchestration and execution metadata | Airflow scheduling and documented metadata adapters | Success, failure, retry, duplicate delivery, and out-of-order event scenarios | Planned |

@@ -1,74 +1,96 @@
 # Development setup
 
-## Current support
+## Available components
 
-The repository currently supports creating a Python development environment. There is no runnable API, dashboard, database migration, sample workload, Compose configuration, or CI workflow yet.
+The project includes PostgreSQL 17, six SQLAlchemy metadata models, an Alembic
+migration and persistence integration tests. There is no API, dashboard, incident
+engine or sample workload yet.
 
 ## Prerequisites
 
-| Tool | Requirement | Used for |
-| --- | --- | --- |
-| Git | Installed | Version control |
-| GitHub authentication | Access as `RJ1899157` | Private repository access and remote changes |
-| Python | 3.12 selected through `.python-version` | Application runtime |
-| uv | Installed | Environment creation and dependency resolution |
-| Node.js and pnpm | Planned Node.js 22 environment | Future web application |
-| Docker Desktop | Required when container services are introduced | Future PostgreSQL and orchestration services |
+- Python 3.12, uv, Git and Docker Desktop.
+- GitHub access as `RJ1899157` for the private repository.
+- Node.js 22 and pnpm will be needed for the future web application.
 
-`.python-version` selects Python 3.12; `pyproject.toml` currently declares a minimum of 3.12 rather than an upper-bound restriction. The lockfile contains no third-party application packages yet. Python patch versions and service image references will be documented when the runtime configuration is finalized.
+The primary checkout is `/Users/rishabhjain/Desktop/PipeGuard`. Run the following
+commands from the repository root. Python packages are installed only in `.venv`;
+`uv.lock` pins the resolved application and development dependencies.
 
-## Existing development checkout
-
-The primary development folder is:
-
-```text
-/Users/rishabhjain/Desktop/PipeGuard
-```
-
-From that folder:
+## First local startup
 
 ```sh
 uv sync --locked
-uv run python --version
+uv run python scripts/init_local_env.py
 ```
 
-`uv sync --locked` creates or synchronizes `.venv` without accepting a changed dependency resolution. The Python version command checks the selected interpreter; it is not an application test.
-
-Optional shell activation:
+The credential generator creates a mode-0600 `.env` and refuses to overwrite an
+existing file. `.env.example` documents names and placeholders. Never commit
+`.env`, print its contents in shared logs, or copy real credentials into examples.
+Start Docker Desktop when ready to use the database, then run:
 
 ```sh
-source .venv/bin/activate
+docker compose up -d --wait postgres
+uv run --env-file .env alembic upgrade head
+uv run --env-file .env alembic current
 ```
 
-Activation is unnecessary when running commands through `uv run`.
+PostgreSQL listens on `127.0.0.1:55432`. Compose pins the upstream PostgreSQL 17
+image by digest. The image used at this checkpoint reports PostgreSQL 17.11.
+The database `pipeguard` belongs to `pipeguard_owner`, a non-superuser without
+role-creation or database-creation privileges. This account is for migrations;
+a separate restricted runtime role must precede API deployment. The database
+admin credential is separate. Airflow and sample warehouse accounts are deferred.
 
-## New checkout
+Initialization scripts execute only on a new database volume. Changing passwords
+in `.env` does not change existing database credentials; rotate those explicitly
+before updating local configuration. Do not remove the volume to fix credentials
+if it contains needed data.
+
+For subsequent starts, reuse `.env` and run Compose followed by `alembic upgrade
+head`. `uv run --env-file .env` loads environment values without shell activation.
+
+## Database checks
 
 ```sh
-git clone https://github.com/RJ1899157/PipeGuard.git
-cd PipeGuard
-uv sync --locked
+uv run --env-file .env pytest -q
+uv run --env-file .env alembic check
 ```
 
-GitHub access must be configured for the private repository. Do not clone a similarly named repository under another owner.
+Tests require a reachable PostgreSQL database and create unique `test_<uuid>`
+schemas. They migrate and drop only those generated schemas. Use the local
+synthetic-data database, never a production connection. Missing database
+configuration fails explicitly rather than silently skipping integration checks.
 
-## Dependency policy
+The suite checks migration upgrade/downgrade/re-upgrade, metadata consistency,
+retry-history preservation, scoped identities, rejected duplicate event keys,
+foreign keys, rollback, permitted processing changes, and event content protection.
+Out-of-order event storage is tested; automated reconciliation and exact replay
+responses will be tested with ingestion implementation.
 
-- Add Python application packages using uv and keep installations inside `.venv`.
-- Commit `pyproject.toml` and `uv.lock` together when dependency declarations change.
-- Keep `.venv`, credentials, local data, and generated output out of source control.
-- When the web project exists, install JavaScript packages in its local `node_modules` and commit its pnpm lockfile. Python virtual environments do not manage JavaScript packages.
-- Isolate Airflow and provider dependencies from the API environment if their supported constraints differ.
-- Pin container images when Compose services are added. Container dependencies are installed inside their images rather than the host `.venv`.
+## Migration policy
 
-## Docker lifecycle
+Use forward migrations for retained data. Inspect generated migrations before
+applying them. The initial downgrade deletes all six tables and requires an
+explicit `-x allow_data_loss=true` override, intended only for disposable data.
+It is not a production recovery procedure. Always use Alembic rather than
+`Base.metadata.create_all`, because event protection triggers live in migrations.
 
-Docker Desktop is intentionally left stopped until a task requires container-backed services. Start it at that point, then use the repository's service instructions once they exist. No service startup or teardown command is prescribed yet because there is no Compose configuration.
+## Stop services
 
-## GitHub identity
+```sh
+docker compose stop postgres
+```
 
-Repository owner and active account must be `RJ1899157`. Commit author and committer must use the configured Rishabh Jain identity and account-associated noreply address. Verify them before commits and remote writes, as specified in [AGENTS.md](../../AGENTS.md).
+This preserves the named database volume. `docker compose down` removes the
+containers/network while preserving the volume. Adding `--volumes` destroys
+stored data and is not part of routine shutdown.
 
-## Verification status
+## Boundaries and verification
 
-Python environment synchronization and repository connection have been completed. There are no application tests, migration checks, browser checks, or performance results to report yet. Each delivery stage adds its relevant acceptance checks; consult the [roadmap](../roadmap.md).
+Python dependencies remain in `.venv`; future JavaScript dependencies belong in
+local `node_modules`, and Airflow constraints must remain isolated as necessary.
+Repository identity and commit rules are in [AGENTS.md](../../AGENTS.md).
+
+The initial checkpoint passed 16 PostgreSQL integration tests and Alembic metadata
+comparison. No API, browser, performance or production-security verification is
+claimed. See the [roadmap](../roadmap.md) for remaining acceptance criteria.
