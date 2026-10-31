@@ -4,7 +4,7 @@
 
 PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It will collect execution metadata, quality results, and lineage; detect incidents through deterministic rules; and present supporting evidence alongside AI-generated hypotheses.
 
-> **Status: persistence, ingestion and local HTTP API implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. The dashboard, orchestration, incident processing and recovery remain planned.
+> **Status: persistence, ingestion and local HTTP API implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. The dashboard, incident processing and recovery remain planned.
 
 [Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md)
 
@@ -49,7 +49,7 @@ These are delivery targets, not currently available features. The [roadmap](docs
 | Python environment | Python 3.12, uv, project-local `.venv` | Configured; persistence dependencies locked |
 | Persistence | PostgreSQL 17, SQLAlchemy 2, Alembic | Initial schema implemented |
 | API and validation | FastAPI, Pydantic 2 | Authenticated local API and versioned contracts implemented |
-| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Independent dbt orders workload implemented; orchestration/event adapters planned |
+| Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage | Orders/dbt workload and Airflow execution adapter implemented; OpenLineage planned |
 | Web application | Next.js 16, React 19, TypeScript 5, Tailwind 4, shadcn/ui | Planned |
 | Graphs and charts | React Flow, Apache ECharts | Planned |
 | Runtime and checks | Docker Compose, Pytest, Playwright, GitHub Actions | PostgreSQL Compose and persistence tests available; browser tests and CI planned |

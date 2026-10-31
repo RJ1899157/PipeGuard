@@ -2,7 +2,7 @@
 
 This roadmap records product delivery milestones. Stage numbers correspond to the original thirteen-week plan; they are not fixed calendar deadlines or a claim that a stage is complete.
 
-**Current state:** persistence and version 1 internal execution ingestion verified on PostgreSQL. Local HTTP API, scoped producer authentication, restricted runtime role and provisioning are verified. The independent orders pipeline is verified. Next: orchestration and workload-to-PipeGuard execution metadata.
+**Current state:** persistence and version 1 internal execution ingestion verified on PostgreSQL. Local HTTP API, scoped producer authentication, restricted runtime role and provisioning are verified. The independent orders pipeline is verified. Airflow scheduling and the bounded workload event adapter are verified. Next: quality-result contracts and deterministic incident detection.
 
 | Stage | Scope | Expected output | Acceptance criteria | State |
 | --- | --- | --- | --- | --- |
@@ -10,7 +10,7 @@ This roadmap records product delivery milestones. Stage numbers correspond to th
 | 2 | Persistence and domain model | PostgreSQL schema, SQLAlchemy models, Alembic migrations | Disposable-DB migration; constraints, rollback, external identity, and retry-history checks | Complete for initial execution slice; replay, retry and conservative reconciliation verified |
 | 3 | API and contracts | Versioned APIs, validation models, pagination, error responses, OpenAPI | Contract validation and database transaction checks | Initial API slice complete: auth, provisioning, scoped metadata reads, pagination, event receipt and OpenAPI verified |
 | 4 | Independent sample pipeline | Reproducible source ingestion, raw/staging/mart transformations, dbt checks | Known outputs, malformed-input handling, and idempotent reruns | Complete: separate warehouse/environment, CSV loader, dbt models and fault/recovery checks |
-| 5 | Orchestration and execution metadata | Airflow scheduling and documented metadata adapters | Success, failure, retry, duplicate delivery, and out-of-order event scenarios | Planned |
+| 5 | Orchestration and execution metadata | Airflow scheduling and documented metadata adapters | Success, failure, retry, duplicate delivery, and out-of-order event scenarios | Initial adapter complete: native retry and durable replay verified; hard-termination polling reconciliation deferred |
 | 6 | Quality and deterministic detection | Versioned quality policies, incident grouping, severity, and lifecycle | Threshold boundaries, duplicate suppression, recovery conditions, and controlled injected faults | Planned |
 | 7 | Lineage and evidence | OpenLineage ingestion, historical lineage, provenance-preserving evidence | Replay handling, graph traversal, missing metadata, and traceable incident evidence | Planned |
 | 8 | Responsive dashboard foundation | App shell, pipeline overview, execution history, and incident queue | Reviewed desktop/mobile layouts, keyboard use, loading/empty/error states | Planned |

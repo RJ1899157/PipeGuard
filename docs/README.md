@@ -32,3 +32,7 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 - [Local HTTP API](contracts/http-api.md): authentication, endpoints, privileges and verified boundaries.
 - [OpenAPI v1](contracts/http-api-v1.openapi.json): machine-readable HTTP contract.
+
+## Orchestration
+
+- [Local Airflow](../infra/airflow/README.md): isolated installation, private configuration, DAG controls and verified retry behaviour.

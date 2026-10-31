@@ -2,8 +2,9 @@
 
 Independent monitored workload: a bounded CSV snapshot is loaded into PostgreSQL,
 then transformed and checked by dbt Core. It imports no monitoring application code
-and uses its own database, credentials, Python environment and lockfile. It does not
-yet publish execution events to PipeGuard; orchestration/adapters follow in Stage 5.
+and uses its own database, credentials, Python environment and lockfile. A scoped
+producer adapter now reports execution observations to PipeGuard; the
+[Airflow DAG](../../infra/airflow/README.md) schedules it and supplies native retry identities.
 
 ## Layout and outputs
 
@@ -94,7 +95,7 @@ observations will be integrated with PipeGuard in later checkpoints.
 uv run --directory sample-pipelines/orders --locked --env-file .env pytest -q
 ```
 
-19 checks cover exact fixture values, malformed fields/headers, multiline handling,
+31 checks cover exact fixture values, malformed fields/headers, multiline handling,
 raw replacement idempotency, transactional rollback, source rejection before writes,
 concurrent-load exclusion, refusal of monitoring database access, complete dbt builds,
 duplicate-order fault injection and successful recovery. Full-build checks use unique
@@ -105,3 +106,57 @@ The monitoring account is also denied connection to the sample warehouse. The tw
 databases share a local PostgreSQL instance; this is an access boundary, not physical
 failure isolation. The sample owns its warehouse and therefore has schema-changing
 privileges there; PipeGuard's runtime account remains restricted in its own database.
+
+## Monitoring and durable delivery
+
+With the local PipeGuard API running, provision the sample producer from root:
+
+```sh
+uv run --env-file .env python scripts/configure_sample_monitoring.py
+```
+
+The administrator token stays in root configuration. Only an integration-scoped
+producer token and IDs are saved in this sample's private `.env`. Re-running warehouse
+provisioning preserves those values. Monitoring provisioning leaves an existing
+producer configuration unchanged; revoke/rotate credentials through the API when
+needed rather than treating this command as automatic credential recovery.
+
+The runner emits a start and terminal observation for each attempt. To demonstrate
+a retry manually, use the same run identity with different attempt numbers:
+
+```sh
+uv run --directory sample-pipelines/orders --env-file .env python run.py --run-id example_manual_retry --attempt 1 --simulate-first-attempt-failure
+uv run --directory sample-pipelines/orders --env-file .env python run.py --run-id example_manual_retry --attempt 2
+```
+
+The first command intentionally returns nonzero. The second performs the real build.
+The native Airflow DAG supplies these identities automatically. When monitoring
+configuration is absent, standalone execution remains available; partial or invalid
+configuration fails explicitly. The monitored DAG requires complete configuration.
+
+Before each delivery, an immutable normalized observation is atomically published
+as a private JSON file in ignored `target/events/<integration>/<job>`. Files contain
+bounded metadata/error categories and never tokens or arbitrary error text. Event
+identity is deterministic for run/attempt/state. Re-emission preserves the existing
+observation timestamp, allowing exact HTTP replay without creating a contradiction.
+A `.sent` marker means PipeGuard acknowledged durable receipt, not that processing
+or the business job succeeded. Inspect PipeGuard's processing/run state for that.
+
+Network failures retain pending files and do not turn a successful business build
+into a failed build. The summary reports monitoring `pending`. Replay manually:
+
+```sh
+uv run --directory sample-pipelines/orders --env-file .env python run.py --replay-events
+```
+
+There is no background delivery worker yet. HTTP delivery is restricted to the local
+API, ignores proxy settings, and refuses redirects. Storage errors in the outbox can
+fail execution; an available local disk is required. Markers rely on the server's
+acknowledged persistence: restoring the server database behind those acknowledgements
+requires an operator-directed replay. Local files are not tamper-proof evidence.
+
+Verification includes a controlled transport outage followed by real HTTP replay;
+terminal-before-start replay retained the failed outcome. Unit checks cover stable
+identity/timestamps, offline retention/replay, private error allowlisting, destination
+restrictions and credential filtering before dbt. The native Airflow retry was also
+verified end to end through PipeGuard's API.

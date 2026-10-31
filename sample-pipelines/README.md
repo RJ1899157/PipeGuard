@@ -7,5 +7,5 @@ from the monitoring application.
 - [Orders](orders/README.md): validated synthetic CSV ingestion, dbt staging/marts,
   quality checks, repeatable builds and controlled failure verification.
 
-The orders workload currently runs independently. Event reporting and Airflow
-orchestration are the next integration milestone.
+The orders workload publishes bounded events to PipeGuard with a durable local outbox.
+A separate Airflow environment schedules it and supplies native run/retry identities.

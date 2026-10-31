@@ -121,5 +121,5 @@ Producer credentials store token hashes and revocation state, scoped to integrat
 The [local HTTP API](../contracts/http-api.md) now wraps execution ingestion and reads.
 
 The PipeGuard and sample warehouse databases are now provisioned with separate roles.
-Airflow’s metadata database and role will be introduced with orchestration. The non-superuser owner account is for migrations and checks. The API uses a
+Airflow now has its own metadata database and role, separate from monitoring and the warehouse. The non-superuser owner account is for migrations and checks. The API uses a
 separate restricted runtime role without schema ownership.

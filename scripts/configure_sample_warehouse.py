@@ -35,7 +35,7 @@ def main():
         connection.execute("REVOKE ALL ON DATABASE sample_warehouse FROM PUBLIC")
         connection.execute("REVOKE ALL ON DATABASE sample_warehouse FROM pipeguard_api")
         connection.execute("REVOKE ALL ON DATABASE pipeguard FROM sample_orders")
-    values = dict(ORDERS_HOST=owner.host, ORDERS_PORT=str(owner.port or 5432),
+    values.update(ORDERS_HOST=owner.host, ORDERS_PORT=str(owner.port or 5432),
                   ORDERS_DATABASE="sample_warehouse", ORDERS_USER="sample_orders",
                   DBT_ENV_SECRET_ORDERS_PASSWORD=password, DBT_SEND_ANONYMOUS_USAGE_STATS="false")
     temp = target.with_name(".env.warehouse-tmp")
