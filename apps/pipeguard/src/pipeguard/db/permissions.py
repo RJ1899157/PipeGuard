@@ -6,11 +6,11 @@ def grant_runtime_access(connection, role="pipeguard_api", schema="public"):
     quote = connection.dialect.identifier_preparer.quote_identifier
     who, where = quote(role), quote(schema)
     connection.execute(text(f"GRANT USAGE ON SCHEMA {where} TO {who}"))
-    for table in ("alembic_version", "integrations", "datasets", "jobs", "runs", "attempts", "ingested_events", "producer_credentials"):
+    for table in ("alembic_version", "integrations", "datasets", "jobs", "runs", "attempts", "ingested_events", "producer_credentials", "monitor_policies", "observations", "incidents", "incident_history", "monitor_heartbeats"):
         connection.execute(text(f"GRANT SELECT ON {where}.{quote(table)} TO {who}"))
-    for table in ("integrations", "jobs", "runs", "attempts", "ingested_events", "producer_credentials"):
+    for table in ("integrations", "jobs", "runs", "attempts", "ingested_events", "producer_credentials", "monitor_policies", "observations", "incidents", "incident_history", "monitor_heartbeats"):
         connection.execute(text(f"GRANT INSERT ON {where}.{quote(table)} TO {who}"))
-    for table in ("runs", "attempts"):
+    for table in ("runs", "attempts", "incidents", "monitor_heartbeats"):
         connection.execute(text(f"GRANT UPDATE ON {where}.{quote(table)} TO {who}"))
     connection.execute(text(f"GRANT UPDATE (enabled) ON {where}.integrations TO {who}"))
     connection.execute(text(f"GRANT UPDATE (revoked) ON {where}.producer_credentials TO {who}"))
@@ -37,5 +37,5 @@ def verify_runtime_access(connection):
     connection.execute(text("SELECT id FROM integrations LIMIT 0"))
     connection.execute(text("SELECT id FROM producer_credentials LIMIT 0"))
     revision = connection.scalar(text("SELECT version_num FROM alembic_version"))
-    if revision != "c9df16169911":
+    if revision != "da7ee46bf91f":
         raise RuntimeError("Apply the API schema migration before starting the server")

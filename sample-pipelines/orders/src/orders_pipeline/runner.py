@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from orders_pipeline.loader import InvalidSource, WAREHOUSE_LOCK, Warehouse, parse_orders, replace_orders
 from orders_pipeline.observer import Observer
+from orders_pipeline.quality import extract
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -59,6 +60,8 @@ def execute(source, settings, observer=None, run_id=None, attempt=1, simulate_fi
         raise
     state = "succeeded" if summary["dbt_succeeded"] else "failed"
     if observer:
+        if summary.get("artifacts"):
+            delivery.append(observer.emit_quality(run_id, attempt, extract(ROOT / summary["artifacts"])))
         delivery.append(observer.emit(run_id, attempt, state, None if state == "succeeded" else "validation_failed"))
     return summary | {"external_run_id": run_id, "attempt_number": attempt,
                       "monitoring": "disabled" if observer is None else ("acknowledged" if all(delivery) else "pending")}

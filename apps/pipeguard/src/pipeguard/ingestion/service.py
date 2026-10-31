@@ -30,7 +30,7 @@ class ProcessingResult:
     error: str | None
 
 
-def receive(bind, data: dict) -> Receipt:
+def _receive(bind, data: dict) -> Receipt:
     """Owns its transaction. Caller must provide a dedicated engine/connection."""
     event = ExecutionEvent.model_validate(data)
     payload = event.model_dump(mode="json")
@@ -150,3 +150,18 @@ def _apply(attempt: Attempt, event: ExecutionEvent) -> None:
         attempt.reconciliation_required = True
     if attempt.reconciliation_required:
         attempt.state = "unknown"
+
+
+def receive(bind, data: dict) -> Receipt:
+    try:
+        return _receive(bind, data)
+    except IngestionRejected as error:
+        if str(error) == "event_id_content_conflict":
+            # Separate transaction: rejection must not roll back its own audit signal.
+            from pipeguard.detection.service import observe, digest, now_utc
+            event = ExecutionEvent.model_validate(data)
+            with Session(bind) as session, session.begin():
+                observe(session, event.job_id, "receipt", "delivery_conflict",
+                        {"event_key_hash": digest(event.event_id),
+                         "submitted_hash": digest(event.model_dump(mode="json"))}, now_utc())
+        raise

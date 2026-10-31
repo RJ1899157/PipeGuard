@@ -133,3 +133,71 @@ class ProducerCredential(Record, Base):
     integration_id: Mapped[UUID] = mapped_column(ForeignKey("integrations.id", ondelete="RESTRICT"))
     token_hash: Mapped[str] = mapped_column(String(64))
     revoked: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
+
+
+class MonitorPolicy(Record, Base):
+    """Explicit expectations; absence of a policy is unmonitored, never healthy."""
+    __tablename__ = "monitor_policies"
+    __table_args__ = (
+        UniqueConstraint("job_id"),
+        CheckConstraint("timeout_seconds BETWEEN 1 AND 604800", name="timeout"),
+        CheckConstraint("expected_interval_seconds IS NULL OR expected_interval_seconds BETWEEN 60 AND 31536000", name="interval"),
+    )
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    version: Mapped[str] = mapped_column(String(100), server_default="detector-v1")
+    timeout_seconds: Mapped[int] = mapped_column(Integer)
+    expected_interval_seconds: Mapped[int | None] = mapped_column(Integer)
+    quality_required: Mapped[bool] = mapped_column(Boolean)
+    airflow_dag_id: Mapped[str | None] = mapped_column(String(255))
+    airflow_task_id: Mapped[str | None] = mapped_column(String(255))
+
+
+class Observation(Record, Base):
+    """Immutable, allowlisted evidence from independent monitoring sources."""
+    __tablename__ = "observations"
+    __table_args__ = (
+        UniqueConstraint("job_id", "source", "deduplication_key"),
+        CheckConstraint("jsonb_typeof(payload) = 'object'", name="payload_object"),
+        Index("ix_observations_job_time", "job_id", "occurred_at"),
+    )
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    source: Mapped[str] = mapped_column(String(30))
+    deduplication_key: Mapped[str] = mapped_column(String(255))
+    kind: Mapped[str] = mapped_column(String(50))
+    occurred_at: Mapped[datetime]
+    payload: Mapped[dict[str, Any]]
+
+
+class Incident(Record, Base):
+    __tablename__ = "incidents"
+    __table_args__ = (
+        UniqueConstraint("job_id", "condition", "subject"),
+        CheckConstraint("state IN ('open', 'resolved')", name="state"),
+        CheckConstraint("severity IN ('warning', 'critical')", name="severity"),
+        Index("ix_incidents_state_job", "state", "job_id"),
+    )
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    condition: Mapped[str] = mapped_column(String(60))
+    subject: Mapped[str] = mapped_column(String(512))
+    policy_version: Mapped[str] = mapped_column(String(100))
+    severity: Mapped[str] = mapped_column(String(20))
+    state: Mapped[str] = mapped_column(String(20))
+    last_evaluated_at: Mapped[datetime]
+
+
+class IncidentHistory(Record, Base):
+    __tablename__ = "incident_history"
+    __table_args__ = (UniqueConstraint("incident_id", "evidence_key", "action"),)
+    incident_id: Mapped[UUID] = mapped_column(ForeignKey("incidents.id", ondelete="RESTRICT"))
+    action: Mapped[str] = mapped_column(String(30))
+    evidence_key: Mapped[str] = mapped_column(String(255))
+    evidence: Mapped[dict[str, Any]]
+    actor: Mapped[str] = mapped_column(String(50))
+    occurred_at: Mapped[datetime]
+
+
+class MonitorHeartbeat(Record, Base):
+    __tablename__ = "monitor_heartbeats"
+    __table_args__ = (UniqueConstraint("name"),)
+    name: Mapped[str] = mapped_column(String(100))
+    completed_at: Mapped[datetime]

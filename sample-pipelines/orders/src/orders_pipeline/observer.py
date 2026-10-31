@@ -63,6 +63,17 @@ class Observer:
         event = dict(schema_version=1, event_id=key, integration_id=self.integration_id,
                      job_id=self.job_id, external_run_id=run_id, attempt_number=attempt, state=state,
                      occurred_at=datetime.now(timezone.utc).isoformat(), error_code=error_code)
+        return self.publish(event)
+
+    def emit_quality(self, run_id, attempt, quality):
+        key = f"quality.{sha256(run_id.encode()).hexdigest()}.a{attempt}"
+        event = dict(schema_version=1, event_id=key, integration_id=self.integration_id,
+                     job_id=self.job_id, external_run_id=run_id, attempt_number=attempt,
+                     occurred_at=datetime.now(timezone.utc).isoformat(), **quality)
+        return self.publish(event)
+
+    def publish(self, event):
+        key = event["event_id"]
         path = self.directory / (key + ".json")
         temporary = self.directory / (".pending-" + uuid4().hex)
         descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -89,7 +100,7 @@ class Observer:
             payload = json.loads(path.read_text())
             if payload["integration_id"] != self.integration_id or payload["job_id"] != self.job_id:
                 return False
-            request = Request(self.base_url.rstrip("/") + "/v1/events", data=json.dumps(payload).encode(),
+            request = Request(self.base_url.rstrip("/") + ("/v1/quality-reports" if "checks" in payload else "/v1/events"), data=json.dumps(payload).encode(),
                               headers={"Authorization": "Bearer " + self.token, "Content-Type": "application/json"}, method="POST")
             opener = build_opener(ProxyHandler({}), NoRedirect())
             with opener.open(request, timeout=5) as response:

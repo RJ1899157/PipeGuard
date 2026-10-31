@@ -40,6 +40,14 @@ def main():
         fd=os.open(password_file,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
         with os.fdopen(fd,"w") as stream:
             json.dump({"RJ1899157":secrets.token_urlsafe(32)},stream)
+    users=json.loads(password_file.read_text())
+    if "pipeguard_observer" not in users:
+        users["pipeguard_observer"]=secrets.token_urlsafe(32)
+        temporary=password_file.with_suffix(".tmp")
+        fd=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        with os.fdopen(fd,"w") as stream:
+            json.dump(users,stream)
+        temporary.replace(password_file)
     values={
         "AIRFLOW_LOCAL_DB_PASSWORD":password,"AIRFLOW_HOME":str(home),
         "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN":owner.set(username="airflow_owner",password=password,database="airflow",drivername="postgresql+psycopg2").render_as_string(hide_password=False),
@@ -48,7 +56,7 @@ def main():
         "AIRFLOW__CORE__PARALLELISM":"1","AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG":"1",
         "AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG":"1","AIRFLOW__API__HOST":"127.0.0.1",
         "AIRFLOW__CORE__EXECUTION_API_SERVER_URL":"http://127.0.0.1:8080/execution/",
-        "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS":"RJ1899157:admin",
+        "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS":"RJ1899157:admin,pipeguard_observer:viewer",
         "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS":"False",
         "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE":str(password_file),
         "AIRFLOW__API_AUTH__JWT_SECRET":previous.get("AIRFLOW__API_AUTH__JWT_SECRET") or secrets.token_urlsafe(32),

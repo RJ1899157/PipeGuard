@@ -286,4 +286,6 @@ def create_app(settings: Settings | None = None, *, engine=None):
             records = list(session.scalars(select(Attempt).where(Attempt.run_id == run_id).order_by(Attempt.attempt_number, Attempt.id).limit(limit+1).offset(offset)))
             return Page[AttemptView](items=[AttemptView.model_validate(x) for x in records[:limit]], limit=limit, offset=offset, has_more=len(records)>limit)
 
+    from pipeguard.detection.api import install_routes
+    install_routes(app, engine, authenticate, administrator)
     return app
