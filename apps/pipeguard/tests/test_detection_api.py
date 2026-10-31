@@ -64,3 +64,34 @@ def test_event_only_enrollment_removes_gap_without_inventing_capabilities(api):
     assert client.post('/v1/events',headers=headers,json=event|{'state':'failed'}).status_code==202
     cycle(engine)
     assert any(i['condition']=='execution_failure' for i in client.get('/v1/incidents',headers=headers).json())
+
+
+def test_quality_history_scope_filters_and_pagination(api):
+    client, admin, _, _ = api
+    first, event, _ = producer(api, 'quality-first')
+    second, _, _ = producer(api, 'quality-other')
+    base = {k: v for k, v in event.items() if k != 'state'}
+    path = '/v1/jobs/' + event['job_id'] + '/quality-reports'
+    assert client.get(path).status_code == 401
+    assert client.get(path, headers=second).status_code == 404
+    assert client.get(path, headers=first).json()['items'] == []
+    for number, attempt, status in [(1, 1, 'fail'), (2, 2, 'pass'), (3, 2, 'error')]:
+        report = base | {'event_id': f'report-{number}', 'attempt_number': attempt,
+            'inventory_complete': True, 'checks': [{'rule_id': 'orders.unique',
+                'rule_version': 'a' * 64, 'status': status, 'failures': None}]}
+        assert client.post('/v1/quality-reports', headers=first, json=report).status_code == 202
+    all_rows = client.get(path, headers=admin).json()
+    assert len(all_rows['items']) == 3 and not all_rows['has_more']
+    assert {r['payload']['checks'][0]['status'] for r in all_rows['items']} == {'fail', 'pass', 'error'}
+    assert all('received_at' in r and 'occurred_at' in r for r in all_rows['items'])
+    one = client.get(path + '?limit=1&attempt_number=2&external_run_id=run-1', headers=first).json()
+    assert one['has_more'] and len(one['items']) == 1
+    assert one['items'][0]['payload']['attempt_number'] == 2
+    two = client.get(path + '?limit=1&offset=1&attempt_number=2', headers=first).json()
+    assert not two['has_more'] and one['items'][0]['id'] != two['items'][0]['id']
+    assert client.get(path + '?external_run_id=other', headers=first).json()['items'] == []
+    for query in ['limit=101', 'offset=-1', 'attempt_number=0', 'external_run_id=bad%26value']:
+        assert client.get(path + '?' + query, headers=first).status_code == 422
+    # Same report replay is not a new historical observation.
+    assert client.post('/v1/quality-reports', headers=first, json=report).json()['replayed']
+    assert len(client.get(path, headers=first).json()['items']) == 3

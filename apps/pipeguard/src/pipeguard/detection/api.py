@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from pipeguard.db.models import Job, MonitorPolicy, Incident, IncidentHistory, Observation
 from pipeguard.detection.contracts import PolicyCreate, QualityReport
 from pipeguard.detection.service import receive_quality, coverage, now_utc, _history
+from pipeguard.api.schemas import Page
+from pipeguard.ingestion.contracts import Identifier
 
 
 class View(BaseModel):
@@ -47,6 +49,14 @@ class ObservationView(View):
     occurred_at: datetime
     created_at: datetime
     payload: dict
+
+
+class QualityReportView(View):
+    id: UUID
+    job_id: UUID
+    occurred_at: datetime
+    received_at: datetime
+    payload: QualityReport
 
 
 class PolicyView(View):
@@ -102,6 +112,26 @@ def install_routes(app, engine, authenticate, administrator):
     @app.get("/v1/monitoring/coverage")
     def monitor_coverage(principal: Admin):
         return coverage(engine)
+
+    @app.get("/v1/jobs/{job_id}/quality-reports", response_model=Page[QualityReportView])
+    def quality_reports(job_id: UUID, principal: Caller, limit: Limit = 50, offset: Offset = 0,
+                        external_run_id: Identifier | None = None,
+                        attempt_number: Annotated[int | None, Query(ge=1, le=2147483647)] = None):
+        with Session(engine) as session:
+            scoped_job = session.scalar(job_scope(select(Job).where(Job.id == job_id), principal))
+            if scoped_job is None:
+                raise HTTPException(404, "job_not_found")
+            query = select(Observation).where(Observation.job_id == job_id,
+                Observation.source == "quality", Observation.kind == "quality_report")
+            if external_run_id is not None:
+                query = query.where(Observation.payload["external_run_id"].as_string() == external_run_id)
+            if attempt_number is not None:
+                query = query.where(Observation.payload["attempt_number"].as_integer() == attempt_number)
+            rows = list(session.scalars(query.order_by(Observation.created_at.desc(), Observation.id.desc())
+                                       .limit(limit + 1).offset(offset)))
+            return Page[QualityReportView](items=[QualityReportView(id=row.id, job_id=row.job_id,
+                occurred_at=row.occurred_at, received_at=row.created_at, payload=row.payload)
+                for row in rows[:limit]], limit=limit, offset=offset, has_more=len(rows) > limit)
 
     @app.get("/v1/incidents", response_model=list[IncidentView])
     def incidents(principal: Caller, limit: Limit = 50, offset: Offset = 0, state: str | None = None):

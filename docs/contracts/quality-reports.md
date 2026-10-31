@@ -16,3 +16,9 @@ Machine-readable schema: [quality report v1](quality-report-v1.schema.json). Run
 
 - [dbt run results](https://docs.getdbt.com/reference/artifacts/run-results-json): result identity, execution status and manifest references.
 - [Airflow task states](https://airflow.apache.org/docs/apache-airflow/3.3.2/core-concepts/tasks.html): independent orchestration state semantics.
+
+## Read history
+
+`GET /v1/jobs/{job_id}/quality-reports` returns immutable quality-report observations in receipt order (newest first), with stable UUID tie-breaking. Authentication and job/integration scope are required; inaccessible and nonexistent jobs both return 404. Optional `external_run_id` and `attempt_number` filters select an execution scope. `limit` (1–100) and `offset` (0–100000) return the standard `items`, `limit`, `offset`, `has_more` page envelope.
+
+Each item includes its observation UUID, job UUID, source `occurred_at`, `received_at`, and the validated quality-report payload. Reports are not collapsed into a latest-pass projection: contradictory results, late deliveries and earlier attempts remain independently inspectable. Empty history means no retained report in that scope, not passing quality. No raw SQL, warehouse rows or arbitrary error text is exposed.
