@@ -1,0 +1,6 @@
+order_id,customer_id,ordered_at,quantity,unit_price,status
+1001,C001,2026-10-01T09:00:00Z,2,19.99,completed
+1002,C002,2026-10-01T10:00:00Z,1,100.00,completed
+1003,C001,2026-10-02T11:00:00Z,3,10.00,completed
+1004,C003,2026-10-02T12:00:00Z,1,50.00,cancelled
+1005,C004,2026-10-02T13:00:00Z,2,5.50,completed

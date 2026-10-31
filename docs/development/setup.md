@@ -2,9 +2,9 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, seven SQLAlchemy metadata models (including producer credentials), an Alembic
+The project includes PostgreSQL 17, seven SQLAlchemy metadata models (including producer credentials), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
-There is no dashboard, incident engine or sample workload yet.
+The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. There is no dashboard or incident engine yet.
 
 ## Prerequisites
 
@@ -39,7 +39,7 @@ image by digest. The image used at this checkpoint reports PostgreSQL 17.11.
 The database `pipeguard` belongs to `pipeguard_owner`, a non-superuser without
 role-creation or database-creation privileges. This account is for migrations;
 the restricted `pipeguard_api` runtime role is provisioned separately below. The database
-admin credential is separate. Airflow and sample warehouse accounts are deferred.
+admin credential is separate. The sample warehouse has a separate account and database; Airflow remains deferred.
 
 Initialization scripts execute only on a new database volume. Changing passwords
 in `.env` does not change existing database credentials; rotate those explicitly
@@ -96,6 +96,23 @@ explicit `-x allow_data_loss=true` override, intended only for disposable data.
 It is not a production recovery procedure. Always use Alembic rather than
 `Base.metadata.create_all`, because event protection triggers live in migrations.
 
+## Independent orders workload
+
+From the repository root, with PostgreSQL running:
+
+```sh
+uv run --env-file .env python scripts/configure_sample_warehouse.py
+uv sync --project sample-pipelines/orders --locked --python 3.12
+uv run --directory sample-pipelines/orders --locked --env-file .env python run.py
+uv run --directory sample-pipelines/orders --locked --env-file .env pytest -q
+```
+
+Workload dependencies live in `sample-pipelines/orders/.venv` and its own lockfile;
+its private `.env` contains only warehouse configuration. Do not run it using the
+monitoring owner's connection or administrator API token. See the workload README
+for expected outputs, failure semantics and artifact locations. Event reporting
+from this workload to PipeGuard is not connected yet.
+
 ## Stop services
 
 ```sh
@@ -108,7 +125,7 @@ stored data and is not part of routine shutdown.
 
 ## Boundaries and verification
 
-Python dependencies remain in `.venv`; future JavaScript dependencies belong in
+Monitoring dependencies remain in the root `.venv`; the independent orders workload uses its own local `.venv` and lockfile; future JavaScript dependencies belong in
 local `node_modules`, and Airflow constraints must remain isolated as necessary.
 GitHub changes and commits use the repository owner, `RJ1899157`.
 
@@ -116,3 +133,5 @@ The persistence, ingestion and API checkpoint passed 74 automated tests against 
 PostgreSQL, including CLI and restricted-role HTTP checks, plus Alembic metadata
 comparison. Real loopback HTTP verification passed as described in the API contract.
 No browser, performance or production-security verification is claimed. See the [roadmap](../roadmap.md) for remaining acceptance criteria.
+
+The sample checkpoint additionally passed 19 workload checks, including repeated dbt builds, an injected uniqueness failure and recovery. Both database access directions were verified: workload credentials cannot connect to monitoring, and monitoring runtime credentials cannot connect to the warehouse.

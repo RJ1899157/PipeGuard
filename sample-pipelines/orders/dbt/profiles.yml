@@ -1,0 +1,16 @@
+config:
+  send_anonymous_usage_stats: false
+pipeguard_orders:
+  target: local
+  outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('ORDERS_HOST', '127.0.0.1') }}"
+      port: "{{ env_var('ORDERS_PORT', '55432') | int }}"
+      dbname: "{{ env_var('ORDERS_DATABASE', 'sample_warehouse') }}"
+      user: "{{ env_var('ORDERS_USER', 'sample_orders') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_ORDERS_PASSWORD') }}"
+      schema: "{{ env_var('ORDERS_SCHEMA_PREFIX', '') }}analytics"
+      threads: 1
+      connect_timeout: 5
+      retries: 0

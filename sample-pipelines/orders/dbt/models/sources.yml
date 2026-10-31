@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: orders_raw
+    schema: "{{ env_var('ORDERS_SCHEMA_PREFIX', '') }}raw"
+    tables:
+      - name: orders
+        columns:
+          - name: order_id
+            data_tests: [not_null, unique]
+          - name: customer_id
+            data_tests: [not_null]

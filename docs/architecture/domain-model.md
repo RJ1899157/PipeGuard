@@ -120,6 +120,6 @@ schemas, migrate them, verify rollback/re-upgrade, and remove only those schemas
 Producer credentials store token hashes and revocation state, scoped to integrations.
 The [local HTTP API](../contracts/http-api.md) now wraps execution ingestion and reads.
 
-Only the PipeGuard database is provisioned now. Airflow and warehouse databases
-and their roles will be created when those services are introduced. The non-superuser owner account is for migrations and checks. The API uses a
+The PipeGuard and sample warehouse databases are now provisioned with separate roles.
+Airflow’s metadata database and role will be introduced with orchestration. The non-superuser owner account is for migrations and checks. The API uses a
 separate restricted runtime role without schema ownership.

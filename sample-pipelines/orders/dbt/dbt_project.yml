@@ -1,0 +1,15 @@
+name: pipeguard_orders
+version: '1.0.0'
+config-version: 2
+profile: pipeguard_orders
+model-paths: [models]
+macro-paths: [macros]
+test-paths: [tests]
+models:
+  pipeguard_orders:
+    staging:
+      +schema: "{{ env_var('ORDERS_SCHEMA_PREFIX', '') }}staging"
+      +materialized: view
+    marts:
+      +schema: "{{ env_var('ORDERS_SCHEMA_PREFIX', '') }}analytics"
+      +materialized: table
