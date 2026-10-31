@@ -5,6 +5,7 @@ import signal
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 
 import pytest
 
@@ -113,3 +114,43 @@ def test_sigkill_parent_keeps_local_exclusion_until_dbt_child_exits(tmp_path):
                 os.killpg(child_pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+
+
+def test_different_checkouts_and_localhost_alias_share_warehouse_lock(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner.pwd, "getpwuid", lambda uid: SimpleNamespace(pw_dir=str(tmp_path)))
+    settings = SimpleNamespace(host="127.0.0.1", port=55432, database="sample_warehouse")
+    monkeypatch.setattr(runner, "ROOT", tmp_path / "checkout-one")
+    first = runner._warehouse_lock_path(settings)
+    monkeypatch.setattr(runner, "ROOT", tmp_path / "checkout-two")
+    settings.host = "localhost"
+    assert runner._warehouse_lock_path(settings) == first
+    settings.port = 55433
+    assert runner._warehouse_lock_path(settings) != first
+    with runner._warehouse_guard(first), first.open("r+") as competing:
+        with pytest.raises(BlockingIOError):
+            fcntl.flock(competing, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def test_warehouse_lock_rejects_symlink_or_public_file(tmp_path):
+    path = tmp_path / "warehouse.lock"
+    path.write_text("")
+    path.chmod(0o644)
+    with pytest.raises(ValueError, match="owner-private"):
+        with runner._warehouse_guard(path):
+            pytest.fail("public lock accepted")
+    link = tmp_path / "linked.lock"
+    link.symlink_to(path)
+    with pytest.raises(OSError):
+        with runner._warehouse_guard(link):
+            pytest.fail("symlink lock accepted")
+
+
+def test_warehouse_lock_rejects_symlink_directory(tmp_path, monkeypatch):
+    monkeypatch.setattr(runner.pwd, "getpwuid", lambda uid: SimpleNamespace(pw_dir=str(tmp_path)))
+    base = tmp_path / "Library/Application Support/PipeGuard" if runner.sys.platform == "darwin" else tmp_path / ".local/state/pipeguard"
+    base.parent.mkdir(parents=True)
+    target = tmp_path / "other"
+    target.mkdir()
+    base.symlink_to(target)
+    with pytest.raises(ValueError, match="symlink"):
+        runner._warehouse_lock_path(SimpleNamespace(host="127.0.0.1", port=55432, database="sample_warehouse"))

@@ -3,10 +3,13 @@ from datetime import datetime, timezone
 from contextlib import contextmanager
 import argparse
 import fcntl
+from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import pwd
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -20,12 +23,32 @@ from orders_pipeline.lineage import extract as extract_lineage, gap as lineage_g
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _warehouse_lock_path(settings):
+    # OS account identity avoids checkout-specific paths or divergent HOME values.
+    home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+    base = home / "Library/Application Support/PipeGuard" if sys.platform == "darwin" else home / ".local/state/pipeguard"
+    for directory in (base, base / "warehouse-locks"):
+        if directory.is_symlink():
+            raise ValueError("Warehouse lock directory must not be a symlink")
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        information = directory.stat()
+        if information.st_uid != os.getuid() or information.st_mode & 0o077:
+            raise ValueError("Warehouse lock directory must be owner-private")
+    identity = ["127.0.0.1" if settings.host == "localhost" else settings.host,
+                settings.port, settings.database]
+    return base / "warehouse-locks" / (sha256(json.dumps(identity).encode()).hexdigest() + ".lock")
+
+
 @contextmanager
 def _warehouse_guard(path):
     """Keep local runner exclusion alive in dbt even if its parent is SIGKILLed."""
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
+        information = os.fstat(descriptor)
+        if (not stat.S_ISREG(information.st_mode) or information.st_uid != os.getuid()
+                or information.st_mode & 0o077):
+            raise ValueError("Warehouse lock file must be owner-private and regular")
         deadline = time.monotonic() + 5
         while True:
             try:
@@ -97,7 +120,7 @@ def run(source: Path, settings: Warehouse):
         "ORDERS_DATABASE": settings.database, "ORDERS_USER": settings.user,
         "ORDERS_SCHEMA_PREFIX": settings.prefix, "DBT_ENV_SECRET_ORDERS_PASSWORD": settings.password,
     }
-    with _warehouse_guard(ROOT / "target/warehouse.lock") as lock_fd, settings.connect() as connection:
+    with _warehouse_guard(_warehouse_lock_path(settings)) as lock_fd, settings.connect() as connection:
         connection.execute("SELECT pg_advisory_lock(%s)", (WAREHOUSE_LOCK,))
         load_started_at = datetime.now(timezone.utc).isoformat()
         replace_orders(connection, rows, settings.prefix)
