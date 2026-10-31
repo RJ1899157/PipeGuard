@@ -1,6 +1,6 @@
 # PipeGuard domain model
 
-Status: the initial six-table persistence slice is implemented and verified on PostgreSQL 17. The remaining entities and event normalization behaviour are proposed designs.
+Status: the initial six-table persistence slice is implemented and verified on PostgreSQL 17. Version 1 execution normalization is implemented; remaining entities and adapter-specific semantics are proposed designs.
 
 [Architecture overview](overview.md) · [Documentation index](../README.md) · [Delivery roadmap](../roadmap.md)
 
@@ -102,16 +102,16 @@ PostgreSQL constraints enforce external identities, foreign keys, valid states,
 positive attempt/schema numbers, JSON object payloads, and SHA-256 hex format.
 Event triggers reject updates to source fields, row deletion, and truncation;
 processing state/error/time may change. Owners and administrators can alter or
-drop these protections: this is not tamper-proof storage. Payload hash correctness,
-redaction, timezone-aware input validation, parent-cycle validation, and event
-normalization will be enforced at the ingestion boundary. No untrusted input
+drop these protections: this is not tamper-proof storage. The version 1 ingestion boundary computes normalized payload hashes, requires aware timestamps,
+and accepts only bounded execution fields. Rich-text redaction and parent-cycle validation
+remain prerequisites for future contracts that accept those fields. No untrusted input
 endpoint is exposed by this schema checkpoint.
 
-The tests store failed and successful attempts under a successful run, and retain
-out-of-order observations with their source timestamps. They do not yet implement
-or prove automatic projection reconciliation or idempotent ingestion responses.
-A unique constraint rejects duplicate event keys; the next ingestion checkpoint
-must return the existing observation on exact replay and reject conflicting reuse.
+The internal [execution ingestion service](../contracts/execution-events.md) preserves
+retry history, rejects conflicting event-ID reuse, handles identical replays and
+projects observations independently of delivery order. Runs and attempts include
+`reconciliation_required` flags for contradictory observations; successful later
+attempts do not erase historical uncertainty. No HTTP ingestion endpoint exists yet.
 
 The first migration is reversible only for disposable data with an explicit
 `allow_data_loss` override. Normal development uses forward migrations; production

@@ -3,8 +3,8 @@
 ## Available components
 
 The project includes PostgreSQL 17, six SQLAlchemy metadata models, an Alembic
-migration and persistence integration tests. There is no API, dashboard, incident
-engine or sample workload yet.
+migrations, internal execution ingestion and integration tests. There is no HTTP API,
+dashboard, incident engine or sample workload yet.
 
 ## Prerequisites
 
@@ -64,8 +64,9 @@ configuration fails explicitly rather than silently skipping integration checks.
 The suite checks migration upgrade/downgrade/re-upgrade, metadata consistency,
 retry-history preservation, scoped identities, rejected duplicate event keys,
 foreign keys, rollback, permitted processing changes, and event content protection.
-Out-of-order event storage is tested; automated reconciliation and exact replay
-responses will be tested with ingestion implementation.
+The ingestion checks also cover exact replay responses, concurrent deliveries,
+receipt durability and conservative execution reconciliation. See the
+[execution contract](../contracts/execution-events.md) for supported local commands.
 
 ## Migration policy
 
@@ -91,6 +92,6 @@ Python dependencies remain in `.venv`; future JavaScript dependencies belong in
 local `node_modules`, and Airflow constraints must remain isolated as necessary.
 Repository identity and commit rules are in [AGENTS.md](../../AGENTS.md).
 
-The initial checkpoint passed 16 PostgreSQL integration tests and Alembic metadata
-comparison. No API, browser, performance or production-security verification is
+The persistence and ingestion checkpoint passed 58 tests against local PostgreSQL,
+including CLI checks, plus Alembic metadata comparison. No API, browser, performance or production-security verification is
 claimed. See the [roadmap](../roadmap.md) for remaining acceptance criteria.

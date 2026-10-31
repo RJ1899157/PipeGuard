@@ -71,6 +71,7 @@ class Run(Record, Base):
     external_run_id: Mapped[str] = mapped_column(String(512))
     parent_run_id: Mapped[UUID | None] = mapped_column(ForeignKey("runs.id", ondelete="RESTRICT"))
     state: Mapped[str] = mapped_column(String(20), server_default="unknown")
+    reconciliation_required: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     data_interval_start: Mapped[datetime | None]
     data_interval_end: Mapped[datetime | None]
     started_at: Mapped[datetime | None]
@@ -88,6 +89,7 @@ class Attempt(Record, Base):
     attempt_key: Mapped[str] = mapped_column(String(512))
     attempt_number: Mapped[int] = mapped_column(Integer)
     state: Mapped[str] = mapped_column(String(20), server_default="unknown")
+    reconciliation_required: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     started_at: Mapped[datetime | None]
     finished_at: Mapped[datetime | None]
     # Reported errors are evidence, not a verified root-cause diagnosis.

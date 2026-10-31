@@ -21,3 +21,8 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 - Add API contracts, migration instructions, operating procedures, and incident runbooks when those systems exist.
 - Keep examples synthetic and secret-free. Avoid credentials, private payloads, and machine-specific data in shared examples.
 - Keep personal lessons, exercises, course recommendations, and individual progress outside the repository.
+
+## Implemented contracts
+
+- [Execution events v1](contracts/execution-events.md): validation, replay, reconciliation and local command.
+- [Execution JSON Schema](contracts/execution-event-v1.schema.json): machine-readable field contract.

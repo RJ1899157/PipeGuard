@@ -1,0 +1,86 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "event_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "integration_id": {
+      "format": "uuid",
+      "title": "Integration Id",
+      "type": "string"
+    },
+    "job_id": {
+      "format": "uuid",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "external_run_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
+      "title": "External Run Id",
+      "type": "string"
+    },
+    "attempt_number": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Attempt Number",
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "running",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "enum": [
+            "connection_timeout",
+            "source_unavailable",
+            "validation_failed",
+            "execution_error",
+            "unknown"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    }
+  },
+  "required": [
+    "event_id",
+    "integration_id",
+    "job_id",
+    "external_run_id",
+    "attempt_number",
+    "state",
+    "occurred_at"
+  ],
+  "title": "ExecutionEvent",
+  "type": "object"
+}
