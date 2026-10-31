@@ -9,6 +9,7 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 | [Project overview](../README.md) | Product problem, planned capabilities, technology plan, and current status |
 | [Architecture overview](architecture/overview.md) | Service boundaries, data ownership, metadata flow, and deployment scope |
 | [Domain model](architecture/domain-model.md) | Entity identity, relationships, event handling, and persistence invariants |
+| [Dashboard foundation](architecture/dashboard-foundation.md) | Design checkpoint, graph technology decision, display invariants and planned verification |
 | [Development setup](development/setup.md) | Repository access, Python environment, dependencies, and verification status |
 | [Delivery roadmap](roadmap.md) | Thirteen delivery stages with outputs and acceptance criteria |
 
