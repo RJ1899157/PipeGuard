@@ -454,3 +454,103 @@ def test_repeated_reopen_and_recovery_preserve_every_lifecycle_transition(migrat
         actions=list(s.scalars(select(IncidentHistory.action).where(IncidentHistory.incident_id==incident.id)))
     assert actions.count('opened')==1 and actions.count('open')==2 and actions.count('resolved')==3
     assert actions.count('observed')==1 and incident.state=='resolved'
+
+
+def test_source_pause_recovery_and_recurrence_keep_each_episode(migrated_database):
+    c, _ = migrated_database
+    ids = setup(c, airflow_dag_id='dag', airflow_task_id='task', expected_interval_seconds=60)
+
+    class Source:
+        is_paused = False
+        run_facts = []
+        def scan(self, *args):
+            return []
+
+    source = Source()
+    for paused, expected in [(False, None), (True, 'open'), (False, 'resolved'),
+                             (True, 'open'), (False, 'resolved')]:
+        source.is_paused = paused
+        for _ in range(2):
+            cycle(c, source)
+        matches = [i for i in incidents(c, ids[1]) if i.condition == 'scheduled_source_paused']
+        assert (matches[0].state if matches else None) == expected
+    with Session(c) as s:
+        configs = list(s.scalars(select(Observation).where(Observation.job_id == ids[1],
+            Observation.kind == 'source_configuration').order_by(Observation.created_at)))
+        assert [o.payload['is_paused'] for o in configs] == [False, True, False, True, False]
+        history = list(s.scalars(select(IncidentHistory.action).where(IncidentHistory.incident_id == matches[0].id)))
+        assert history.count('resolved') == 2 and history.count('open') == 1
+
+
+@pytest.mark.parametrize('partial', [False, True])
+def test_source_dag_state_recurrence_is_not_erased_by_poll_deduplication(migrated_database, partial):
+    from pipeguard.detection.airflow import SourceUnavailable
+    c, _ = migrated_database
+    ids = setup(c, airflow_dag_id='dag', airflow_task_id='task')
+
+    class Source:
+        is_paused = False
+        run_facts = []
+        partial = []
+        def scan(self, *args):
+            if partial:
+                raise SourceUnavailable('source_incomplete_history')
+            return []
+
+    source = Source()
+    for index, (state, expected) in enumerate([('failed', 'open'), ('succeeded', 'resolved'),
+                                              ('failed', 'open'), ('succeeded', 'resolved')]):
+        source.run_facts = [(T + timedelta(seconds=index), {'external_run_id': 'same-run', 'state': state})]
+        for _ in range(2):
+            cycle(c, source)
+        match = next(i for i in incidents(c, ids[1]) if i.condition == 'orchestrator_run_failure')
+        assert match.state == expected
+    # Returning to a prior state is a new episode even if the source repeats its old boundary.
+    source.run_facts = [(T, {'external_run_id': 'same-run', 'state': 'failed'})]
+    cycle(c, source)
+    assert next(i for i in incidents(c, ids[1]) if i.condition == 'orchestrator_run_failure').state == 'open'
+    with Session(c) as s:
+        assert s.scalar(select(func.count()).select_from(Observation).where(
+            Observation.job_id == ids[1], Observation.kind == 'airflow_run')) == 5
+
+
+def test_quality_attempt_needs_its_own_execution_and_explicit_recovery(migrated_database):
+    c, _ = migrated_database
+    ids = setup(c)
+    send(c, event(ids, 'first-success', state='succeeded'))
+    receive_quality(c, report(ids, 'first-quality', 1, 'pass'))
+    receive_quality(c, report(ids, 'second-quality', 2, 'pass'))
+    evaluate_job(c, ids[1], at=T + timedelta(seconds=3))
+    missing = next(i for i in incidents(c, ids[1]) if i.condition == 'execution_evidence_missing')
+    assert missing.state == 'open'
+    assert any(i.condition == 'unknown_execution_state' and i.state == 'open' for i in incidents(c, ids[1]))
+    send(c, event(ids, 'second-success', attempt=2, state='succeeded', seconds=4))
+    evaluate_job(c, ids[1], at=T + timedelta(seconds=5))
+    assert next(i for i in incidents(c, ids[1]) if i.condition == 'execution_evidence_missing').state == 'resolved'
+    assert next(i for i in incidents(c, ids[1]) if i.condition == 'unknown_execution_state').state == 'resolved'
+
+
+def test_source_scan_window_uses_latest_receipt_without_deleting_cited_history(migrated_database):
+    c, _ = migrated_database
+    ids = setup(c, airflow_dag_id='dag', airflow_task_id='task')
+    with Session(c) as s, s.begin():
+        failed, _ = observe(s, ids[1], 'airflow', 'source_scan', {'status': 'incomplete'}, T, key='bad')
+        failed_id = failed.id
+    evaluate_job(c, ids[1], at=T)
+    for index in range(100):
+        with Session(c) as s, s.begin():
+            observe(s, ids[1], 'airflow', 'source_scan', {'status': 'complete'},
+                    T + timedelta(seconds=1), key='good-' + str(index))
+    evaluate_job(c, ids[1], at=T + timedelta(seconds=2))
+    incident = next(i for i in incidents(c, ids[1]) if i.condition == 'source_coverage')
+    assert incident.state == 'resolved'
+    with Session(c) as s, s.begin():
+        observe(s, ids[1], 'airflow', 'source_scan', {'status': 'incomplete'},
+                T + timedelta(seconds=3), key='bad-again')
+    evaluate_job(c, ids[1], at=T + timedelta(seconds=4))
+    assert next(i for i in incidents(c, ids[1]) if i.condition == 'source_coverage').state == 'open'
+    with Session(c) as s:
+        assert s.scalar(select(func.count()).select_from(Observation).where(Observation.job_id == ids[1])) == 102
+        assert s.get(Observation, failed_id).payload == {'status': 'incomplete'}
+        assert any(h.evidence.get('id') == str(failed_id) for h in s.scalars(
+            select(IncidentHistory).where(IncidentHistory.incident_id == incident.id)))

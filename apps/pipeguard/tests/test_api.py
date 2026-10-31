@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 import os
+from pathlib import Path
 import secrets
 from uuid import uuid4
 
@@ -143,6 +144,22 @@ def test_validation_errors_do_not_echo_input(api):
     assert malformed.status_code == 422 and marker not in malformed.text
 
 
+@pytest.mark.parametrize('field', ['environment', 'kind'])
+def test_integration_field_lengths_match_database_boundaries(api, field):
+    client, admin, _, _ = api
+    body = {'name': 'bounded-' + field, 'environment': 'test', 'kind': 'synthetic'}
+    assert client.post('/v1/integrations', headers=admin, json=body | {field: 'a' * 101}).status_code == 422
+    assert client.post('/v1/integrations', headers=admin, json=body | {field: 'a' * 100}).status_code == 201
+
+
+def test_job_kind_length_matches_database_boundary(api):
+    client, admin, _, _ = api
+    _, event, _ = producer(api)
+    body = {'integration_id': event['integration_id'], 'namespace': 'test', 'name': 'bounded', 'kind': 'a' * 101}
+    assert client.post('/v1/jobs', headers=admin, json=body).status_code == 422
+    assert client.post('/v1/jobs', headers=admin, json=body | {'kind': 'a' * 100}).status_code == 201
+
+
 def test_host_origin_and_actual_body_limits(api):
     client, admin, _, _ = api
     assert client.get("/health/live", headers={"Host": "attacker.example"}).status_code == 400
@@ -165,6 +182,19 @@ def test_pagination_and_openapi(api):
     schema = client.get("/v1/openapi.json", headers=admin).json()
     assert schema["paths"]["/v1/events"]["post"]["security"] == [{"HTTPBearer": []}]
     assert client.get("/docs").status_code == 404
+
+
+def test_checked_in_contracts_match_runtime_models_and_routes(api):
+    from pipeguard.ingestion.contracts import ExecutionEvent
+    from pipeguard.detection.contracts import QualityReport
+    from pipeguard.lineage.contracts import LineageReport
+    client, admin, _, _ = api
+    contracts = Path('docs/contracts')
+    assert client.get('/v1/openapi.json', headers=admin).json() == json.loads(
+        (contracts / 'http-api-v1.openapi.json').read_text())
+    for name, model in [('execution-event', ExecutionEvent), ('quality-report', QualityReport),
+                        ('lineage-report', LineageReport)]:
+        assert model.model_json_schema() == json.loads((contracts / f'{name}-v1.schema.json').read_text())
 
 
 def test_runtime_database_role_cannot_change_schema_or_history(api):

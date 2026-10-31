@@ -16,7 +16,9 @@ def _time(value):
 def reconcile(bind, job_id, snapshots):
     with Session(bind) as session, session.begin():
         job = session.get(Job, job_id)
-        events = list(session.scalars(select(IngestedEvent).where(IngestedEvent.integration_id == job.integration_id)))
+        events = list(session.scalars(select(IngestedEvent).where(
+            IngestedEvent.integration_id == job.integration_id,
+            IngestedEvent.payload["job_id"].as_string() == str(job_id))))
         for _, p in snapshots:
             session.execute(insert(Run).values(job_id=job_id, external_run_id=p["external_run_id"])
                             .on_conflict_do_nothing(index_elements=["job_id", "external_run_id"]))

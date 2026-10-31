@@ -11,7 +11,7 @@ from pipeguard.db.models import IngestedEvent, MonitorPolicy, MonitorHeartbeat, 
 from pipeguard.db.permissions import verify_runtime_access
 from pipeguard.ingestion.service import process
 from pipeguard.detection.airflow import AirflowClient, SourceUnavailable
-from pipeguard.detection.service import evaluate_job, observe, now_utc
+from pipeguard.detection.service import evaluate_job, observe, now_utc, digest, _lock_job
 from pipeguard.detection.projection import reconcile
 
 
@@ -44,6 +44,25 @@ def _heartbeat(bind, name):
                         .on_conflict_do_update(index_elements=["name"], set_={"completed_at": now_utc()}))
 
 
+def _observe_source_state(session, job_id, kind, payload, when):
+    """Preserve returning source states as new immutable episodes, without poll duplicates.
+
+    The caller holds the job transaction lock. Configuration time is receipt time;
+    run time is source evidence and a changed boundary also needs a new observation.
+    """
+    query = select(Observation).where(Observation.job_id == job_id,
+        Observation.source == "airflow", Observation.kind == kind)
+    if kind == "airflow_run":
+        query = query.where(Observation.payload["external_run_id"].as_string() == payload["external_run_id"])
+    previous = session.scalar(query.order_by(Observation.created_at.desc(), Observation.occurred_at.desc(),
+                                             Observation.id.desc()).limit(1))
+    if previous and previous.payload == payload and (kind == "source_configuration" or previous.occurred_at == when):
+        return
+    key = "episode:" + digest({"previous": str(previous.id) if previous else None,
+        "kind": kind, "payload": payload, "time": when.isoformat() if kind == "airflow_run" else None})
+    observe(session, job_id, "airflow", kind, payload, when, key=key)
+
+
 def _job_cycle(bind, client, policy):
     if policy.airflow_dag_id:
         try:
@@ -51,15 +70,16 @@ def _job_cycle(bind, client, policy):
                 raise SourceUnavailable("source_not_configured")
             snapshots = client.scan(policy.airflow_dag_id, policy.airflow_task_id)
             with Session(bind) as session, session.begin():
+                _lock_job(session, policy.job_id)
                 for when, payload in client.run_facts:
-                    observe(session, policy.job_id, "airflow", "airflow_run", payload, when)
+                    _observe_source_state(session, policy.job_id, "airflow_run", payload, when)
                 for when, payload in snapshots:
                     observe(session, policy.job_id, "airflow", "airflow_attempt", payload, when)
                 known = {o.payload["external_run_id"] for o in session.scalars(select(Observation).where(
                     Observation.job_id == policy.job_id, Observation.kind == "airflow_attempt"))}
                 current = {p["external_run_id"] for _, p in snapshots}
                 status = {"status": "incomplete", "error_code": "source_history_disappeared"} if known - current else {"status": "complete"}
-                observe(session, policy.job_id, "airflow", "source_configuration",
+                _observe_source_state(session, policy.job_id, "source_configuration",
                         {"is_paused": client.is_paused}, now_utc())
                 observe(session, policy.job_id, "airflow", "source_scan", status,
                         now_utc(), key="scan:" + now_utc().isoformat())
@@ -67,8 +87,9 @@ def _job_cycle(bind, client, policy):
         except (SourceUnavailable, KeyError, ValueError, TypeError) as exc:
             code = str(exc) if isinstance(exc, SourceUnavailable) else "source_invalid_response"
             with Session(bind) as session, session.begin():
+                _lock_job(session, policy.job_id)
                 for when, payload in getattr(client, "run_facts", []):
-                    observe(session, policy.job_id, "airflow", "airflow_run", payload, when)
+                    _observe_source_state(session, policy.job_id, "airflow_run", payload, when)
                 for when, payload in getattr(client, "partial", []):
                     observe(session, policy.job_id, "airflow", "airflow_attempt", payload, when)
                 observe(session, policy.job_id, "airflow", "source_scan",

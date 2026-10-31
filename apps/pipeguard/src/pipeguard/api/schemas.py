@@ -1,8 +1,10 @@
 from datetime import datetime
-from typing import Generic, TypeVar
+from typing import Annotated, Generic, TypeVar
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from pipeguard.ingestion.contracts import Identifier
+
+ShortIdentifier = Annotated[Identifier, Field(max_length=100)]
 
 
 class Contract(BaseModel):
@@ -15,8 +17,8 @@ class ErrorResponse(Contract):
 
 class IntegrationCreate(Contract):
     name: Identifier
-    environment: Identifier
-    kind: Identifier
+    environment: ShortIdentifier
+    kind: ShortIdentifier
 
 
 class IntegrationView(IntegrationCreate):
@@ -28,7 +30,7 @@ class JobCreate(Contract):
     integration_id: UUID
     namespace: Identifier
     name: Identifier
-    kind: Identifier
+    kind: ShortIdentifier
 
 
 class JobView(JobCreate):

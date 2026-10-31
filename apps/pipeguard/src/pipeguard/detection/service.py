@@ -5,7 +5,7 @@ import json
 from uuid import UUID, uuid4
 
 from pydantic import ValidationError
-from sqlalchemy import select, text
+from sqlalchemy import or_, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -124,10 +124,17 @@ def evaluate_job(bind, job_id, *, at=None):
             _condition(session, policy, "monitoring_disabled", "job",
                        [("integration-disabled", {"integration_id": str(integration.id)})], None, at)
             return
-        observations = list(session.scalars(select(Observation).where(Observation.job_id == job_id)
+        # Scan receipts grow every polling cycle. Evaluation only uses the latest scan;
+        # older immutable receipts remain available to history references and snapshots.
+        latest_scan = select(Observation.id).where(Observation.job_id == job_id,
+            Observation.kind == "source_scan").order_by(Observation.created_at.desc(),
+                Observation.occurred_at.desc(), Observation.id.desc()).limit(1).correlate(None).scalar_subquery()
+        observations = list(session.scalars(select(Observation).where(Observation.job_id == job_id,
+            or_(Observation.kind != "source_scan", Observation.id == latest_scan))
                                            .order_by(Observation.created_at, Observation.occurred_at, Observation.id)))
-        events = list(session.scalars(select(IngestedEvent).where(IngestedEvent.integration_id == job.integration_id)))
-        events = [e for e in events if e.payload.get("job_id") == str(job_id)]
+        events = list(session.scalars(select(IngestedEvent).where(
+            IngestedEvent.integration_id == job.integration_id,
+            IngestedEvent.payload["job_id"].as_string() == str(job_id))))
         # Detect failures from source evidence too, including events that failed projection.
         facts = {}
         for event in events:
@@ -146,17 +153,24 @@ def evaluate_job(bind, job_id, *, at=None):
                 facts.setdefault(p["external_run_id"], []).append({
                     "attempt": p["attempt_number"], "state": p["state"], "time": row.occurred_at,
                     "ref": _ref(row, "observations"), "source": "airflow", "error_code": None})
-        for report in [o for o in observations if o.kind == "quality_report"]:
-            run_id = report.payload["external_run_id"]
+        reports_by_run = {}
+        for report in observations:
+            if report.kind == "quality_report":
+                reports_by_run.setdefault(report.payload["external_run_id"], []).append(report)
+        for run_id, reports in reports_by_run.items():
+            execution = facts.get(run_id, [])
+            attempts_with_execution = {e["attempt"] for e in execution}
+            missing = [r for r in reports if r.payload["attempt_number"] not in attempts_with_execution]
+            recovery_refs = {e["attempt"]: e["ref"][1] for e in execution}
             _condition(session, policy, "execution_evidence_missing", run_id,
-                       [_ref(report, "observations")] if run_id not in facts else [],
-                       ("execution:" + run_id, {"evidence": facts[run_id][0]["ref"][1]}) if run_id in facts else None, at)
-        for report in [o for o in observations if o.kind == "quality_report"]:
-            run_id = report.payload["external_run_id"]
-            if run_id not in facts:
-                facts[run_id] = [{"attempt": report.payload["attempt_number"], "state": "unknown",
-                                  "time": report.occurred_at, "ref": _ref(report, "observations"),
-                                  "source": "quality_only", "error_code": None}]
+                       [_ref(report, "observations") for report in missing],
+                       ("execution:" + run_id, {"evidence": list(recovery_refs.values())}) if not missing else None, at)
+            # A report for a later attempt does not borrow an earlier attempt's execution.
+            # Keep its uncertainty visible until that exact attempt's source evidence arrives.
+            for report in missing:
+                facts.setdefault(run_id, []).append({"attempt": report.payload["attempt_number"], "state": "unknown",
+                    "time": report.occurred_at, "ref": _ref(report, "observations"),
+                    "source": "quality_only", "error_code": None})
         dag_facts = {}
         for row in observations:
             if row.kind == "airflow_run":

@@ -4113,14 +4113,14 @@
           },
           "environment": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Environment"
           },
           "kind": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Kind"
@@ -4146,14 +4146,14 @@
           },
           "environment": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Environment"
           },
           "kind": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Kind"
@@ -4202,7 +4202,7 @@
           },
           "kind": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Kind"
@@ -4241,7 +4241,7 @@
           },
           "kind": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 100,
             "minLength": 1,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]*$",
             "title": "Kind"
