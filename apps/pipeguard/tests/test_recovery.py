@@ -7,7 +7,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
 from test_api import api, producer
-from pipeguard.db.models import (Incident, IncidentHistory, MonitorHeartbeat, Observation,
+from pipeguard.db.models import (Incident, IncidentHistory, MonitorHeartbeat,
     RecoveryDecision, RecoveryProposal, Run)
 from pipeguard.detection.service import evaluate_job, observe
 from pipeguard.recovery import service

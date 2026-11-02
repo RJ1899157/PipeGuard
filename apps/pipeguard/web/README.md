@@ -53,3 +53,9 @@ Overview includes independent watcher status with a 15-second refresh, separate 
 ## Advisory investigation
 
 Incidents now offer explicit manual generation through a fixed same-origin broker. Groq credentials stay on the API server. Requests and outcomes are durable; uncertain submissions retain their request key for replay. Qualified summaries are shown by default; generated prose and exact evidence projections are separately expandable. Preview mode never submits records. See [operations](../../../docs/investigation-operations.md) and [verification](../../../docs/investigation-verification.md).
+
+## Recovery review
+
+Select **Incidents → an incident → Recovery review**. This section precedes investigation history so it remains reachable as retained AI history grows. The server admits proposals only for the explicitly configured sample job and eligible current failure evidence. Preview never submits review operations. The current paused DAG and resolved incidents remain blocked.
+
+Creating a proposal does not start a run. Review approval or rejection requires checking the exact-proposal confirmation; both decisions are immutable. The proposal/hash inspector shows the exact impact, parameters and expiry. Unknown responses retain the original body/key for explicit replay. These are review-only decisions and cannot authorize current or future execution. See [operations](../../../docs/recovery-operations.md) and [verification](../../../docs/recovery-verification.md).

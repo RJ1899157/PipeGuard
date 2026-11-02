@@ -2,7 +2,7 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, seventeen SQLAlchemy metadata models (including incident, lineage and evidence records), Alembic
+The project includes PostgreSQL 17, 21 SQLAlchemy metadata models (including incident, lineage and evidence records), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
 The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. Deterministic incident detection, lineage and a local read-only dashboard are implemented. See the [dashboard setup](../../apps/pipeguard/web/README.md) for frontend startup and its local owner access boundary.
 

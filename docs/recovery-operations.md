@@ -42,11 +42,11 @@ These are point-in-time **review** checks. They do not fence all ingestion write
 
 All routes require a bearer credential. History is restricted to the incident's integration or administrator; mutations require the administrator.
 
-| Method | Route | Input |
-| --- | --- | --- |
-| GET | `/v1/incidents/{incident_id}/recovery-proposals` | `limit` 1–20; optional incident-scoped `before` UUID |
-| POST | `/v1/incidents/{incident_id}/recovery-proposals` | `request_key` UUID only |
-| POST | `/v1/incidents/{incident_id}/recovery-proposals/{proposal_id}/decisions` | `request_key`, exact `proposal_hash`, `decision` (`approve` or `reject`), literal `confirmed: true` |
+| Method | Route                                                                    | Input                                                                                               |
+| ------ | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/incidents/{incident_id}/recovery-proposals`                         | `limit` 1–20; optional incident-scoped `before` UUID                                                |
+| POST   | `/v1/incidents/{incident_id}/recovery-proposals`                         | `request_key` UUID only                                                                             |
+| POST   | `/v1/incidents/{incident_id}/recovery-proposals/{proposal_id}/decisions` | `request_key`, exact `proposal_hash`, `decision` (`approve` or `reject`), literal `confirmed: true` |
 
 History is a descending keyset view; it returns current eligibility and retained decisions, not a frozen multi-page snapshot. `expired` is separate from the recorded decision: an expired review approval remains visible as historical approval and still cannot execute. Fixed validation/admission rejections return HTTP errors without creating proposal or decision rows; they are not a separate security-event audit stream.
 
@@ -56,7 +56,7 @@ The local dashboard broker accepts only these fixed review operations, strict sa
 
 The backend suite passes 339 checks, including 27 recovery checks and disposable-schema migration roundtrip/metadata checks. They cover scoped access, literal confirmation, hash mismatch, expiry at both checks, stale/changed evidence, paused or unknown source state, pending receipts, replay, cross-incident keys/cursors, immutable tables, lock contention and simulated interruption before proposal/decision commit. These simulations do not reproduce every operating-system termination or power-loss scenario.
 
-Pre-migration and post-migration PipeGuard backups were created and restore-verified in disposable databases. No live database was replaced. Browser verification is recorded separately in the recovery checkpoint.
+Pre-migration and post-migration PipeGuard backups were created and restore-verified in disposable databases. No live database was replaced. Browser verification, lost-response replay and live-system restoration are recorded in the [recovery checkpoint](recovery-verification.md).
 
 Remaining Stage 11 work: verify the installed Airflow mutation API and minimum privileges; implement a separately approved execution policy, durable dispatch intent and independent reconciliation; test lost replies, duplicate dispatch and interruption boundaries; then run a deliberately approved synthetic incident-to-recovery scenario. No operational recovery safety claim is made before that work is complete.
 

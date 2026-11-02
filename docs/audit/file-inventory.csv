@@ -2,7 +2,7 @@ path,review_area,method,bytes,text_lines,sha256
 .env.example,operations and integrating review,source/command review,1174,17,ad6fa0268da4456bb098b06dc089750274ea143035323a4c72a8e1adc060f535
 .gitignore,operations and integrating review,source/command review,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .python-version,operations and integrating review,source/command review,5,1,7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d
-README.md,operations and integrating review,documentation review,8906,101,0b0c6cd1d424465cc872f03c2f09cb9d3c324e7728f3a777aede75dc43e021c9
+README.md,operations and integrating review,documentation review,9019,101,f6f037955f6cc29e68a87738153efb661dd0638df8c05a6dba84be21df00510d
 alembic.ini,operations and integrating review,source/command review,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,operations and integrating review,documentation review,984,14,0aaa5ee7f424b1dd48e19e3fa25e338a0b7fba431e556e96a843490398462453
 apps/pipeguard/migrations/README,backend review; operational tests integrated,documentation review,38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -67,8 +67,8 @@ apps/pipeguard/tests/test_local_operations.py,operations and integrating review,
 apps/pipeguard/tests/test_operational_files.py,backend review; operational tests integrated,source/command review,7407,156,d8dd12c2edc05d300771a7ba7c24d846da38098cc2dbd5efac2b1858bca77f95
 apps/pipeguard/tests/test_persistence.py,backend review; operational tests integrated,source/command review,6422,178,a4707306c5994ab7694e09ee13b99376a9ebd2077c7598219f08fe0a4774f86b
 apps/pipeguard/tests/test_read_snapshots.py,operations and integrating review,source/command review,10529,185,63b0049ee03d418693f82afdad932c877498c4ed08b202182e4a2885ca666683
-apps/pipeguard/tests/test_recovery.py,recovery implementation review,source and acceptance checks,12504,213,632f648ae282f70120539af82ddce90f8be4b5d67ad15173d16954791e5485cd
-apps/pipeguard/web/README.md,frontend review,documentation review,5583,55,2ee2f2f76ce11d341f0eb8564098824dcd64dfdbf8a9741ffcff9963e8c7d7ae
+apps/pipeguard/tests/test_recovery.py,recovery implementation review,source and acceptance checks,12491,213,7fe6a7d26242c777dd9b22f2eee758845a974a4e600a4d242ee66bec2c81d936
+apps/pipeguard/web/README.md,frontend review,documentation review,6469,61,9cf7ae51a306ba8d076d1f141360d2893d196e4528c400ce5de317a3cbb5e956
 apps/pipeguard/web/app/api/investigations/route.ts,frontend integration review,source/command review,3262,101,d79888fe6eeb7b2ebb00b873524c7907b13e8cf2ba9d1338e3775be62ce96300
 apps/pipeguard/web/app/api/read/route.ts,frontend review,source/command review,2043,63,9abba6a23c84b5b1287f9457ce48ac21bbc7bdb70e657b97e4a05a8c68531b9c
 apps/pipeguard/web/app/api/recovery/route.ts,recovery implementation review,source and acceptance checks,2370,76,a7aa289f7f511cdca83a93cab0331da1c91f13a2cf8211ba4184c702c7637686
@@ -120,7 +120,7 @@ docs/architecture/dashboard-foundation.md,operations and integrating review,docu
 docs/architecture/domain-model.md,operations and integrating review,documentation review,19266,137,7a17323adfc9df3fd8c82bea3d16f726820cd84e5ae236afe062b91083e22ce8
 docs/architecture/incident-detection.md,operations and integrating review,documentation review,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835
 docs/architecture/lineage-evidence.md,operations and integrating review,documentation review,7730,63,642e1f70825ee64f1d8e34728b1eff7d65996f1e51c9fd50111338aedce88f00
-docs/architecture/overview.md,operations and integrating review,documentation review,6120,73,ee5b5695f52dd00b19683484aee108260a09118d1b2fb809f5dcfc370f91fa56
+docs/architecture/overview.md,operations and integrating review,documentation review,6189,73,7ebc1ccda0d3c7ca9fe577dd6efc954513d6fdeabf903cf94f400bdd192f1b27
 docs/audit/final-timeline.jpg,operations and integrating review,visual review,104333,,2aed2c64e09ba8f05d47d6cc74fc59bbb2c6c70419a53286d339b8fa7a69d15e
 docs/audit/hardening-desktop.png,operations and integrating review,visual review,67601,,e4978a010adbbc7cd1ee1e035462dc4512e928622d86343861a4f3d0c26cd8a7
 docs/audit/hardening-mobile.png,operations and integrating review,visual review,37078,,6267da1faa23fab472ed1946607d1febafce300fcd411071c808ebc8deaa746d
@@ -138,7 +138,7 @@ docs/container-security.md,operations and integrating review,documentation revie
 docs/contracts/execution-event-v1.schema.json,operations and integrating review,runtime schema equality and semantic boundary review,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
 docs/contracts/execution-events.md,operations and integrating review,documentation review,6762,116,f547adad9945fa24759be4f75180f113c20ced9f220146b98fd2d6c8f8ff8451
 docs/contracts/http-api-v1.openapi.json,operations and integrating review,runtime schema equality and semantic boundary review,169840,6522,7216802e068e8ad9db3da368031a93dbcab0093dcdf8dfa0f92261f285dd1b8f
-docs/contracts/http-api.md,operations and integrating review,documentation review,11093,129,c352c23a1a552f1bf1f0f8c9da5acb67645ac08fb6c5723064886a8bf0a87875
+docs/contracts/http-api.md,operations and integrating review,documentation review,11477,133,596a6b19f5650d457a2caba8e49b0fafcb2e83f2d25cb03fccd72c7f0dbcbc0b
 docs/contracts/lineage-events.md,operations and integrating review,documentation review,3754,30,8b38d0a921294c3d1aeb6fe2b97020e904b3cfa329be2b5e7a7d79c55a8ae7d6
 docs/contracts/lineage-report-v1.schema.json,operations and integrating review,runtime schema equality and semantic boundary review,5983,271,a1d83118a3f9679730f2353c14635d1111c32aca7e52ba74ec7d112f98b303ec
 docs/contracts/quality-report-v1.schema.json,operations and integrating review,runtime schema equality and semantic boundary review,2612,121,efe8ea6bdc3ede10defc7e2a2e709b903f5c322e753cfc1f65318d28519b9901
@@ -148,7 +148,7 @@ docs/design/dashboard-attempts.jpg,operations and integrating review,visual revi
 docs/design/dashboard-desktop.jpg,operations and integrating review,visual review,107273,,1c312f4e0444695ad15bf61af11932a09fe4f719ced434f2e106d522f3a91a91
 docs/design/dashboard-mobile.jpg,operations and integrating review,visual review,124350,,91c970de22e2cf7b508ba2b75f7bc57f5ff22d5d13498dfc7a1818b3b61c7c3f
 docs/design/dashboard-reference.png,operations and integrating review,visual review,1542800,,c98c67298da114de69e139e04e7f0365b9f1bf4adc625e462040a75cf76cf383
-docs/development/setup.md,operations and integrating review,documentation review,8246,151,c8d7a2849b8627763a76b382b6bf03fa49f3655074a78b5c45d5dd94a25bd6e0
+docs/development/setup.md,operations and integrating review,documentation review,8239,151,80367e76bd44ee5c5854e66ad1896a7a6aeb0b9a9c91dec63c889ff03db348c9
 docs/exploration-verification.md,operations and integrating review,documentation review,4864,40,944d3e96171536c26f10530353cb490252f2e7a3b42ea5c540330390c54b474f
 docs/failure-coverage.md,operations and integrating review,documentation review,15356,87,ae68d0ede888003462e63a1910870fdea08e18b871365bd83628be8372015178
 docs/hardening-verification.md,operations and integrating review,documentation review,10599,61,30a856390301a24a2ad577d77b187c00c432d16b770040a87f4e6a7146d26fbf
@@ -159,11 +159,12 @@ docs/investigation-verification.md,operations and integrating review,documentati
 docs/lineage-operations.md,operations and integrating review,documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,operations and integrating review,documentation review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,operations and integrating review,documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,operations and integrating review,documentation review,4452,33,e1f9740c57bda75699cf5f3c8904606e013dc9364b50cb32d8f298b690bd75c8
+docs/next-session.md,operations and integrating review,documentation review,4557,33,054d4e75064c71679fd17c66963da8bcd14dfa5c70118ce2b30fa4f601110cb4
 docs/recovery-design.md,investigation evaluation and recovery design,documentation review,5285,45,bd06baaa3c5a94d91be55cc7364e0e3f9949be2df812486be8961ced7b4e4dc5
-docs/recovery-operations.md,recovery implementation review,documentation review,7558,63,efc50079997f55b7c7dad047f9582983c79058f8016266430004bd2a34b8a381
-docs/roadmap.md,operations and integrating review,documentation review,11509,36,41344f2a79b4111d0d49bc0df166578b0e68ddb207028bddd3a96235ba6d380c
-docs/system-audit.md,operations and integrating review,documentation review,15843,90,6dbf5140912be3b377f570fcaaab70ea9c4cc484d6a247ad345c358a479e9234
+docs/recovery-operations.md,recovery implementation review,documentation review,8133,63,d02ca26970e6e9e535d04cb8114a827f01fbc6e388f6ffa19ad347e7557da0c6
+docs/recovery-verification.md,recovery implementation review,documentation review,7559,62,49304bcc2b6ea1b9e61f533f9e6a56a46d2ba89e02d64927043c3eb65bead58d
+docs/roadmap.md,operations and integrating review,documentation review,11771,36,904512562fe2089a8d40ad62f4d635aea108db68c96e674d14d077cd36f5dcdb
+docs/system-audit.md,operations and integrating review,documentation review,15843,90,4a7c83e084836c83a071e34c6fd480fa62886cb6d2b300e4deadd8d977dad0a2
 infra/airflow/README.md,workload and operations review,documentation review,12079,151,40fcb566a917d0c65605c3d10429135590b957fb4ce66428bc54badf4fdbee88
 infra/airflow/constraints-3.12.txt,workload and operations review,"structural, resolver, provenance and advisory checks",18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c
 infra/airflow/dags/orders.py,workload and operations review,source/command review,4061,78,37d060cb50f5d5dfe01eeeffd98fe3762fa2f38af092e8610d4991661b8fb332

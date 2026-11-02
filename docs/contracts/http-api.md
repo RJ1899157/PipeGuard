@@ -127,3 +127,7 @@ Snapshots expire after five minutes or process restart, cap at 5,000 rows/8 MiB 
 ## Advisory investigation extension
 
 Administrator-only `POST /v1/incidents/{incident_id}/investigations` requires a UUID `request_key`, literal boolean `free_plan_confirmed: true`, and optional scoped `bundle_id`. Replays return the recorded operation without generating again. Admission can return 429 or 503. Authenticated `GET` history is integration-scoped, limited to 20 records per page, with a scoped UUID `before` cursor and `next_before`. It is a live keyset view. Records expose bounded input/provenance, input-integrity and current-policy flags, terminal outcome or explicit pending/unknown state. Neither endpoint changes incident state or authorizes recovery. See [investigation operations](../investigation-operations.md) for exact limits and [verification](../investigation-verification.md) for checked behavior.
+
+## Recovery review
+
+The administrator-only proposal and approve/reject endpoints record review-only decisions, with integration-scoped keyset history. No execute endpoint exists. See [recovery operations](../recovery-operations.md) for exact inputs, freshness checks, replay semantics and the non-executable policy boundary; the generated OpenAPI contract includes all three routes.
