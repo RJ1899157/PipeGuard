@@ -39,8 +39,9 @@ apps/pipeguard/src/pipeguard/ingestion/contracts.py,backend review; operational 
 apps/pipeguard/src/pipeguard/ingestion/service.py,backend review; operational tests integrated,source/command review,9663,182,f2fdb19bb2ed47f9b01de2d65ad61d6331ec7ae1a488e8897b4ec78e83d210f5
 apps/pipeguard/src/pipeguard/investigation/__init__.py,backend integration review,source/command review,83,1,919e071e30a679068ad321f87a2dec33576ffd3010bf4b7fdcbec5eea9047e9d
 apps/pipeguard/src/pipeguard/investigation/api.py,backend integration review,source/command review,4147,78,f3c478c87868368688a5faa2f463e70ea142ee80913d181d98654f845fee5a7a
-apps/pipeguard/src/pipeguard/investigation/core.py,backend integration review,source/command review,11012,208,6f958b1690073a9efe35b70801d84a4e1930a7cdcbcd263d8f9a99f52b39bb7c
-apps/pipeguard/src/pipeguard/investigation/groq.py,backend integration review,source/command review,7745,133,215efba073f2c6086c3eb183baa059c989cccb8c6a23ac1736b8983cd7b9867b
+apps/pipeguard/src/pipeguard/investigation/core.py,backend integration review,source/command review,11219,211,1f267398c125914eefe77c094adf3565e652f17ab064b51e7a77d26d66c66a07
+apps/pipeguard/src/pipeguard/investigation/evaluation.py,investigation evaluation review,source and acceptance checks,957,19,c2bb25e97f7899421521aef443eea5b2af0a51d16494b372aa511340ae8c930e
+apps/pipeguard/src/pipeguard/investigation/groq.py,backend integration review,source/command review,9087,151,3c735b750a1e4800dc648a3f667c2b3254c77b3baef8ae4f6cd44582d2a6f363
 apps/pipeguard/src/pipeguard/investigation/service.py,backend integration review,source/command review,8070,129,95b0c4a51a2d2b6e3f3debe1335ad4d3b1ea6454c09c5f0000f48a7b5515b20e
 apps/pipeguard/src/pipeguard/lineage/__init__.py,backend review; operational tests integrated,source/command review,82,1,e2edf2bfa04f88bafe988e0c32c2c912970fa6203329439c2d242b3f96deb77f
 apps/pipeguard/src/pipeguard/lineage/api.py,backend review; operational tests integrated,source/command review,5414,102,2d017a49ac7874f40757373b3c80785956cbe96404912f87b65c1a14e9bc092a
@@ -56,6 +57,7 @@ apps/pipeguard/tests/test_detection_api.py,backend review; operational tests int
 apps/pipeguard/tests/test_evidence.py,backend review; operational tests integrated,source/command review,6767,111,30e18e0483f1724ff7d786733605311b777cb1e671a0b74f1258177861d38350
 apps/pipeguard/tests/test_ingestion.py,backend review; operational tests integrated,source/command review,14031,301,c02b570469e92b91317a8ca43e3aaeff720e0eb583c2868689dc5c713a726bc7
 apps/pipeguard/tests/test_investigation.py,backend integration review,source/command review,12795,252,c43033f5835ab225153727fc7a66bd80e250e14cbc3a6eab35c9f75355d02d8b
+apps/pipeguard/tests/test_investigation_evaluation.py,investigation evaluation review,source and acceptance checks,8753,159,75f9d32b92f3ad029b072ec418e5b133244e5f7050237cb170dca986e2ea958d
 apps/pipeguard/tests/test_lineage.py,backend review; operational tests integrated,source/command review,16232,266,d1bb94e82d374a38779469aabd5a5b73f9363754f33a5d319f75f641d956caf5
 apps/pipeguard/tests/test_local_operations.py,operations and integrating review,source/command review,12034,252,6775333cea2a65f9463a1173e48674661dcd1441fd27992cc90a321db932cf88
 apps/pipeguard/tests/test_operational_files.py,backend review; operational tests integrated,source/command review,7407,156,d8dd12c2edc05d300771a7ba7c24d846da38098cc2dbd5efac2b1858bca77f95
@@ -138,14 +140,15 @@ docs/exploration-verification.md,operations and integrating review,documentation
 docs/failure-coverage.md,operations and integrating review,documentation review,15356,87,ae68d0ede888003462e63a1910870fdea08e18b871365bd83628be8372015178
 docs/hardening-verification.md,operations and integrating review,documentation review,10599,61,30a856390301a24a2ad577d77b187c00c432d16b770040a87f4e6a7146d26fbf
 docs/incident-operations.md,operations and integrating review,documentation review,3834,67,f5c62f76f39f6b84f91687d1e969f58a92ac5557bdc4de69748574e09659dd61
-docs/investigation-operations.md,operations and integrating review,documentation review,9041,70,142794c042fb8b596f3ec60a8650b97625890592abff8ead54e41e5ba1e2dbe7
+docs/investigation-evaluation.md,investigation evaluation review,documentation review,5972,49,035997d0b4f59cf4f7648b6cd042d0027e7ec67ad200642ebd6cbc530eead8f5
+docs/investigation-operations.md,operations and integrating review,documentation review,9669,70,16461410ce43bad652c56233455456d67828a26d75a281eaf152f2d61d638304
 docs/investigation-verification.md,operations and integrating review,documentation review,7684,50,638ee1435c7ad402887bee32b6ab5d4688f71764ec818e5591660426cfa7c62a
 docs/lineage-operations.md,operations and integrating review,documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,operations and integrating review,documentation review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,operations and integrating review,documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
 docs/next-session.md,operations and integrating review,documentation review,4268,33,bb9b8f825c0f020b79f991516034260baeb4c78c997ad30f41cbefddaaba1be7
 docs/roadmap.md,operations and integrating review,documentation review,11163,34,2f01ff4dfc90fcc53ca73e679939a70ef0a6418c748b0c0f6edf79b9d16d39a1
-docs/system-audit.md,operations and integrating review,documentation review,15853,90,0643738ffed96f09ae680b1647657f9d66d29a61feed95bbea5a009cac17c136
+docs/system-audit.md,operations and integrating review,documentation review,15853,90,b3df578861c1776f85a038c5e27d75924c1f1b890666aa548bc945bc3f21a3ca
 infra/airflow/README.md,workload and operations review,documentation review,12079,151,40fcb566a917d0c65605c3d10429135590b957fb4ce66428bc54badf4fdbee88
 infra/airflow/constraints-3.12.txt,workload and operations review,"structural, resolver, provenance and advisory checks",18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c
 infra/airflow/dags/orders.py,workload and operations review,source/command review,4061,78,37d060cb50f5d5dfe01eeeffd98fe3762fa2f38af092e8610d4991661b8fb332
@@ -193,6 +196,7 @@ scripts/configure_sample_warehouse.py,workload and operations review,source/comm
 scripts/configure_watchdog.py,operations and integrating review,source/command review,3520,58,74781d2b8418f15698a5cee2541d691e78c7d756518e25536c6c22904861548b
 scripts/enroll_lineage.py,workload and operations review,source/command review,1704,35,a83412cc02e416c847072e8bd025fc931d5c9b395ae86d0de0c49c4f9e456ea0
 scripts/enroll_monitor.py,workload and operations review,source/command review,2273,53,704ab9fa84e0101be2680d9ecd0ef3ce59afbceaa1462967a9b33adeffa70c74
+scripts/evaluate_investigations.py,investigation evaluation review,source and acceptance checks,4043,78,a988cd848890b0f1fa1fec2b83e28cc2175673f64da9a0366b31547c0c782a11
 scripts/ingest_event.py,workload and operations review,source/command review,2698,65,4ee6a2e9100d09d5606c0c2f83ca703cddcf1c13a96fb37c6b12801ec7878fa3
 scripts/init_local_env.py,workload and operations review,source/command review,718,18,50b8ce34943f6c81c6dac224e54e4ac727b3e817954c4292b4968db77075a290
 scripts/investigate.py,operations and integrating review,source/command review,4434,79,bec19e986710ddfdbde314744efe6a3f84c0085734732742129e7540bd593f36

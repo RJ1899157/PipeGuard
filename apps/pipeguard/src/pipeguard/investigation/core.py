@@ -200,6 +200,9 @@ def validate_answer(answer, packet):
         supporting = [facts[ref] for ref in hypothesis.supporting_evidence]
         if not all(supports(category, fact) for fact in supporting):
             raise InvestigationRejected("hypothesis_support_missing")
+        if not contradiction and any(incompatible(counter, support)
+                for counter in facts.values() for support in supporting):
+            raise InvestigationRejected("contradiction_omitted")
         # A successful later retry is not a contradiction of an earlier failed attempt.
         for ref in contradiction:
             counter = facts[ref]
