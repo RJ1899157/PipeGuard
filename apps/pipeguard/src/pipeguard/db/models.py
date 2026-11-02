@@ -275,6 +275,36 @@ class EvidenceBundle(Record, Base):
     payload_hash: Mapped[str] = mapped_column(String(64))
 
 
+class InvestigationRequest(Record, Base):
+    __tablename__ = "investigation_requests"
+    __table_args__ = (
+        UniqueConstraint("request_key"),
+        CheckConstraint("input_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("jsonb_typeof(input_payload) = 'object' AND octet_length(input_payload::text) <= 32768", name="bounded_input"),
+        Index("ix_investigation_requests_created", "created_at", "id"),
+        Index("ix_investigation_requests_bundle", "bundle_id", "created_at", "id"),
+    )
+    bundle_id: Mapped[UUID] = mapped_column(ForeignKey("evidence_bundles.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    actor: Mapped[str] = mapped_column(String(40))
+    model: Mapped[str] = mapped_column(String(100))
+    prompt_version: Mapped[str] = mapped_column(String(60))
+    input_payload: Mapped[dict[str, Any]]
+    input_hash: Mapped[str] = mapped_column(String(64))
+
+
+class InvestigationOutcome(Record, Base):
+    __tablename__ = "investigation_outcomes"
+    __table_args__ = (
+        UniqueConstraint("request_id"),
+        CheckConstraint("state IN ('completed', 'failed')", name="state"),
+        CheckConstraint("jsonb_typeof(payload) = 'object' AND octet_length(payload::text) <= 16384", name="bounded_output"),
+    )
+    request_id: Mapped[UUID] = mapped_column(ForeignKey("investigation_requests.id", ondelete="RESTRICT"))
+    state: Mapped[str] = mapped_column(String(20))
+    payload: Mapped[dict[str, Any]]
+
+
 class LineageExpectation(Record, Base):
     """Explicit enrollment for detecting absent lineage on newly observed executions."""
     __tablename__ = "lineage_expectations"

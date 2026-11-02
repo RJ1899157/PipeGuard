@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--free-plan-confirmed", action="store_true",
                         help="Operator confirms this key's Groq organization remains on the Free plan")
     parser.add_argument("--dry-run", action="store_true", help="Project locally; make no Groq request")
+    parser.add_argument("--request-key", type=UUID, help="Reuse an existing request key to inspect/replay without another generation")
     args = parser.parse_args()
     os.umask(0o077)
     if not args.dry_run and not args.free_plan_confirmed:
@@ -39,11 +40,20 @@ def main():
         bundle_id = str(args.bundle_id)
         bundle = json_request("http://127.0.0.1:8000/v1/evidence-bundles/" + bundle_id,
                               key=os.environ["PIPEGUARD_ADMIN_TOKEN"])
-        packet, mapping = project_bundle(bundle)
+        if args.dry_run:
+            packet, mapping = project_bundle(bundle)
         bundle_hash = bundle["payload_hash"]
     if args.dry_run:
         print(json.dumps({"mode": "local_projection_only", "groq_request_sent": False,
                           "evidence_count": len(packet["items"]), "bytes": len(json.dumps(packet).encode())}))
+        return
+    if not args.verify_connection:
+        request_key = str(args.request_key or uuid4())
+        print(json.dumps({"request_key": request_key}), flush=True)
+        record = json_request("http://127.0.0.1:8000/v1/incidents/" + str(UUID(bundle["incident_id"])) + "/investigations",
+            key=os.environ["PIPEGUARD_ADMIN_TOKEN"], body={"request_key": request_key,
+            "bundle_id": bundle_id, "free_plan_confirmed": True})
+        print(json.dumps({"id": record["id"], "state": record["state"], "request_key": request_key}))
         return
     result = investigate(packet, os.environ.get("GROQ_API_KEY", ""))
     record = {"schema_version": 1, "created_at": datetime.now(timezone.utc).isoformat(),

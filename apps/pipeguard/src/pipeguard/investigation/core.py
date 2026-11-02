@@ -13,6 +13,9 @@ from pipeguard.lineage.evidence import SAFE_SOURCE_ERRORS
 
 class InvestigationRejected(ValueError):
     """Errors contain fixed public codes, never provider bodies or evidence text."""
+    def __init__(self, code, *, diagnostic=None):
+        super().__init__(code)
+        self.diagnostic = diagnostic
 
 
 class StrictModel(BaseModel):
@@ -20,17 +23,22 @@ class StrictModel(BaseModel):
 
 
 class Hypothesis(StrictModel):
+    category: Literal["reported_source_failure", "reported_execution_failure", "reported_validation_failure",
+                      "reported_quality_failure", "source_evidence_gap", "lineage_evidence_gap",
+                      "conflicting_execution_reports"]
     explanation: Annotated[str, Field(min_length=1, max_length=1200)]
     confidence: Literal["low", "medium"]
-    supporting_evidence: Annotated[list[str], Field(min_length=1, max_length=12)]
-    contradicting_evidence: Annotated[list[str], Field(max_length=12)]
+    supporting_evidence: Annotated[list[str], Field(min_length=1, max_length=1)]
+    contradicting_evidence: Annotated[str, Field(min_length=1, max_length=5)]
 
 
 class Investigation(StrictModel):
     abstained: bool = Field(strict=True)
     abstention_reason: Annotated[str, Field(max_length=600)]
     hypotheses: Annotated[list[Hypothesis], Field(max_length=3)]
-    next_checks: Annotated[list[Annotated[str, Field(min_length=1, max_length=300)]], Field(max_length=5)]
+    next_checks: Annotated[list[Literal["inspect_source_availability", "compare_retry_history",
+        "compare_quality_reports", "inspect_source_coverage", "inspect_lineage_completeness",
+        "request_missing_evidence"]], Field(max_length=5)]
 
     @model_validator(mode="after")
     def consistent_outcome(self):
@@ -40,7 +48,8 @@ class Investigation(StrictModel):
         elif not self.hypotheses or self.abstention_reason:
             raise ValueError("hypotheses_required_without_abstention_reason")
         for hypothesis in self.hypotheses:
-            support, contradiction = hypothesis.supporting_evidence, hypothesis.contradicting_evidence
+            support = hypothesis.supporting_evidence
+            contradiction = [] if hypothesis.contradicting_evidence == "none" else [hypothesis.contradicting_evidence]
             if (len(set(support)) != len(support) or len(set(contradiction)) != len(contradiction)
                     or set(support) & set(contradiction)):
                 raise ValueError("ambiguous_evidence_citations")
@@ -135,10 +144,65 @@ def project_bundle(bundle):
     return packet, mapping
 
 
+def eligible_categories(condition):
+    return ({"reported_source_failure", "reported_execution_failure", "reported_validation_failure", "conflicting_execution_reports"}
+            if condition in {"execution_failure", "unknown_execution_state"} else
+            {"reported_quality_failure"} if condition in {"quality_failure", "quality_conflict", "quality_missing"} else
+            {"source_evidence_gap"} if condition == "source_coverage" else
+            {"lineage_evidence_gap"} if condition in {"lineage_partial", "lineage_missing", "lineage_conflict"} else set())
+
+
+def supports(category, fact):
+    if category == "reported_source_failure":
+        return fact.get("error_code") in {"source_unavailable", "connection_timeout"}
+    if category == "reported_execution_failure":
+        return fact.get("error_code") == "execution_error"
+    if category == "reported_validation_failure":
+        return fact.get("error_code") == "validation_failed"
+    if category == "reported_quality_failure":
+        return any(fact.get("quality_counts", {}).get(s, 0) > 0 for s in ("fail", "error"))
+    if category == "source_evidence_gap":
+        return fact.get("scan_status") == "incomplete" or fact.get("error_code") in SAFE_SOURCE_ERRORS
+    if category == "lineage_evidence_gap":
+        return fact.get("lineage_coverage") == "partial"
+    return category == "conflicting_execution_reports" and fact.get("reconciliation_required") is True
+
+
+def supported_categories(packet):
+    return sorted(c for c in eligible_categories(packet.get("condition"))
+                  if any(supports(c, item.get("facts", {})) for item in packet["items"]))
+
+
+def incompatible(one, two):
+    return (one.get("run") is not None and one.get("run") == two.get("run")
+            and one.get("attempt") is not None and one.get("attempt") == two.get("attempt")
+            and one.get("state") in {"succeeded", "failed", "cancelled"}
+            and two.get("state") in {"succeeded", "failed", "cancelled"} and one["state"] != two["state"])
+
+
 def validate_answer(answer, packet):
     result = Investigation.model_validate(answer)
+    if len(json.dumps(result.model_dump(), ensure_ascii=False).encode()) > 12000:
+        raise InvestigationRejected("investigation_output_limit")
     allowed = {item["citation"] for item in packet["items"]}
+    categories = set()
+    facts = {item["citation"]: item.get("facts", {}) for item in packet["items"]}
+    condition = packet.get("condition")
+    eligible = eligible_categories(condition)
     for hypothesis in result.hypotheses:
-        if not set(hypothesis.supporting_evidence + hypothesis.contradicting_evidence) <= allowed:
+        contradiction = [] if hypothesis.contradicting_evidence == "none" else [hypothesis.contradicting_evidence]
+        if not set(hypothesis.supporting_evidence + contradiction) <= allowed:
             raise InvestigationRejected("unknown_evidence_citation")
+        category = hypothesis.category
+        if category not in eligible or category in categories:
+            raise InvestigationRejected("unsupported_hypothesis_category")
+        categories.add(category)
+        supporting = [facts[ref] for ref in hypothesis.supporting_evidence]
+        if not all(supports(category, fact) for fact in supporting):
+            raise InvestigationRejected("hypothesis_support_missing")
+        # A successful later retry is not a contradiction of an earlier failed attempt.
+        for ref in contradiction:
+            counter = facts[ref]
+            if not any(incompatible(counter, support) for support in supporting):
+                raise InvestigationRejected("unsupported_contradiction")
     return result
