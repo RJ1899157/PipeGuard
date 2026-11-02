@@ -1,6 +1,6 @@
 # Investigation integration verification
 
-Checkpoint: 2026-11-02. Scope: the first durable, authorized, dashboard-integrated advisory investigation slice. Stage 10 remains in progress; this report does not establish general model accuracy or production readiness.
+Checkpoint: 2026-11-02. Scope: the first durable, authorized, dashboard-integrated advisory investigation slice. **Follow-up:** the [fixed evaluation gate](investigation-evaluation.md) passed for the bounded local advisory slice using GPT-OSS 120B, with 312 backend tests. The integration results and Qwen screenshots below are historical evidence from before that model change; they do not establish general model accuracy or production readiness.
 
 ## Implemented and checked
 
@@ -41,10 +41,10 @@ All **1,161 baseline evidence/history IDs and native-row hashes** across seven t
 
 ## Remaining acceptance work
 
-- A broader fixed model-quality evaluation set, repeated trials and explicit quality thresholds across execution, quality, source and lineage incidents. The current evidence gates are deliberately narrow and can abstain on cases outside supported categories.
-- Final model selection: the current Qwen model is a preview release. No automatic alternative provider/model is enabled.
+- Expand live evaluation to quality failures, source-coverage findings and same-attempt contradictory reports before claiming live-model performance on those classes. The fixed offline cases cover their policy boundaries; the six-trial live gate covers execution/retry, partial lineage and missing quality only.
+- GPT-OSS 120B is now explicitly selected for the local advisory slice after Qwen's failed evaluations. No automatic alternative provider/model is enabled; future changes must repeat the gate.
 - Confidence calibration and evidence enrichment require separate evidence and privacy review. Citation membership and category checks do not prove arbitrary model prose or unseen root causes.
 - API/browser guarantees apply to the trusted local-machine deployment. Free-plan status is operator-confirmed; host loss, off-host backup, public multi-user authentication and distributed atomicity retain their documented limits.
-- Stage 11 recovery remains planned. No AI response can approve or execute recovery.
+- Stage 11 implementation remains planned; its [proposal, approval and interruption design](recovery-design.md) is recorded. No AI response can approve or execute recovery.
 
 See [operating procedures](investigation-operations.md) and the [roadmap](roadmap.md).

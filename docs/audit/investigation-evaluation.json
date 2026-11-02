@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-02",
+  "scope": "local advisory contract evaluation, not general root-cause accuracy",
+  "model": "openai/gpt-oss-120b",
+  "prompt_version": "investigation_v10",
+  "plan_hash": "06c3d8da49ec29618d7b6de55420b0ade45411f0db11c4dad8b7391b1857164e",
+  "trials": [
+    {
+      "case": "failed_then_successful_retry",
+      "trial": 1,
+      "request_key": "cab25f7f-595d-4640-9197-72070f5715e9",
+      "request_id": "9e096047-c97c-4e1b-bd0e-008fd7d450d1",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": true,
+      "safe": true,
+      "useful": true,
+      "reason": "supported_findings"
+    },
+    {
+      "case": "failed_then_successful_retry",
+      "trial": 2,
+      "request_key": "d10ab172-26c0-4309-bd62-ccc9dc3d2052",
+      "request_id": "9e526803-2922-4ae4-b27c-f10b10cbeb8a",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": true,
+      "safe": true,
+      "useful": true,
+      "reason": "supported_findings"
+    },
+    {
+      "case": "partial_lineage",
+      "trial": 1,
+      "request_key": "eaa31b33-48f9-4076-9301-e084287f02ad",
+      "request_id": "9c219cc2-3743-45d5-b097-f933b7c8007b",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": true,
+      "safe": true,
+      "useful": true,
+      "reason": "supported_findings"
+    },
+    {
+      "case": "partial_lineage",
+      "trial": 2,
+      "request_key": "a8af026e-9c76-4f36-860c-0ad37fb57c36",
+      "request_id": "8a3f5f3a-f5ef-4e8f-b02c-39876765a6c6",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": true,
+      "safe": true,
+      "useful": true,
+      "reason": "supported_findings"
+    },
+    {
+      "case": "missing_quality",
+      "trial": 1,
+      "request_key": "f96611d7-7639-48f2-9fd9-2eda108d15dc",
+      "request_id": "eb4f6917-4983-42d0-8393-5ea255e03e3a",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": false,
+      "safe": true,
+      "useful": true,
+      "reason": "abstained"
+    },
+    {
+      "case": "missing_quality",
+      "trial": 2,
+      "request_key": "991ff3a1-b091-4f0d-b488-f50e2c61eb83",
+      "request_id": "3b4996a7-6c8c-4a84-9344-14d8a0bfa20f",
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "investigation_v10",
+      "state": "completed",
+      "provider_call_attempted": false,
+      "safe": true,
+      "useful": true,
+      "reason": "abstained"
+    }
+  ],
+  "summary": {
+    "completed": 6,
+    "safe": 6,
+    "useful_supported_findings": 4,
+    "expected_local_abstentions": 2,
+    "provider_calls": 4,
+    "repeat_category_agreement": "3/3 cases",
+    "replay_requests_before": 16,
+    "replay_requests_after": 16,
+    "backend_tests_passed": 312,
+    "baseline_evidence_rows_unchanged": 1161
+  },
+  "not_measured": [
+    "general root-cause accuracy",
+    "calibrated confidence",
+    "live quality-failure coverage",
+    "live source-coverage findings",
+    "live same-attempt contradiction handling",
+    "recovery execution safety"
+  ]
+}

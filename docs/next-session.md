@@ -1,6 +1,6 @@
 # Next-session checkpoint
 
-**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations. The historical pre-break snapshot below is retained for context; next work is broader fixed model-quality evaluation.
+**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations and a passing bounded [evaluation gate](investigation-evaluation.md). GPT-OSS 120B replaces Qwen. The historical pre-break snapshot below is retained for context; next work is Stage 11 durable proposals and explicit approvals with dispatch disabled, following the [recovery design](recovery-design.md).
 
 Saved on 2026-11-01 (Asia/Kolkata), after the pre-investigation hardening audit.
 

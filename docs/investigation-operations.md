@@ -1,6 +1,6 @@
 # Advisory investigation operations
 
-Stage 10 is **in progress**. Manual investigation is available through the incident dashboard, authenticated API and CLI. Requests and outcomes are retained in PostgreSQL. This is a bounded advisory implementation; broader model-quality evaluation remains pending. AI cannot change deterministic incident state or execute recovery.
+Stage 10's **initial local advisory slice is verified**. Manual investigation is available through the incident dashboard, authenticated API and CLI. Requests and outcomes are retained in PostgreSQL. This is a bounded advisory implementation; the fixed bounded evaluation gate passes, while broader live incident-class coverage remains limited. AI cannot change deterministic incident state or execute recovery.
 
 ## Configuration and free-tier boundary
 

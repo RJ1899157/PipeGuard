@@ -46,4 +46,18 @@ Version 8 failed its usefulness gate: execution trial 1 produced the expected so
 
 Version 9 clarified that a metadata-coverage incident should be explained as a reported coverage gap, without claiming it caused an execution failure. Its lineage trial passed, but execution trial 1 failed with provider HTTP 400 (JSON generation failure). Remaining trials were stopped; this is another incomplete failed evaluation. No automatic regeneration was attempted.
 
-Version 10 changes the model and model-specific reasoning/completion settings, preserving the version 9 prompt, source evidence and thresholds. Results are pending; criteria must not be loosened to fit observed output.
+Version 10 changed the model and model-specific reasoning/completion settings, preserving the version 9 prompt, source evidence and thresholds. **The local advisory gate passed without changing those thresholds.**
+
+| Fixed case                               | Trial 1                          | Trial 2                                          | Groq calls |
+| ---------------------------------------- | -------------------------------- | ------------------------------------------------ | ---------- |
+| Failed execution, successful later retry | Supported source-failure finding | Same category; later success not a contradiction | 2          |
+| Partial lineage                          | Reported lineage coverage gap    | Same category                                    | 2          |
+| Missing quality report                   | Local abstention                 | Local abstention                                 | 0          |
+
+All six completed with locally valid output. All four supported-finding trials were useful under the predefined source-claim labels, both missing-report trials abstained, and category/abstention agreement was three of three cases. These are small-set observations, not population accuracy estimates. Generated prose was inspected as unverified narrative; the gate scores categories and citations, not arbitrary prose correctness.
+
+The full backend suite passed **312 tests**, including **36** fixed evaluation/runner checks. One existing upstream Starlette/HTTPX deprecation warning remains. Alembic reported no schema drift; no migration or dependency was added. All **1,161** baseline evidence/history IDs and native-row hashes remained unchanged. API liveness/readiness and the dashboard returned HTTP 200. The dashboard's live incident history displayed the GPT-OSS results and retained Qwen failures. No frontend source changed in this checkpoint; the earlier frontend/build/responsive checks were not rerun.
+
+All six version 10 trials were replayed through the normal API with the frozen keys. The total request count remained **16 before and after**: six earlier integration requests, two version 8 requests, two version 9 requests and six version 10 requests. No replay generated another provider call. Failed and abstained earlier evaluations remain available; they were not removed from the denominator of their own failed runs.
+
+Machine-readable results: [evaluation report](audit/investigation-evaluation.json). The exact source evidence, provider contracts, request identities and outcomes remain in the normal database ledger; private plans and invocation results remain under ignored local data. The next Stage 11 milestone is durable proposals and explicit approvals with dispatch disabled, following the [recovery design](recovery-design.md).
