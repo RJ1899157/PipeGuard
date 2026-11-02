@@ -34,6 +34,7 @@ import { ExecutionTimeline, QualityResults } from "./analytics";
 import { GraphText } from "./graph-text";
 import { WatchdogStatus } from "./watchdog-status";
 import { Investigations } from "./investigations";
+import { Recovery } from "./recovery";
 const Lineage = dynamic(() => import("./lineage"), {
   ssr: false,
   loading: () => <div className="empty">Loading lineage diagram…</div>,
@@ -690,6 +691,11 @@ export default function Dashboard() {
                       onChange={setHistoryOffset}
                     />
                   )}
+                  <Recovery
+                    key={`recovery:${demo}:${incident.id}`}
+                    incidentId={incident.id}
+                    demo={demo}
+                  />
                   <Investigations
                     key={`${demo}:${incident.id}`}
                     incidentId={incident.id}

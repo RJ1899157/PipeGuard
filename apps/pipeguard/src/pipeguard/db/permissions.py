@@ -12,7 +12,7 @@ def grant_runtime_access(connection, role="pipeguard_api", schema="public"):
         connection.execute(text(f"GRANT INSERT ON {where}.{quote(table)} TO {who}"))
     for table in ("runs", "attempts", "incidents", "monitor_heartbeats"):
         connection.execute(text(f"GRANT UPDATE ON {where}.{quote(table)} TO {who}"))
-    for table in ("investigation_requests", "investigation_outcomes"):
+    for table in ("investigation_requests", "investigation_outcomes", "recovery_proposals", "recovery_decisions"):
         connection.execute(text(f"GRANT SELECT, INSERT ON {where}.{quote(table)} TO {who}"))
     connection.execute(text(f"GRANT UPDATE (enabled) ON {where}.integrations TO {who}"))
     connection.execute(text(f"GRANT UPDATE (revoked) ON {where}.producer_credentials TO {who}"))
@@ -39,5 +39,5 @@ def verify_runtime_access(connection):
     connection.execute(text("SELECT id FROM integrations LIMIT 0"))
     connection.execute(text("SELECT id FROM producer_credentials LIMIT 0"))
     revision = connection.scalar(text("SELECT version_num FROM alembic_version"))
-    if revision != "e7c2b936a410":
+    if revision != "f102b8e6d391":
         raise RuntimeError("Apply the API schema migration before starting the server")

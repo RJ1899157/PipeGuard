@@ -313,3 +313,31 @@ class LineageExpectation(Record, Base):
     job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
     grace_seconds: Mapped[int] = mapped_column(Integer)
     version: Mapped[str] = mapped_column(String(100), server_default="lineage-v1")
+
+
+class RecoveryProposal(Record, Base):
+    __tablename__ = "recovery_proposals"
+    __table_args__ = (UniqueConstraint("request_key"),
+        CheckConstraint("payload_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("jsonb_typeof(payload) = 'object' AND octet_length(payload::text) <= 16384", name="bounded_payload"),
+        CheckConstraint("expires_at > created_at AND expires_at <= created_at + interval '10 minutes'", name="expiry"),
+        Index("ix_recovery_proposals_incident", "incident_id", "created_at", "id"))
+    incident_id: Mapped[UUID] = mapped_column(ForeignKey("incidents.id", ondelete="RESTRICT"))
+    bundle_id: Mapped[UUID] = mapped_column(ForeignKey("evidence_bundles.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    actor: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict[str, Any]]
+    payload_hash: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime]
+
+
+class RecoveryDecision(Record, Base):
+    __tablename__ = "recovery_decisions"
+    __table_args__ = (UniqueConstraint("proposal_id"), UniqueConstraint("request_key"),
+        CheckConstraint("proposal_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("decision IN ('approve', 'reject')", name="decision"))
+    proposal_id: Mapped[UUID] = mapped_column(ForeignKey("recovery_proposals.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    proposal_hash: Mapped[str] = mapped_column(String(64))
+    decision: Mapped[str] = mapped_column(String(10))
+    actor: Mapped[str] = mapped_column(String(40))

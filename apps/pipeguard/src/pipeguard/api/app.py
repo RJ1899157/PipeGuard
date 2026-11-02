@@ -323,4 +323,6 @@ def create_app(settings: Settings | None = None, *, engine=None):
     install_lineage_routes(app, engine, authenticate)
     from pipeguard.investigation.api import install_routes as install_investigation_routes
     install_investigation_routes(app, engine, authenticate, administrator)
+    from pipeguard.recovery.api import install_routes as install_recovery_routes
+    install_recovery_routes(app, engine, authenticate, administrator)
     return app
