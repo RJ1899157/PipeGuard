@@ -2,9 +2,9 @@
 
 **Data pipeline observability, evidence-grounded investigation, and human-approved recovery.**
 
-PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It collects execution metadata, quality results and bounded dataset lineage, detects incidents through deterministic rules and preserves supporting evidence. AI-generated hypotheses remain a later stage.
+PipeGuard is a local-first platform designed to help operators understand pipeline failures and data-quality incidents. It collects execution metadata, quality results and bounded dataset lineage, detects incidents through deterministic rules and preserves supporting evidence. A manual hosted-AI investigation prototype is now available for evaluation; integrated investigation remains in progress.
 
-> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. Dataset lineage, historical graph traversal and immutable incident evidence bundles are implemented through a bounded OpenLineage profile. The local read-only dashboard now exposes pipeline coverage, execution attempts, incident history and attempt-scoped interactive lineage. AI investigation and approved recovery remain planned.
+> **Status: local monitoring and deterministic detection implemented.** Authenticated producer setup, event submission, replay protection, execution history and scoped reads are available. An independent orders workload with dbt transformations and quality checks is available. Airflow orchestration and scoped execution reporting are implemented. Deterministic incidents, versioned quality reports, read-only Airflow reconciliation and monitoring coverage checks are implemented. Dataset lineage, historical graph traversal and immutable incident evidence bundles are implemented through a bounded OpenLineage profile. The local read-only dashboard now exposes pipeline coverage, execution attempts, incident history and attempt-scoped interactive lineage. A manual Groq investigation prototype is available; its integrated evaluation, API/dashboard and human-approved recovery remain pending.
 
 [Architecture](docs/architecture/overview.md) · [Domain model](docs/architecture/domain-model.md) · [Development setup](docs/development/setup.md) · [Delivery roadmap](docs/roadmap.md) · [Documentation index](docs/README.md) · [Incident operations](docs/incident-operations.md) · [Failure coverage](docs/failure-coverage.md) · [Lineage and evidence](docs/architecture/lineage-evidence.md)
 
@@ -97,3 +97,5 @@ All repository changes are owned by **RJ1899157**.
 ## Local hardening and operations
 
 [Hardening verification](docs/hardening-verification.md) records independent local service monitoring, dedicated minimal credentials, verified database restore drills, consistent captured pagination, full-scope quality conflict summaries and measured query improvements. [Operating procedures](docs/local-resilience.md) describe the supported local boundaries and recovery checks.
+
+See [manual investigation operations](docs/investigation-operations.md) for the first Stage 10 checkpoint and its limits.

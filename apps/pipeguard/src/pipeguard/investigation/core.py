@@ -1,0 +1,144 @@
+"""Minimal outbound evidence and locally checked advisory responses."""
+import json
+from typing import Annotated, Literal
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from pipeguard.detection.service import digest
+from pipeguard.ingestion.contracts import ExecutionEvent
+from pipeguard.detection.contracts import QualityReport
+from pipeguard.lineage.evidence import SAFE_SOURCE_ERRORS
+
+
+class InvestigationRejected(ValueError):
+    """Errors contain fixed public codes, never provider bodies or evidence text."""
+
+
+class StrictModel(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+
+class Hypothesis(StrictModel):
+    explanation: Annotated[str, Field(min_length=1, max_length=1200)]
+    confidence: Literal["low", "medium"]
+    supporting_evidence: Annotated[list[str], Field(min_length=1, max_length=12)]
+    contradicting_evidence: Annotated[list[str], Field(max_length=12)]
+
+
+class Investigation(StrictModel):
+    abstained: bool = Field(strict=True)
+    abstention_reason: Annotated[str, Field(max_length=600)]
+    hypotheses: Annotated[list[Hypothesis], Field(max_length=3)]
+    next_checks: Annotated[list[Annotated[str, Field(min_length=1, max_length=300)]], Field(max_length=5)]
+
+    @model_validator(mode="after")
+    def consistent_outcome(self):
+        if self.abstained:
+            if self.hypotheses or not self.abstention_reason.strip():
+                raise ValueError("abstention_requires_reason_without_hypotheses")
+        elif not self.hypotheses or self.abstention_reason:
+            raise ValueError("hypotheses_required_without_abstention_reason")
+        for hypothesis in self.hypotheses:
+            support, contradiction = hypothesis.supporting_evidence, hypothesis.contradicting_evidence
+            if (len(set(support)) != len(support) or len(set(contradiction)) != len(contradiction)
+                    or set(support) & set(contradiction)):
+                raise ValueError("ambiguous_evidence_citations")
+        return self
+
+
+STATES = {"unknown", "queued", "running", "waiting", "succeeded", "failed", "cancelled", "blocked", "skipped"}
+CONDITIONS = {"execution_failure", "unknown_execution_state", "quality_failure", "quality_conflict",
+              "quality_missing", "source_coverage", "lineage_conflict", "lineage_partial", "lineage_missing"}
+ERRORS = SAFE_SOURCE_ERRORS | {"connection_timeout", "source_unavailable", "validation_failed", "execution_error", "unknown"}
+
+
+def project_bundle(bundle):
+    """No raw names, external identifiers, logs, SQL or arbitrary strings leave here.
+
+    Fail on size/integrity limits instead of silently dropping older failed attempts.
+    Local citation mapping is retained separately and never sent to the provider.
+    """
+    payload = bundle["payload"]
+    if digest(payload) != bundle["payload_hash"]:
+        raise InvestigationRejected("bundle_integrity_mismatch")
+    if payload.get("schema_version") != 1 or payload.get("truncated") is not False:
+        raise InvestigationRejected("bundle_incomplete_or_unsupported")
+    if "source_hash_mismatch" in payload.get("missing_evidence", []):
+        raise InvestigationRejected("source_integrity_mismatch")
+    source_items = payload.get("items", [])
+    if not isinstance(source_items, list) or len(source_items) > 100:
+        raise InvestigationRejected("evidence_limit")
+    aliases, run_ids, mapping, items = {}, {}, {}, []
+
+    def run_alias(value):
+        if value not in aliases:
+            aliases[value] = f"run_{len(aliases) + 1}"
+        return aliases[value]
+
+    for item in source_items:
+        if item["table"] == "runs":
+            external = item["summary"].get("external_run_id")
+            if isinstance(external, str):
+                run_ids[item["id"]] = run_alias(external)
+    for item in source_items:
+        table, value, fields = item["table"], item["summary"], {}
+        # UUIDs and original hashes remain in the local citation map only.
+        UUID(item["id"])
+        if table == "ingested_events":
+            event = ExecutionEvent.model_validate(value)
+            fields = {"run": run_alias(event.external_run_id), "attempt": event.attempt_number,
+                      "state": event.state, "error_code": event.error_code,
+                      "occurred_at": event.occurred_at.isoformat()}
+        elif table == "attempts":
+            if value.get("run_id") not in run_ids:
+                raise InvestigationRejected("attempt_run_missing")
+            number = value.get("attempt_number")
+            if type(number) is not int or not 1 <= number <= 2147483647:
+                raise InvestigationRejected("invalid_attempt")
+            fields = {"run": run_ids[value["run_id"]], "attempt": number}
+        elif table == "runs":
+            fields = {"run": run_ids.get(item["id"])}
+        elif table == "observations" and "report" in value:
+            report = QualityReport.model_validate(value["report"])
+            fields = {"run": run_alias(report.external_run_id), "attempt": report.attempt_number,
+                      "inventory_complete": report.inventory_complete,
+                      "quality_counts": {status: sum(c.status == status for c in report.checks)
+                                         for status in ("pass", "fail", "error", "skipped", "unknown")},
+                      "occurred_at": report.occurred_at.isoformat()}
+        elif table == "observations":
+            if value.get("status") in {"complete", "incomplete"}:
+                fields["scan_status"] = value["status"]
+        elif table == "lineage_events":
+            if value.get("coverage") in {"complete", "partial"}:
+                fields["lineage_coverage"] = value["coverage"]
+        else:
+            continue
+        if value.get("state") in STATES:
+            fields["state"] = value["state"]
+        if value.get("error_code") in ERRORS:
+            fields["error_code"] = value["error_code"]
+        if type(value.get("reconciliation_required")) is bool:
+            fields["reconciliation_required"] = value["reconciliation_required"]
+        if not fields:
+            continue
+        citation = f"e{len(items) + 1}"
+        items.append({"citation": citation, "kind": table, "facts": fields})
+        mapping[citation] = {key: item[key] for key in ("table", "id", "content_hash", "hash_basis")}
+    condition = payload.get("incident", {}).get("condition")
+    packet = {"schema_version": 1, "condition": condition if condition in CONDITIONS else "unknown",
+              "missing_evidence_present": bool(payload.get("missing_evidence")), "items": items}
+    if not items:
+        raise InvestigationRejected("no_usable_evidence")
+    if len(json.dumps(packet).encode()) > 6000:
+        raise InvestigationRejected("provider_evidence_limit")
+    return packet, mapping
+
+
+def validate_answer(answer, packet):
+    result = Investigation.model_validate(answer)
+    allowed = {item["citation"] for item in packet["items"]}
+    for hypothesis in result.hypotheses:
+        if not set(hypothesis.supporting_evidence + hypothesis.contradicting_evidence) <= allowed:
+            raise InvestigationRejected("unknown_evidence_citation")
+    return result
