@@ -723,6 +723,28 @@ dd {
   overflow-x: auto;
   margin-top: 18px;
 }
+.investigation-panel {
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  overflow-wrap: anywhere;
+}
+.investigation-panel .action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.investigation-panel input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+.investigation-panel pre {
+  max-height: 350px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 table {
   border-collapse: collapse;
   text-align: left;

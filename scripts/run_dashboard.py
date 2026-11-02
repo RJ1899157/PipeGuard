@@ -1,4 +1,4 @@
-"""Launch the local read-only dashboard with only its required secret."""
+"""Launch the local dashboard with only its required API credential."""
 import os
 from pathlib import Path
 import shutil

@@ -1,5 +1,7 @@
 # Next-session checkpoint
 
+**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations. The historical pre-break snapshot below is retained for context; next work is broader fixed model-quality evaluation.
+
 Saved on 2026-11-01 (Asia/Kolkata), after the pre-investigation hardening audit.
 
 ## Verified before the break

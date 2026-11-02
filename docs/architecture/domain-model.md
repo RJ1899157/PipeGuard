@@ -29,23 +29,23 @@ An orders pipeline loads a local file into `raw.orders`, transforms it into `ana
 
 IDs are application-generated UUIDs unless an external identifier is explicitly named. Internal IDs remain stable even if an upstream display name changes. External identifiers are scoped to an integration/environment, not globally assumed unique.
 
-| Entity | Meaning and principal fields | Identity and relationships |
-| --- | --- | --- |
-| Integration | One configured producer or adapter in an environment: name, kind, environment, secret reference, enabled | Unique integration name per environment; credentials stay outside metadata payloads |
-| Dataset | A logical data asset: namespace, name, kind | Unique `(namespace, name)`; examples include a file and a warehouse table |
-| Job | A reusable computation: integration, namespace, name, kind | Unique `(integration_id, namespace, name)`; a DAG, task, or dbt model can each be a job |
-| Run | One execution of a job: external run ID, optional parent run, state projection, data interval, started/finished times | Unique `(job_id, external_run_id)`; producer scope is inherited through the job; parent references another run |
-| Attempt | One execution attempt within a run: external task-instance key, attempt number, state, times, redacted reported error code/message | Unique `(run_id, attempt_key, attempt_number)`; retries add attempts |
-| Ingested event | A received observation: integration, deduplication key, schema version, occurred/received times, redacted payload, payload hash, processing state | Unique `(integration_id, deduplication_key)`; append-only source record; normalization may link it to a run/attempt |
-| Dataset schema snapshot | A recorded schema at an observation time: dataset, schema hash, canonical column description, source event | Referenced by event/evidence; identical schemas can be deduplicated by dataset and hash |
-| Run dataset observation | A run consumed or produced a dataset: run, dataset, input/output direction, source event, optional schema snapshot | Carries provenance; preserves historic relationships rather than overwriting a current graph |
-| Quality rule version | A versioned rule definition: dataset, rule key, version, type, configuration | Unique `(dataset_id, rule_key, version)`; results keep their original rule version |
-| Quality result | One evaluation: rule version, evaluation key, optional run, evaluated time, pass/fail/error/unknown, metrics, source event | Unique `(rule_version_id, evaluation_key)`; a check execution error is distinct from a failed data assertion |
-| Incident | An operational issue: dataset/job/run scope, policy version, fingerprint, severity, open/resolved state, acknowledgement fields, timestamps | One active incident per fingerprint; recurrence reopens the same deterministic condition incident and appends history |
-| Incident occurrence | A repeated triggering observation: incident, trigger event or quality result, evaluation key, observed time | Unique detector evaluation key per incident; repeated delivery does not inflate occurrence counts |
-| Incident transition | An auditable incident change: incident, previous/new state, actor type/ID, reason, source evaluation, time | Append-only; deterministic recovery observations or recorded human decisions may change state |
-| Evidence artifact | A captured observation: kind, capture time, source locator/event, redacted content or artifact locator, content hash, redaction version | Immutable snapshot; hash demonstrates consistency, not source truth or tamper-proof storage |
-| Incident evidence link | An incident uses an evidence artifact | Unique `(incident_id, evidence_id)`; one artifact may support several incidents |
+| Entity                  | Meaning and principal fields                                                                                                                      | Identity and relationships                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Integration             | One configured producer or adapter in an environment: name, kind, environment, secret reference, enabled                                          | Unique integration name per environment; credentials stay outside metadata payloads                                   |
+| Dataset                 | A logical data asset: namespace, name, kind                                                                                                       | Unique `(namespace, name)`; examples include a file and a warehouse table                                             |
+| Job                     | A reusable computation: integration, namespace, name, kind                                                                                        | Unique `(integration_id, namespace, name)`; a DAG, task, or dbt model can each be a job                               |
+| Run                     | One execution of a job: external run ID, optional parent run, state projection, data interval, started/finished times                             | Unique `(job_id, external_run_id)`; producer scope is inherited through the job; parent references another run        |
+| Attempt                 | One execution attempt within a run: external task-instance key, attempt number, state, times, redacted reported error code/message                | Unique `(run_id, attempt_key, attempt_number)`; retries add attempts                                                  |
+| Ingested event          | A received observation: integration, deduplication key, schema version, occurred/received times, redacted payload, payload hash, processing state | Unique `(integration_id, deduplication_key)`; append-only source record; normalization may link it to a run/attempt   |
+| Dataset schema snapshot | A recorded schema at an observation time: dataset, schema hash, canonical column description, source event                                        | Referenced by event/evidence; identical schemas can be deduplicated by dataset and hash                               |
+| Run dataset observation | A run consumed or produced a dataset: run, dataset, input/output direction, source event, optional schema snapshot                                | Carries provenance; preserves historic relationships rather than overwriting a current graph                          |
+| Quality rule version    | A versioned rule definition: dataset, rule key, version, type, configuration                                                                      | Unique `(dataset_id, rule_key, version)`; results keep their original rule version                                    |
+| Quality result          | One evaluation: rule version, evaluation key, optional run, evaluated time, pass/fail/error/unknown, metrics, source event                        | Unique `(rule_version_id, evaluation_key)`; a check execution error is distinct from a failed data assertion          |
+| Incident                | An operational issue: dataset/job/run scope, policy version, fingerprint, severity, open/resolved state, acknowledgement fields, timestamps       | One active incident per fingerprint; recurrence reopens the same deterministic condition incident and appends history |
+| Incident occurrence     | A repeated triggering observation: incident, trigger event or quality result, evaluation key, observed time                                       | Unique detector evaluation key per incident; repeated delivery does not inflate occurrence counts                     |
+| Incident transition     | An auditable incident change: incident, previous/new state, actor type/ID, reason, source evaluation, time                                        | Append-only; deterministic recovery observations or recorded human decisions may change state                         |
+| Evidence artifact       | A captured observation: kind, capture time, source locator/event, redacted content or artifact locator, content hash, redaction version           | Immutable snapshot; hash demonstrates consistency, not source truth or tamper-proof storage                           |
+| Incident evidence link  | An incident uses an evidence artifact                                                                                                             | Unique `(incident_id, evidence_id)`; one artifact may support several incidents                                       |
 
 The initial schema implemented integrations, datasets, jobs, runs, attempts and ingested events. Subsequent migrations add quality observations, deterministic incidents, lineage and immutable evidence bundles as described below. Investigation and recovery remain planned.
 
@@ -70,13 +70,13 @@ A recovery proposal stores a typed allowlisted action, target, parameters, expec
 
 ## Alternatives considered
 
-| Choice | Why it fits PipeGuard | Alternative and tradeoff |
-| --- | --- | --- |
-| PostgreSQL | Relationships, constraints, transactions, and JSONB fit operational metadata and approval workflows | SQLite simplifies local setup but does not exercise the selected PostgreSQL behavior or concurrent service access |
-| Relational lineage observations | Enough to traverse the initial dataset/job graph while retaining source events | A graph database may help complex traversals later but adds a service and duplicated operational data |
-| Events plus state projections | Efficient dashboard reads while retaining history for debugging and replay | Current-state-only tables lose prior failures; full event sourcing introduces more replay/versioning work than the initial scope needs |
-| Typed columns plus JSONB | Stable query paths with room for adapter-specific metadata | All-JSON documents weaken visible relationships and constraints; fully normalizing every external facet creates excessive schema churn |
-| UUID internal identity plus external unique keys | Keeps application relationships independent of producer identifiers | External IDs as primary keys tightly couple the app to one producer's naming and lifecycle |
+| Choice                                           | Why it fits PipeGuard                                                                               | Alternative and tradeoff                                                                                                               |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| PostgreSQL                                       | Relationships, constraints, transactions, and JSONB fit operational metadata and approval workflows | SQLite simplifies local setup but does not exercise the selected PostgreSQL behavior or concurrent service access                      |
+| Relational lineage observations                  | Enough to traverse the initial dataset/job graph while retaining source events                      | A graph database may help complex traversals later but adds a service and duplicated operational data                                  |
+| Events plus state projections                    | Efficient dashboard reads while retaining history for debugging and replay                          | Current-state-only tables lose prior failures; full event sourcing introduces more replay/versioning work than the initial scope needs |
+| Typed columns plus JSONB                         | Stable query paths with room for adapter-specific metadata                                          | All-JSON documents weaken visible relationships and constraints; fully normalizing every external facet creates excessive schema churn |
+| UUID internal identity plus external unique keys | Keeps application relationships independent of producer identifiers                                 | External IDs as primary keys tightly couple the app to one producer's naming and lifecycle                                             |
 
 ## Planned database checkpoint
 
@@ -131,3 +131,7 @@ separate restricted runtime role without schema ownership.
 ## Lineage and evidence additions
 
 `lineage_runs` binds logical step UUIDs to monitored execution attempts. `lineage_events` retains canonical source claims; `dataset_mentions` indexes their input/output assertions. `lineage_expectations` declares required delivery for newly observed runs. `evidence_bundles` retains immutable scoped incident snapshots. Dataset identities and these records are append-only. See [lineage and evidence architecture](lineage-evidence.md) for the distinction between declared dependencies, reported outcomes and verified business truth.
+
+## Advisory investigation audit
+
+`investigation_requests` stores an immutable bundle reference, idempotency key, bounded exact outbound projection, citation map, input hash and provider/prompt metadata. Current records also preserve the system prompt, response schema and inference settings without credential headers. `investigation_outcomes` appends one terminal result or failure per request. Missing terminal writes remain pending/unknown and are never automatically replayed. These records cannot change deterministic incident state or authorize recovery. See [operations](../investigation-operations.md).

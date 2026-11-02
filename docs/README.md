@@ -26,7 +26,9 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Operations and security
 
-- [Advisory investigation](investigation-operations.md): initial manual Groq integration, bounded evidence projection and remaining Stage 10 work.
+- [Investigation integration verification](investigation-verification.md): regression, grounding, browser and live provider checks.
+
+- [Advisory investigation](investigation-operations.md): durable Groq investigations, bounded evidence projection and remaining Stage 10 work.
 
 - [Container security triage](container-security.md): installed-package advisories, release classifications and unresolved upstream risks.
 - [Local resilience operations](local-resilience.md): watcher, private backups, restore verification and limits.

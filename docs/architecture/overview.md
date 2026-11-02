@@ -1,6 +1,6 @@
 # Architecture overview
 
-**Status:** target architecture with implemented local monitoring, detection, lineage and evidence slices. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; quality reports, deterministic incident services and independent source reconciliation are implemented; bounded lineage ingestion, historical traversal and evidence snapshots are implemented; a local read-only dashboard with attempt-scoped React Flow lineage is implemented; AI investigation and approved recovery remain planned.
+**Status:** target architecture with implemented local monitoring, detection, lineage and evidence slices. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; quality reports, deterministic incident services and independent source reconciliation are implemented; bounded lineage ingestion, historical traversal and evidence snapshots are implemented; a local read-only dashboard with attempt-scoped React Flow lineage is implemented; Durable manual advisory investigation is integrated through scoped APIs and the dashboard; broader model-quality evaluation and approved recovery remain planned.
 
 ## Scope
 
@@ -33,16 +33,16 @@ The diagram shows intended data flow, not deployed services. It does not prescri
 
 ## Responsibilities
 
-| Component | Owns | Boundary |
-| --- | --- | --- |
-| Sample ingestion and transformations | Business records and transformation logic | Emits metadata; independent of PipeGuard internals |
-| Orchestrator | Scheduling, execution, retries, and its own metadata | Access through documented APIs/events; no direct reads of internal tables |
-| Metadata ingestion | Event receipt, validation, deduplication, normalization, and processing state | Adapters normalize external contracts into application records |
-| Detection | Versioned policies, evaluations, incident grouping, and recovery conditions | Deterministic and auditable |
-| Evidence collection | Captured observations, source references, timestamps, redaction, and content hashes | Preserve provenance and distinguish unavailable evidence |
-| Investigator | Ranked hypotheses and explicit supporting/contradicting evidence | Advisory; may abstain and cannot authorize recovery |
-| API and dashboard | Operational queries, incident views, graph exploration, and approval interfaces | Must enforce access control at server boundaries |
-| Recovery adapter | Allowlisted commands, approval validation, idempotency, and execution records | Executes only an authorized, current, unexpired proposal |
+| Component                            | Owns                                                                                | Boundary                                                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Sample ingestion and transformations | Business records and transformation logic                                           | Emits metadata; independent of PipeGuard internals                        |
+| Orchestrator                         | Scheduling, execution, retries, and its own metadata                                | Access through documented APIs/events; no direct reads of internal tables |
+| Metadata ingestion                   | Event receipt, validation, deduplication, normalization, and processing state       | Adapters normalize external contracts into application records            |
+| Detection                            | Versioned policies, evaluations, incident grouping, and recovery conditions         | Deterministic and auditable                                               |
+| Evidence collection                  | Captured observations, source references, timestamps, redaction, and content hashes | Preserve provenance and distinguish unavailable evidence                  |
+| Investigator                         | Ranked hypotheses and explicit supporting/contradicting evidence                    | Advisory; may abstain and cannot authorize recovery                       |
+| API and dashboard                    | Operational queries, incident views, graph exploration, and approval interfaces     | Must enforce access control at server boundaries                          |
+| Recovery adapter                     | Allowlisted commands, approval validation, idempotency, and execution records       | Executes only an authorized, current, unexpired proposal                  |
 
 ## Data ownership
 

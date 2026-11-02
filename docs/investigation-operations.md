@@ -1,44 +1,70 @@
-# Advisory investigation: first integration checkpoint
+# Advisory investigation operations
 
-Stage 10 is **in progress**. This checkpoint implements manual CLI investigation of an existing immutable evidence bundle. It does not add dashboard controls, persisted investigation database records, an API route or recovery execution.
+Stage 10 is **in progress**. Manual investigation is available through the incident dashboard, authenticated API and CLI. Requests and outcomes are retained in PostgreSQL. This is a bounded advisory implementation; broader model-quality evaluation remains pending. AI cannot change deterministic incident state or execute recovery.
 
-## Provider and cost boundary
+## Configuration and free-tier boundary
 
-The operator selected Groq and confirmed the account is on its Free plan. The private root `.env` contains `GROQ_API_KEY`; the key is never passed to the browser or printed. Model-list authentication succeeded on 2026-11-02. The model-list API does not expose or verify the account's billing plan.
+The operator selected Groq and confirmed the organization is on its **Free plan**. Private root `.env` settings are:
 
-The initial integration uses `qwen/qwen3.8-27b`, available to the account and documented as supporting strict JSON Schema output. Groq labels it a **preview model**: availability may change. Its use here verifies the integration, not a final production model selection or proven investigation quality. No automatic model fallback or paid-plan upgrade exists. Every generation requires the operator's `--free-plan-confirmed` assertion; this flag cannot technically verify billing or prevent charges if the operator subsequently upgrades the account. Keep the account on Free.
-
-Each invocation makes at most one generation request, with a 6,000-byte projected evidence cap, 2,048 maximum completion tokens, a 256 KiB response cap and a 30-second socket timeout. There is no automatic retry, tool use, streaming, proxy inheritance or redirect following. A quota error returns `provider_rate_limited`; wait before deliberately retrying. Limits are account/model-specific. This is not an absolute wall-clock deadline or a global cross-process request budget.
-
-## Manual operation
-
-From the project root, with the existing API running:
-
-```sh
-# Inspect a stored bundle locally; no Groq request.
-uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --dry-run
-
-# Synthetic provider connectivity and response validation; no live incident evidence.
-uv run --locked --env-file .env python scripts/investigate.py --verify-connection --free-plan-confirmed
-
-# Explicitly submit the bounded projection of this selected stored bundle.
-uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --free-plan-confirmed
+```dotenv
+GROQ_API_KEY=your_private_key
+PIPEGUARD_INVESTIGATION_ENABLED=true
 ```
 
-The bundle must already exist; this command does not capture additional evidence or query a workload. It reads a selected bundle through the fixed local authenticated API. Integrity mismatches, truncated bundles, missing attempt/run bindings, oversized projections and unusable evidence fail closed before generation. There is no silent trimming of older failed attempts to fit the provider budget.
+The enable flag defaults to false in the example file. Restart the API after changing these values. The dashboard receives only its API credential; the Groq key never reaches browser code. The account's billing plan cannot be verified through the model-list endpoint. Keep the organization on Free: an operator confirmation or an application request limit cannot prevent charges after a paid-plan upgrade. No automatic model fallback, billing upgrade or retry exists.
 
-## Evidence and response boundary
+The configured initial model is `qwen/qwen3.8-27b`, a Groq **preview** model. Availability and quality are not production guarantees. Model-list authentication and synthetic structured generation were verified on 2026-11-02. No new Python or web dependency was required.
 
-Only an allowlisted projection leaves the machine: execution states, enumerated error codes, attempt numbers, normalized execution/report times, quality status counts, completeness/reconciliation flags and a known incident condition. Run identifiers become temporary aliases. Dataset names, rule names, external identifiers, SQL, logs, credentials, arbitrary free text and original database UUIDs are excluded. Some bundle fields are deliberately not sent. Quality counts do not preserve rule identity and cannot establish cross-report rule conflicts.
+## Dashboard and API
 
-The response has at most three ranked hypotheses, supporting/contradicting citation IDs, low/medium confidence, advisory next checks or an explicit abstention. Local validation rejects unknown citation IDs, duplicate/overlapping citations, inconsistent abstention and malformed or oversized output. The instructions require preserving failed attempts after successful retries and treating source claims as untrusted. No response can change deterministic incident state or execute recovery.
+Select **Incidents → an incident → AI investigation**. Confirm the selected evidence may go to Groq and that the organization remains on Free, then choose **Investigate incident**. Preview mode never submits demonstration records. Refreshing history is a local read and does not generate another response.
 
-Citation membership and schema validation **do not prove factual correctness**, causal attribution or prompt-injection resistance. Generated text remains untrusted. Repeatable groundedness, contradiction, missing-evidence, injection and provider-failure evaluations, durable investigation audit records, API authorization and dashboard presentation remain required before Stage 10 is complete.
+- `POST /v1/incidents/{incident_id}/investigations`: administrator-only. Body: `request_key` UUID, literal boolean `free_plan_confirmed: true`, optional `bundle_id` UUID. Without a bundle ID, capture a fresh bounded bundle for this incident. The API accepts no custom prompt or model parameter.
+- `GET /v1/incidents/{incident_id}/investigations`: authenticated, scoped to the producer's integration or administrator. Up to 20 records per page, newest first. Follow `next_before` as `before` to read older records; retained history is not truncated. This is a live keyset view, not a frozen response snapshot.
+- The dashboard broker uses fixed local endpoints, strict Host/Origin/Fetch Metadata checks for submission, JSON-only bounded bodies and bounded upstream responses. It never forwards browser-selected destinations or provider credentials.
 
-## Private records and verification
+This remains a trusted local-machine interface. Loopback and browser-origin checks are not authentication between different local operating-system users or hostile local programs. Public or multi-user deployment requires a separate authorization design.
 
-Accepted results are written atomically as owner-private, randomly named JSON files in ignored `data/local/investigations/`. Each includes provider/model/prompt version, the exact outbound projection and its hash, local source-reference mapping, bundle hash, response and timestamp. These files are not immutable database audit records, do not preserve the full source bundle, and do not establish reproducibility of model output. The original immutable bundle remains in PostgreSQL. Console output contains only status and the local record path; raw provider failures are withheld.
+## Durable state and interruption behavior
 
-On 2026-11-02, a synthetic failed-attempt/successful-retry example returned a schema-valid, citation-checked abstention. A local-only projection of the existing stored bundle retained 14 evidence items in 1,934 bytes; no live incident evidence was sent during verification. The first generation attempt was rejected with HTTP 403; an explicit application User-Agent resolved the transport rejection. No broad regression suite was run for this new checkpoint.
+Migration `e7c2b936a410` adds `investigation_requests` and `investigation_outcomes`. Both reject row changes, deletion and truncation through immutable-history triggers; the runtime role has SELECT/INSERT only. Database owners can still alter protections. Each request references an immutable evidence bundle and stores the outbound projection, citation mapping, input hash, model, prompt version and actor. Current requests also retain the exact system prompt, response schema and inference settings. No secret headers are stored.
 
-Official references: [Groq structured outputs](https://console.groq.com/docs/structured-outputs), [Qwen model status](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [rate limits](https://console.groq.com/docs/rate-limits), [data handling](https://console.groq.com/docs/your-data), [billing](https://console.groq.com/docs/billing-faqs).
+The request commits **before** contacting Groq. A terminal result or failure is appended separately, with safe validation diagnostics where available. A request without a terminal outcome is `pending` for two minutes, then `unknown`; clock-inconsistent future records are also unknown. Unknown does not mean Groq did no work. Reusing the same request key returns its recorded state without another generation, including across API restarts and failures. Reusing a key for a different incident/bundle is rejected.
+
+The dashboard retains an unconfirmed submission key during network/database uncertainty. It offers explicit replay of that same key. It does not forget the key merely because a database error was returned after generation. There is no background retry or automatic recovery. A deliberate new request creates another record; previous failures remain visible.
+
+Application admission uses a PostgreSQL session lock, a recent-unsettled-request guard, one minute between new requests and a limit of **20 requests per rolling 24 hours** across the API's database. These are conservative application limits, not organization-wide Groq accounting. Requests rejected during projection still count. Provider calls and database writes cannot be one atomic transaction; a lost terminal write remains unknown and manual new submissions can repeat similar work.
+
+## Evidence and grounding boundaries
+
+The outbound projection is capped at 6,000 bytes. It contains only machine states, enumerated error codes, attempt numbers, normalized execution/report times, quality counts and completeness/reconciliation flags. Run identifiers become temporary aliases. Dataset/rule names, external identifiers, database UUIDs, SQL, logs, credentials and arbitrary source prose are excluded. Integrity mismatches, truncated bundles and oversized/invalid projections fail before provider inference; older failures are not silently trimmed.
+
+Current decoding is constrained to finding categories and primary citations supported by this packet. A finding has one primary supporting citation and at most one incompatible same-run/same-attempt terminal-state counter-citation. Later successful attempts are recovery context, not contradictions of earlier failures. Lineage gaps cannot be offered as execution-failure causes. Unsupported categories, duplicate/overlapping/unknown citations and inconsistent abstention are rejected locally. With no supported category, the local gate abstains without a provider call; the outcome records that distinction.
+
+The UI displays fixed, qualified summaries such as **producer-reported source failure; underlying cause unverified**. Generated explanatory prose is explicitly unverified and collapsed. Next checks come from a small enumerated set of human inspection tasks, not executable commands. Responses from earlier prompt policies remain in audit history and are not endorsed by the current rules. A real response exposed spurious alternatives during this checkpoint; the response was retained, the issue was addressed by category/citation constraints, and subsequent rejected responses were retained as separate failures.
+
+These checks do **not** prove arbitrary generated prose correct, calibrate confidence, establish business impact or identify an unseen root cause. Quality counts omit rule identity and cannot establish cross-report rule conflicts. Missing evidence can require abstention. Rejected raw provider bodies are withheld; fixed error codes and bounded, input-free validation diagnostics are retained instead.
+
+## Network and response limits
+
+Each accepted submission attempts at most one Groq generation. The configured completion cap is 2,048 tokens and the provider response cap is 256 KiB. A 45-second elapsed budget is checked between reads with 10-second socket timeouts; this is not a hard process-level deadline for OS/DNS operations. Redirects, proxy inheritance, tools, streaming and automatic retries are disabled. Validated output has an additional 12,000-byte limit; durable input is bounded before insertion. A rate-limit error is recorded and does not change incident state.
+
+## CLI
+
+```sh
+# Local projection only; no Groq request.
+uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --dry-run
+
+# Durable API-backed submission of exactly this stored bundle.
+uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --free-plan-confirmed
+
+# Replay an existing request; never regenerate its recorded operation.
+uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --request-key REQUEST_UUID --free-plan-confirmed
+
+# Explicit synthetic connectivity probe; outside the incident ledger/admission budget.
+uv run --locked --env-file .env python scripts/investigate.py --verify-connection --free-plan-confirmed
+```
+
+The connectivity probe sends synthetic data and saves a private local file under ignored `data/local/investigations/`. It is a diagnostic exception, not the normal incident workflow. Initial prototype files predate durable API records and are not retroactively imported.
+
+See [verification](investigation-verification.md) for measured checks and remaining acceptance work. Official references: [Groq structured outputs](https://console.groq.com/docs/structured-outputs), [model status](https://console.groq.com/docs/model/qwen/qwen3.8-27b), [rate limits](https://console.groq.com/docs/rate-limits), [data handling](https://console.groq.com/docs/your-data), [billing](https://console.groq.com/docs/billing-faqs), [PostgreSQL advisory locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS).

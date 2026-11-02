@@ -33,6 +33,7 @@ import { useRead } from "@/lib/use-read";
 import { ExecutionTimeline, QualityResults } from "./analytics";
 import { GraphText } from "./graph-text";
 import { WatchdogStatus } from "./watchdog-status";
+import { Investigations } from "./investigations";
 const Lineage = dynamic(() => import("./lineage"), {
   ssr: false,
   loading: () => <div className="empty">Loading lineage diagram…</div>,
@@ -365,7 +366,7 @@ export default function Dashboard() {
         <span className={`mode ${demo ? "demo" : ""}`}>
           {demo
             ? "Design preview · demonstration data"
-            : "Live data · read-only"}
+            : "Live data · advisory AI"}
         </span>
         <nav aria-label="Main navigation">
           {["Overview", "Pipelines", "Incidents", "Lineage"].map((item) => (
@@ -689,6 +690,11 @@ export default function Dashboard() {
                       onChange={setHistoryOffset}
                     />
                   )}
+                  <Investigations
+                    key={`${demo}:${incident.id}`}
+                    incidentId={incident.id}
+                    demo={demo}
+                  />
                 </>
               )}
             </aside>

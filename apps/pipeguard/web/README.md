@@ -42,10 +42,14 @@ pnpm --dir apps/pipeguard/web build
 pnpm --dir apps/pipeguard/web exec prettier --check app components lib tests proxy.ts next.config.ts
 ```
 
-See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. See [exploration verification](../../../docs/exploration-verification.md) for charts, timeline and measured graph fixtures. AI investigation, recovery controls and public hosting are not implemented.
+See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. See [exploration verification](../../../docs/exploration-verification.md) for charts, timeline and measured graph fixtures. Advisory AI investigation is now available from selected incidents; recovery controls and public hosting are not implemented.
 
 ## Hardening follow-up
 
 Production scripts use a fresh per-document nonce and dynamic rendering, including error pages. Inline positioning styles remain necessary for React Flow/ECharts. Lists use bounded five-minute captured snapshots; capture times are visible, Refresh resets pagination, and expiry/capacity errors never silently switch to live pages. Quality conflict summaries cover the complete selected scope. Dense graph text views support search, type filters and keyboard selection while preserving graph data.
 
 Overview includes independent watcher status with a 15-second refresh, separate from manual metadata refresh. See [resilience operations](../../../docs/local-resilience.md) and [hardening verification](../../../docs/hardening-verification.md).
+
+## Advisory investigation
+
+Incidents now offer explicit manual generation through a fixed same-origin broker. Groq credentials stay on the API server. Requests and outcomes are durable; uncertain submissions retain their request key for replay. Qualified summaries are shown by default; generated prose and exact evidence projections are separately expandable. Preview mode never submits records. See [operations](../../../docs/investigation-operations.md) and [verification](../../../docs/investigation-verification.md).
