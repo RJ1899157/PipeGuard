@@ -52,11 +52,43 @@ def test_private_write_rejects_symlink(tmp_path):
     assert target.read_text() == "existing"
 
 
+def test_airflow_accounts_are_preseeded_privately_without_rotating_existing_users(tmp_path, monkeypatch):
+    import json
+    root = Path(__file__).resolve().parents[3]
+    monkeypatch.syspath_prepend(str(root / "scripts"))
+    spec = importlib.util.spec_from_file_location("configure_airflow", root / "scripts/configure_airflow.py")
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    path = tmp_path / "users.json"
+    script.provision_users(path)
+    original = json.loads(local_files.read_private(path, 65536))
+    assert set(original) == {"RJ1899157", "pipeguard_observer", "pipeguard_recovery"}
+    assert len(set(original.values())) == 3
+    script.provision_users(path)
+    assert json.loads(path.read_text()) == original
+    # Older installations may have only one account; preserve its credential.
+    local_files.write_private(path, json.dumps({"pipeguard_observer": original["pipeguard_observer"]}))
+    script.provision_users(path)
+    assert json.loads(path.read_text())["pipeguard_observer"] == original["pipeguard_observer"]
+    path.chmod(0o644)
+    with pytest.raises(ValueError):
+        script.provision_users(path)
+    path.chmod(0o600)
+    path.write_text('[]')
+    with pytest.raises(ValueError):
+        script.provision_users(path)
+    path.unlink()
+    path.symlink_to(tmp_path / "missing")
+    with pytest.raises(ValueError):
+        script.provision_users(path)
+
+
 def test_airflow_launcher_cleans_groups_after_leader_exits(tmp_path, monkeypatch):
     launcher_spec = importlib.util.spec_from_file_location("run_airflow", Path(__file__).resolve().parents[3] / "scripts/run_airflow.py")
     launcher = importlib.util.module_from_spec(launcher_spec)
     launcher_spec.loader.exec_module(launcher)
     monkeypatch.setenv("AIRFLOW_HOME", str(tmp_path))
+    monkeypatch.setenv("PYTHONPATH", "/untrusted/inherited/path")
     monkeypatch.setattr("sys.argv", ["run_airflow.py", "start"])
     monkeypatch.setattr(launcher.signal, "signal", lambda *args: None)
     calls = []
@@ -64,6 +96,7 @@ def test_airflow_launcher_cleans_groups_after_leader_exits(tmp_path, monkeypatch
     class Process:
         def __init__(self, *args, **kwargs):
             assert kwargs["start_new_session"]
+            assert launcher.os.environ["PYTHONPATH"] == str(launcher.ROOT / "infra/airflow/auth")
             self.pid = 100000000 + len(processes)
             processes.append(self)
         def poll(self):

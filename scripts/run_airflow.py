@@ -13,6 +13,9 @@ def main():
     os.umask(0o077)
     if not os.environ.get("AIRFLOW_HOME"):
         raise SystemExit("Load .env.airflow before invoking the orchestrator")
+    # Import the reviewed auth manager in every CLI/server child, never from a DAG
+    # folder or an inherited arbitrary module search path.
+    os.environ["PYTHONPATH"]=str(ROOT/"infra/airflow/auth")
     binary=ROOT/"infra/airflow/.venv/bin/airflow"
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command",choices=["init","start","cli"])

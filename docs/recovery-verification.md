@@ -55,8 +55,12 @@ The fixture uses separate disposable schemas; they were removed after verificati
 - Pre-migration and post-migration PipeGuard backups were created and restore-verified in disposable databases; no live database was replaced.
 - Groq and API credentials were absent from browser JavaScript assets; the root environment file remains mode 0600. No project `AGENTS.md` or personal learning material was added.
 
+## Airflow authorization follow-up
+
+The [scoped Airflow authorization checkpoint](recovery-airflow-authorization.md) adds a dedicated recovery account, disabled run-creation capability, startup guards and private account pre-seeding. Nine isolated permission tests, twelve live HTTP checks and all 340 backend tests passed. Existing six Airflow runs and eleven attempt snapshots remain present; the DAG stays paused. No frontend, database schema or external action changed in this follow-up.
+
 ## Remaining Stage 11 acceptance work
 
-Verify the installed Airflow API and minimum dispatch privileges; implement a distinct executable proposal/approval policy, durable dispatch intent, deterministic external identity, stale-state revalidation and independent outcome reconciliation. Then verify duplicate dispatch, lost replies, process/host interruption, dependency outages and a deliberately approved synthetic end-to-end recovery. The existing review-only approvals must remain non-executable.
+Verify successful Airflow mutation/conflict semantics in a deliberate scenario; implement a distinct executable proposal/approval policy, durable dispatch intent, deterministic external identity, stale-state revalidation and independent outcome reconciliation. Then verify duplicate dispatch, lost replies, process/host interruption, dependency outages and a deliberately approved synthetic end-to-end recovery. The existing review-only approvals must remain non-executable.
 
 The current checks are bounded, point-in-time review controls. They do not establish exactly-once external execution, public multi-user security or recovery safety. See the [operating guide](recovery-operations.md) and [design](recovery-design.md).

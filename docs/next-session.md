@@ -1,6 +1,6 @@
 # Next-session checkpoint
 
-**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations and a passing bounded [evaluation gate](investigation-evaluation.md). GPT-OSS 120B replaces Qwen. The historical pre-break snapshot below is retained for context; the [Stage 11 review milestone](recovery-verification.md) now includes durable proposals and explicit review decisions. Next work is the separately authorized execution policy and dispatcher, following the [recovery design](recovery-design.md).
+**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations and a passing bounded [evaluation gate](investigation-evaluation.md). GPT-OSS 120B replaces Qwen. The historical pre-break snapshot below is retained for context; the [Stage 11 review milestone](recovery-verification.md) now includes durable proposals and explicit review decisions. The [Airflow authorization prerequisite](recovery-airflow-authorization.md) is now verified with execution disabled. Next work is the separately authorized execution policy and dispatcher, following the [recovery design](recovery-design.md).
 
 Saved on 2026-11-01 (Asia/Kolkata), after the pre-investigation hardening audit.
 
@@ -28,6 +28,7 @@ These requirements are not marked complete. No external account, public endpoint
 
 1. Confirm Docker and the local services are available using the existing [setup guide](development/setup.md) and [resilience procedures](local-resilience.md). Service availability after sleep, reboot or a closed development session must be checked again.
 2. Keep the sample DAG paused until a deliberate scenario requires a run.
-3. Review Stage 10's model/provider, evidence access and output contract, then implement grounded investigation. AI must cite evidence, distinguish hypotheses from reported facts and abstain when evidence is insufficient. It must not authorize recovery.
+3. Keep `PIPEGUARD_AIRFLOW_RECOVERY_ENABLED=0`. The dedicated scoped account is verified; its capability switch is not human approval. Existing `recovery_review_v1` approvals remain non-executable.
+4. Implement a distinct executable proposal/approval policy, durable dispatch intent and independent exact-run reconciliation. Verify stale state, duplicate requests, lost replies, interruptions and dependency outages before a deliberately approved synthetic recovery scenario. AI findings must never authorize an action.
 
-Stages 10–13 remain planned in the [roadmap](roadmap.md). The next session does not require repeating the completed audit from scratch; recheck runtime state and any upstream changes first.
+Stage 10's bounded advisory gate passes, Stage 11 is in progress, and Stages 12–13 remain planned in the [roadmap](roadmap.md). The next session does not require repeating the completed audit from scratch; recheck runtime state and any upstream changes first.

@@ -80,6 +80,11 @@ Runtime files and logs stay under ignored `data/local/airflow`. The local UI use
 `RJ1899157`; its generated password is stored privately in `data/local/airflow/users.json`
 with mode 0600 and is preseeded so initialization does not print generated passwords.
 SimpleAuthManager is development authentication, not a production identity system.
+The local `PipeGuardAuthManager` extension preserves the administrator and observer
+roles while restricting the dedicated recovery account to the sample DAG/run scope.
+Recovery writes stay disabled by default. See the [authorization checkpoint](../../docs/recovery-airflow-authorization.md)
+for the version/startup guards, permission matrix and verification. Start Airflow
+through `scripts/run_airflow.py` so the reviewed auth module is on its search path.
 Authentication is enabled; the all-admin bypass is disabled.
 
 The launcher starts API server, scheduler and DAG processor, limits execution to
