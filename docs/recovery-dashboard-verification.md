@@ -1,5 +1,7 @@
 # Executable recovery dashboard checkpoint
 
+**Subsequent checkpoint:** [Controlled live recovery acceptance](recovery-live-verification.md) is now verified. The results and authorization boundaries below describe this earlier checkpoint or procedure.
+
 Date: 2026-11-03. Stage 11 remains in progress. The CLI's separate executable policy now has scoped HTTP routes and an incident-dashboard flow through a supervised worker. Both execution switches remain **0**, and `pipeguard_orders` remains **paused**. No real recovery run was started for this milestone.
 
 ## Delivered

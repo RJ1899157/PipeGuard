@@ -1,6 +1,6 @@
 # Manual recovery dispatch and reconciliation
 
-Checkpoint: 2026-11-03. Stage 11 now includes a separate executable policy, immutable approvals/cancellation, durable dispatch intent and exact-run reconciliation through a **local operator CLI and supervised dashboard/API flow**. Execution remains disabled. The dashboard separates review-only proposals from executable actions, with distinct approval and start confirmations. Stage 11's controlled live recovery acceptance remains pending.
+Checkpoint: 2026-11-03. Stage 11 now includes a separate executable policy, immutable approvals/cancellation, durable dispatch intent and exact-run reconciliation through a **local operator CLI and supervised dashboard/API flow**. Execution remains disabled. The dashboard separates review-only proposals from executable actions, with distinct approval and start confirmations. Stage 11's [controlled live recovery acceptance](recovery-live-verification.md) passes for the fixed local action.
 
 ## Supported action
 
@@ -88,7 +88,7 @@ Payloads are limited to 16 KiB and event facts to 2 KiB. Each dispatch retains a
 
 The isolated checks cover replay, expiry/staleness, review-policy exclusion, unapproved/rejected/cancelled actions, concurrent commands, different proposals for one failed run, preflight changes, SQL immutability, source response/identity failures, lost replies and simulated database failures. Real child processes are terminated with SIGKILL after intent and SIGTERM after a **synthetic** external-request marker; these tests never start Airflow and are not a host-power-loss experiment. The full regression and live disabled checks are recorded in the [execution checkpoint](recovery-execution-verification.md).
 
-The [controlled live scenario](recovery-live-scenario.md) is prepared but not executed. Remaining acceptance: a deliberately approved live failure → fresh executable proposal → approval → new run → independent monitored outcome chain; actual API duplicate-ID/visibility checks. The executable dashboard flow is now verified against a disposable source in the [dashboard checkpoint](recovery-dashboard-verification.md). Existing review controls remain unchanged. Until that work passes, Stage 11 stays in progress and both switches stay off.
+The [controlled live scenario](recovery-live-scenario.md) now passes [local acceptance](recovery-live-verification.md): failed run with both attempts retained, explicit approval and separate start, one successful new run, independent quality/lineage observations, actual duplicate-ID conflict, replay checks and disabled-state restoration. Both switches remain off after verification. Existing review controls remain unchanged.
 
 References: [Airflow 3.3.2 public API authentication](https://airflow.apache.org/docs/apache-airflow/3.3.2/security/api.html), [PostgreSQL session advisory locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS), [scoped Airflow authorization](recovery-airflow-authorization.md), [recovery design](recovery-design.md).
 

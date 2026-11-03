@@ -1,5 +1,7 @@
 # Controlled live recovery scenario
 
+**Subsequent checkpoint:** [Controlled live recovery acceptance](recovery-live-verification.md) is now verified. The results and authorization boundaries below describe this earlier checkpoint or procedure.
+
 Prepared: 2026-11-03. **Phase 1 approved and completed; recovery execution remains unauthorized.** See the [live failure checkpoint](recovery-phase1-verification.md). This is the remaining Stage 11 acceptance procedure, following the [dashboard checkpoint](recovery-dashboard-verification.md). Local sample data only; no hosted AI calls or paid services are needed.
 
 ## Scope and approval points

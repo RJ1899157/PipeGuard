@@ -2,7 +2,7 @@ path,review_area,method,bytes,text_lines,sha256
 .env.example,operations and integrating review,source/command review,1174,17,ad6fa0268da4456bb098b06dc089750274ea143035323a4c72a8e1adc060f535
 .gitignore,operations and integrating review,source/command review,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .python-version,operations and integrating review,source/command review,5,1,7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d
-README.md,recovery dashboard review,documentation review,9279,101,54304ee6483b07342776491b2a0dfd7fd6f99a9f207d8fd4a9a98af82d852bcb
+README.md,live recovery acceptance review,documentation review,9346,101,3f6ad8ab080ad26243a2f16b3ce87a4bf0114824f08d7e0a0ce43b6b5460aa5c
 alembic.ini,operations and integrating review,source/command review,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,operations and integrating review,documentation review,984,14,0aaa5ee7f424b1dd48e19e3fa25e338a0b7fba431e556e96a843490398462453
 apps/pipeguard/migrations/README,backend review; operational tests integrated,documentation review,38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -148,6 +148,7 @@ docs/audit/mobile-top.jpg,operations and integrating review,visual review,34246,
 docs/audit/postgres-advisory-triage.json,operations and integrating review,source/command review,60459,1950,99f331bc5673c7129a4c39b6f0f3ae7eb5b43cf72af25b083c3ab876b0e84d95
 docs/audit/postgres-packages.tsv,operations and integrating review,source/command review,2942,142,2c1e624c7594486f4f434a3fc87aeff699e82b6ab3c9bd53571bd6524c4869a0
 docs/audit/recovery-desktop.png,recovery implementation review,visual check,57377,,7c352537f4302db77bebd1b3786618862e7f6f74fddfe4ba2471df7ac9e5e8b3
+docs/audit/recovery-live-success.png,live recovery acceptance review,visual check,134221,,1d2f854f7c73b13c777b7cab606047d69713be6c3dd3c09a44ac04cc5c03e7d8
 docs/audit/recovery-mobile.png,recovery implementation review,visual check,53744,,7503da1bae274b266cd4eb63395930dd47d7934757aeadf0752137c84fe029ac
 docs/audit/recovery-phase1-attempts.png,live recovery phase 1 review,visual check,113096,,61f3559f0ee799f7d1e5fb8a27890eb6b1c0623000e7736df6c233c399d78cfa
 docs/audit/tablet-final.jpg,operations and integrating review,visual review,42467,,14f12fd976cb44429549bb8f25113cf80e134555d73b6608664786bbc2a1b381
@@ -176,18 +177,19 @@ docs/investigation-verification.md,operations and integrating review,documentati
 docs/lineage-operations.md,operations and integrating review,documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,operations and integrating review,documentation review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,operations and integrating review,documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,live recovery phase 1 review,documentation review,5777,34,ac2ff55e731859856f7ef7bcfbad5e9b80777d01cb6021f5c6037f447a1127d9
+docs/next-session.md,live recovery acceptance review,documentation review,5885,36,da662d9b2a0663880ff18e625b57b16aad18f1f0e854f7308fd962b161cf21ad
 docs/recovery-airflow-authorization.md,recovery execution review,documentation review,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
-docs/recovery-dashboard-verification.md,recovery dashboard review,source/command review,5319,49,ac71a36c7ae94eeeb1a4c946267fd9172f88025fb39a771a147ce1445db42de4
-docs/recovery-design.md,recovery dashboard review,documentation review,5759,45,e6154abd8b7829f6d4ebf9fa871567477097609bbad6816fee844a1fe2305b17
-docs/recovery-execution-verification.md,recovery dashboard review,documentation review,7260,47,77da266ea3e2b8771f354376b64eaa3fa76fb8b889abf1b67085b7819e4be142
-docs/recovery-execution.md,recovery scenario review,documentation review,14617,111,d7040b23f2a08b2181e0fdb49ed8a2683b2f532d555b6fc8d56d9e24cdd46943
-docs/recovery-live-scenario.md,live recovery phase 1 review,source/command review,8167,56,366ac08dffbad007cb716f68b83458a9221073b2c3f3beb22a496c6a61a0ea38
+docs/recovery-dashboard-verification.md,live recovery acceptance review,source/command review,5527,51,535994c88accb9301d3c057ccc8a316bce87c64a14889242aacdf17bf759b486
+docs/recovery-design.md,live recovery acceptance review,documentation review,5884,45,4099bd996bd0fdd1963633c7d76117b376915fe10b13f1818359aaad563b984f
+docs/recovery-execution-verification.md,live recovery acceptance review,documentation review,7468,49,b828f3fc0ccbcfe784ae07b0c3fe45457e4eb4ad309d9fedfb4d3ead68a0565e
+docs/recovery-execution.md,live recovery acceptance review,documentation review,14547,111,3e63a1a27c798b870ca367bcd3855b410702a0c9bf7d9a4e4209304ad8c7d6cb
+docs/recovery-live-scenario.md,live recovery acceptance review,source/command review,8375,58,27ab1c8d7be28bc6bff8186c364c7bc3c863eb06d765567e14a47f80a4f562f0
+docs/recovery-live-verification.md,live recovery acceptance review,source/command review,5886,55,25ad2f5d4ae7edcb49c4dc6fb0ea9c0d03dd4d36fa5c665bb34c841642b3ee6e
 docs/recovery-operations.md,recovery dashboard review,documentation review,8937,65,2dbe3c71bf83f8af1a9410afa980e8b77ca2914308113835dbde87b287ed42de
-docs/recovery-phase1-verification.md,live recovery phase 1 review,source/command review,5279,44,4d536b9db74736c8d608a20f5b46dbce8fe9878dbab65ee53b4695de9e284dc4
+docs/recovery-phase1-verification.md,live recovery acceptance review,source/command review,5487,46,817d1746081d508fce5af5d5cfecc2d73d4393bd0cbeb913253e4366fc38c348
 docs/recovery-verification.md,recovery execution review,documentation review,8137,66,c2e0bc28903902242e5d37584c7b4c8028648491a884c081b4af500519f5304d
-docs/roadmap.md,live recovery phase 1 review,documentation review,12886,36,bbb1ff1bec389d8ab1ce8c1b2aa65aef5bbfefb50e60628d671e2609a30e8f59
-docs/system-audit.md,live recovery phase 1 review,documentation review,15840,90,aed8bfd6b3c0def24e9ac7ebf917a101c22c9a5f4932f3676ea9d93dd4bdb431
+docs/roadmap.md,live recovery acceptance review,documentation review,12951,36,c5d67fee7b10bb0b15dfb66aa4899dc1e8be005ffebe0fdc1773cd720a13ffa5
+docs/system-audit.md,live recovery acceptance review,documentation review,15852,90,7a197794c3309ee2fcf2fcd6cdbc2d80d4ee26608a07eb28b5288d0f9192161e
 infra/airflow/README.md,recovery scenario review,documentation review,13529,163,2567466103d3352101f3684c8ebb8a5e4856c4413530c00c03a59e0962139b50
 infra/airflow/auth/pipeguard_airflow_auth.py,recovery authorization review,source and acceptance checks,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c
 infra/airflow/constraints-3.12.txt,workload and operations review,"structural, resolver, provenance and advisory checks",18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c

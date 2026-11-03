@@ -1,5 +1,7 @@
 # Executable recovery checkpoint
 
+**Subsequent checkpoint:** [Controlled live recovery acceptance](recovery-live-verification.md) is now verified. The results and authorization boundaries below describe this earlier checkpoint or procedure.
+
 Date: 2026-11-03. **CLI implementation milestone; live recovery acceptance pending.** Execution remains disabled in both the worker and Airflow. The current DAG remains paused. No live proposal, approval or dispatch was created for this milestone.
 
 ## Delivered

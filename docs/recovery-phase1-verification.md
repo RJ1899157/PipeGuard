@@ -1,5 +1,7 @@
 # Live terminal-failure checkpoint
 
+**Subsequent checkpoint:** [Controlled live recovery acceptance](recovery-live-verification.md) is now verified. The results and authorization boundaries below describe this earlier checkpoint or procedure.
+
 Date: 2026-11-03. The user explicitly approved **phase 1 only** of the [controlled scenario](recovery-live-scenario.md): manual scheduling, one deliberately failed run with two failed attempts, and re-pause. Recovery execution was not authorized or performed. Stage 11 remains in progress.
 
 ## Observed result
