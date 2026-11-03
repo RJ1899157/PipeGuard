@@ -83,6 +83,73 @@ def test_airflow_accounts_are_preseeded_privately_without_rotating_existing_user
         script.provision_users(path)
 
 
+def test_recovery_configuration_is_scoped_private_and_resets_execution(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from uuid import uuid4
+    root = Path(__file__).resolve().parents[3]
+    monkeypatch.syspath_prepend(str(root / 'scripts'))
+    spec = importlib.util.spec_from_file_location('configure_recovery', root / 'scripts/configure_recovery.py')
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    script.__file__ = str(tmp_path / 'scripts/configure_recovery.py')
+    job_id = str(uuid4())
+    monkeypatch.setenv('PIPEGUARD_RECOVERY_JOB_ID', job_id)
+    monkeypatch.setenv('PIPEGUARD_API_DATABASE_URL', 'postgresql+psycopg://pipeguard_api:synthetic@127.0.0.1:55432/pipeguard')
+    monkeypatch.setenv('GROQ_API_KEY', 'PRIVATE_MUST_NOT_COPY')
+    users = tmp_path/'data/local/airflow/users.json'
+    users.parent.mkdir(parents=True)
+    local_files.write_private(users, json.dumps({'pipeguard_recovery':'scoped_password', 'RJ1899157':'PRIVATE_MUST_NOT_COPY'}))
+    class Connection:
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+    class Engine:
+        def connect(self):return Connection()
+        def dispose(self):pass
+    class Session(Connection):
+        def __init__(self,*args):pass
+        def scalar(self,*args):return SimpleNamespace(airflow_dag_id='pipeguard_orders', airflow_task_id='build_orders')
+    monkeypatch.setattr(script,'create_engine',lambda *args,**kwargs:Engine())
+    monkeypatch.setattr(script,'verify_runtime_access',lambda connection:None)
+    monkeypatch.setattr(script,'Session',Session)
+    destination = tmp_path/'.env.recovery'
+    local_files.write_private(destination, 'PIPEGUARD_RECOVERY_EXECUTION_ENABLED=1\n')
+    script.main()
+    result = local_files.read_private(destination, 65536).decode()
+    assert 'PRIVATE_MUST_NOT_COPY' not in result
+    assert 'PIPEGUARD_RECOVERY_EXECUTION_ENABLED=0\n' in result
+    assert 'PIPEGUARD_AIRFLOW_RECOVERY_USERNAME=pipeguard_recovery\n' in result
+    assert len(result.splitlines())==5
+    monkeypatch.setenv('PIPEGUARD_API_DATABASE_URL', 'postgresql+psycopg://pipeguard_owner:synthetic@127.0.0.1:55432/pipeguard')
+    with pytest.raises(ValueError,match='Restricted local recovery database'):
+        script.main()
+
+
+def test_recovery_command_deadline_terminates_only_its_owned_child_group(monkeypatch):
+    import subprocess
+    root = Path(__file__).resolve().parents[3]
+    spec = importlib.util.spec_from_file_location('run_recovery', root/'scripts/run_recovery.py')
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    calls=[]
+    class Process:
+        pid=100000001
+        def __init__(self,*args,**kwargs):
+            assert kwargs['start_new_session']
+            assert kwargs['env']['_PIPEGUARD_RECOVERY_CHILD']=='1'
+        def wait(self,timeout=None):
+            calls.append(('wait',timeout))
+            if timeout is not None:raise subprocess.TimeoutExpired('synthetic',timeout)
+            return 0
+        def poll(self):return None
+    monkeypatch.setattr(script.subprocess,'Popen',Process)
+    monkeypatch.setattr(script.os,'killpg',lambda pid,kind:calls.append(('signal',pid,kind)))
+    monkeypatch.setattr(script.signal,'signal',lambda *args:None)
+    assert script.bounded_main()==124
+    assert calls==[('wait',45),('signal',Process.pid,script.signal.SIGTERM),('wait',5),
+                   ('signal',Process.pid,script.signal.SIGKILL),('wait',None)]
+
+
 def test_airflow_launcher_cleans_groups_after_leader_exits(tmp_path, monkeypatch):
     launcher_spec = importlib.util.spec_from_file_location("run_airflow", Path(__file__).resolve().parents[3] / "scripts/run_airflow.py")
     launcher = importlib.util.module_from_spec(launcher_spec)

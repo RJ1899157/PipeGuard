@@ -2,6 +2,8 @@
 
 Checkpoint: 2026-11-02. Stage 11's Airflow permission prerequisite is implemented and verified against the local Airflow **3.3.2** service. Dispatch remains disabled and unimplemented. This checkpoint does not enable execution or change the meaning of any existing review approval.
 
+**Update 2026-11-03:** a separate [manual executable CLI](recovery-execution.md) now exists, with durable intent and reconciliation verified in isolation. Both capability switches remain off; no live recovery was dispatched. The original authorization checks below remain the 2026-11-02 checkpoint.
+
 ## Account and scope
 
 The built-in SimpleAuthManager `user` role grants broad DAG write access. Recovery therefore uses a dedicated `pipeguard_recovery:viewer` account with the local `PipeGuardAuthManager` extension. The existing administrator and read-only observer retain their prior permissions.

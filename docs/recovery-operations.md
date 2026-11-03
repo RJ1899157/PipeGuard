@@ -1,6 +1,6 @@
 # Recovery review operations
 
-Stage 11 is **in progress**. Immutable proposals, human review decisions and scoped APIs are implemented. This milestone is **review only**: no dispatch endpoint or worker exists. The policy `recovery_review_v1` and every returned record explicitly carry `can_execute: false`. A future executable policy must require a new proposal and new explicit approval; existing review approvals must not be reused.
+Stage 11 is **in progress**. Immutable proposals, human review decisions and scoped APIs are implemented. This API/dashboard milestone is **review only**. A separate [manual executable CLI](recovery-execution.md) now exists with execution disabled; no HTTP dispatch endpoint exists. The policy `recovery_review_v1` and every returned record explicitly carry `can_execute: false`. The separate executable policy requires a new proposal and new explicit approval; existing review approvals must not be reused.
 
 ## Configuration and eligibility
 
@@ -36,7 +36,7 @@ Proposal and decision transactions use a shared transaction-scoped advisory lock
 
 Each eligibility read uses a repeatable database snapshot. Proposal creation compares semantic evidence before and after capturing its immutable bundle. The fingerprint includes incident history, run/attempt projections, producer receipts and processing state, non-scan observations, lineage references and target/policy configuration. Routine fresh, unchanged complete scans and heartbeat timestamps do not invalidate an otherwise identical proposal; their freshness is checked separately. Changed evidence or a new execution does invalidate approval.
 
-These are point-in-time **review** checks. They do not fence all ingestion writers or make an external action atomic with PostgreSQL. Data can change after a review transaction. The future dispatcher must revalidate immediately before dispatch and reconcile uncertain external outcomes under the [recovery design](recovery-design.md). There is no action queue or background execution in this milestone.
+These are point-in-time **review** checks. They do not fence all ingestion writers or make an external action atomic with PostgreSQL. Data can change after a review transaction. The future dispatcher must revalidate immediately before dispatch and reconcile uncertain external outcomes under the [recovery design](recovery-design.md). There is no action queue or background execution in this API/dashboard milestone. The separate CLI requires an explicit executable approval and dispatch command.
 
 ## API contract
 
@@ -58,6 +58,6 @@ The original review milestone passed 339 backend checks, including 27 recovery c
 
 Pre-migration and post-migration PipeGuard backups were created and restore-verified in disposable databases. No live database was replaced. Browser verification, lost-response replay and live-system restoration are recorded in the [recovery checkpoint](recovery-verification.md).
 
-The [Airflow permission prerequisite](recovery-airflow-authorization.md) now verifies a dedicated, scoped recovery identity against installed Airflow 3.3.2. Its run-creation capability stays disabled. Remaining Stage 11 work: verify successful mutation/conflict semantics in a deliberate scenario; implement a separately approved execution policy, durable dispatch intent and independent reconciliation; test lost replies, duplicate dispatch and interruption boundaries; then run a deliberately approved synthetic incident-to-recovery scenario. No operational recovery safety claim is made before that work is complete.
+The [Airflow permission prerequisite](recovery-airflow-authorization.md) now verifies a dedicated, scoped recovery identity against installed Airflow 3.3.2. Its run-creation capability stays disabled. The [CLI execution checkpoint](recovery-execution-verification.md) now covers a distinct executable policy, durable intent, independent reconciliation and isolated fault checks. Remaining Stage 11 work includes actual mutation/conflict semantics, a deliberately approved synthetic incident-to-recovery scenario and executable dashboard controls. No operational recovery safety claim is made before that work is complete.
 
 References: [PostgreSQL isolation](https://www.postgresql.org/docs/17/transaction-iso.html), [PostgreSQL locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS), [SQLAlchemy transaction management](https://docs.sqlalchemy.org/en/20/orm/session_transaction.html).

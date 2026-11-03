@@ -19,7 +19,10 @@ def eligible(api, monkeypatch):
     headers, event, _ = producer(api, 'recovery-sample')
     client.post('/v1/monitor-policies', headers=admin, json={'job_id':event['job_id'],
         'quality_required':False, 'airflow_dag_id':'pipeguard_orders', 'airflow_task_id':'orders'})
-    now = datetime.now(timezone.utc)
+    # Docker's database clock can trail the host by a few milliseconds. Seed
+    # freshness from the same authoritative clock as the recovery admission gate.
+    with engine.connect() as connection:
+        now = connection.scalar(text('SELECT clock_timestamp()'))
     event |= {'state':'failed','error_code':'source_unavailable','occurred_at':(now-timedelta(seconds=5)).isoformat()}
     assert client.post('/v1/events', headers=headers, json=event).status_code == 202
     with Session(engine) as session, session.begin():
@@ -113,7 +116,7 @@ def test_changes_prevent_approval(api,eligible,monkeypatch,change):
 def test_polling_freshness_is_checked_without_invalidating_unchanged_complete_scan(api,eligible):
     row=create(api,eligible).json()
     with Session(api[2]) as s,s.begin():
-        observe(s,UUID(eligible[1]['job_id']),'airflow','source_scan',{'status':'complete'},datetime.now(timezone.utc),'new-scan')
+        observe(s,UUID(eligible[1]['job_id']),'airflow','source_scan',{'status':'complete'},service.clock(s),'new-scan')
     assert decide(api,eligible,row).json()['state']=='review_approved'
 
 

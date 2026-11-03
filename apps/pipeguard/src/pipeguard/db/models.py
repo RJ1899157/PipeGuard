@@ -341,3 +341,69 @@ class RecoveryDecision(Record, Base):
     proposal_hash: Mapped[str] = mapped_column(String(64))
     decision: Mapped[str] = mapped_column(String(10))
     actor: Mapped[str] = mapped_column(String(40))
+
+
+class RecoveryAction(Record, Base):
+    """Executable proposals are deliberately separate from historical review records."""
+    __tablename__ = "recovery_actions"
+    __table_args__ = (UniqueConstraint("request_key"),
+        CheckConstraint("payload_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("jsonb_typeof(payload) = 'object' AND octet_length(payload::text) <= 16384", name="bounded_payload"),
+        CheckConstraint("expires_at > created_at AND expires_at <= created_at + interval '10 minutes'", name="expiry"),
+        Index("ix_recovery_actions_incident", "incident_id", "created_at", "id"))
+    incident_id: Mapped[UUID] = mapped_column(ForeignKey("incidents.id", ondelete="RESTRICT"))
+    bundle_id: Mapped[UUID] = mapped_column(ForeignKey("evidence_bundles.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    actor: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict[str, Any]]
+    payload_hash: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime]
+
+
+class RecoveryActionDecision(Record, Base):
+    __tablename__ = "recovery_action_decisions"
+    __table_args__ = (UniqueConstraint("request_key"), UniqueConstraint("action_id", "decision"),
+        CheckConstraint("proposal_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("decision IN ('approve', 'reject', 'cancel')", name="decision"),
+        Index("ix_recovery_action_decision_terminal", "action_id", unique=True,
+              postgresql_where=text("decision <> 'cancel'")))
+    action_id: Mapped[UUID] = mapped_column(ForeignKey("recovery_actions.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    proposal_hash: Mapped[str] = mapped_column(String(64))
+    decision: Mapped[str] = mapped_column(String(10))
+    actor: Mapped[str] = mapped_column(String(40))
+
+
+class RecoveryDispatch(Record, Base):
+    __tablename__ = "recovery_dispatches"
+    __table_args__ = (UniqueConstraint("request_key"), UniqueConstraint("action_id"),
+        UniqueConstraint("approval_id"), UniqueConstraint("failed_run_id"), UniqueConstraint("external_run_id"),
+        CheckConstraint("payload_hash ~ '^[0-9a-f]{64}$'", name="sha256_hex"),
+        CheckConstraint("jsonb_typeof(payload) = 'object' AND octet_length(payload::text) <= 16384", name="bounded_payload"),
+        Index("ix_recovery_dispatches_job", "job_id", "created_at", "id"))
+    action_id: Mapped[UUID] = mapped_column(ForeignKey("recovery_actions.id", ondelete="RESTRICT"))
+    approval_id: Mapped[UUID] = mapped_column(ForeignKey("recovery_action_decisions.id", ondelete="RESTRICT"))
+    failed_run_id: Mapped[UUID] = mapped_column(ForeignKey("runs.id", ondelete="RESTRICT"))
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id", ondelete="RESTRICT"))
+    external_run_id: Mapped[str] = mapped_column(String(100))
+    request_key: Mapped[UUID]
+    actor: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict[str, Any]]
+    payload_hash: Mapped[str] = mapped_column(String(64))
+
+
+class RecoveryDispatchEvent(Record, Base):
+    __tablename__ = "recovery_dispatch_events"
+    __table_args__ = (UniqueConstraint("request_key"), UniqueConstraint("dispatch_id", "sequence"),
+        CheckConstraint("sequence BETWEEN 1 AND 100", name="sequence_bound"),
+        CheckConstraint("source IN ('dispatch', 'reconcile')", name="source"),
+        CheckConstraint("state IN ('unknown', 'accepted', 'rejected', 'queued', 'running', 'succeeded', 'failed', 'conflict')", name="state"),
+        CheckConstraint("code ~ '^[a-z_]{1,80}$'", name="safe_code"),
+        CheckConstraint("jsonb_typeof(facts) = 'object' AND octet_length(facts::text) <= 2048", name="bounded_facts"))
+    dispatch_id: Mapped[UUID] = mapped_column(ForeignKey("recovery_dispatches.id", ondelete="RESTRICT"))
+    request_key: Mapped[UUID]
+    sequence: Mapped[int] = mapped_column(Integer)
+    source: Mapped[str] = mapped_column(String(20))
+    state: Mapped[str] = mapped_column(String(20))
+    code: Mapped[str] = mapped_column(String(80))
+    facts: Mapped[dict[str, Any]]

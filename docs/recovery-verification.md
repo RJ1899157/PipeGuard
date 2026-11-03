@@ -1,6 +1,6 @@
 # Recovery review verification
 
-Checkpoint: 2026-11-02. Stage 11's **proposal and human-review milestone** is complete. Stage 11 as a whole remains in progress: no executable recovery policy, dispatcher or external-outcome reconciliation is implemented.
+Historical review checkpoint: 2026-11-02. See the subsequent [2026-11-03 CLI execution checkpoint](recovery-execution-verification.md). Stage 11's **proposal and human-review milestone** is complete. Stage 11 as a whole remains in progress: no executable recovery policy, dispatcher or external-outcome reconciliation is implemented.
 
 ## Delivered
 
@@ -61,6 +61,6 @@ The [scoped Airflow authorization checkpoint](recovery-airflow-authorization.md)
 
 ## Remaining Stage 11 acceptance work
 
-Verify successful Airflow mutation/conflict semantics in a deliberate scenario; implement a distinct executable proposal/approval policy, durable dispatch intent, deterministic external identity, stale-state revalidation and independent outcome reconciliation. Then verify duplicate dispatch, lost replies, process/host interruption, dependency outages and a deliberately approved synthetic end-to-end recovery. The existing review-only approvals must remain non-executable.
+The separate CLI now implements executable proposals/approvals, durable intent and reconciliation, with isolated fault verification recorded in the [execution checkpoint](recovery-execution-verification.md). Remaining acceptance includes actual Airflow mutation/conflict semantics, a deliberately approved synthetic end-to-end recovery and executable dashboard controls. The existing review-only approvals must remain non-executable.
 
 The current checks are bounded, point-in-time review controls. They do not establish exactly-once external execution, public multi-user security or recovery safety. See the [operating guide](recovery-operations.md) and [design](recovery-design.md).
