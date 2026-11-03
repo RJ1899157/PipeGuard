@@ -325,4 +325,6 @@ def create_app(settings: Settings | None = None, *, engine=None):
     install_investigation_routes(app, engine, authenticate, administrator)
     from pipeguard.recovery.api import install_routes as install_recovery_routes
     install_recovery_routes(app, engine, authenticate, administrator)
+    from pipeguard.recovery.execution_api import install_routes as install_execution_routes
+    install_execution_routes(app, engine, authenticate, administrator)
     return app

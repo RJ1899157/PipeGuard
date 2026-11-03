@@ -1,6 +1,6 @@
 # Manual recovery dispatch and reconciliation
 
-Checkpoint: 2026-11-03. Stage 11 now includes a separate executable policy, immutable approvals/cancellation, durable dispatch intent and exact-run reconciliation through a **local operator CLI**. Execution remains disabled. The dashboard still provides review-only proposals; it cannot approve or start these executable actions. Stage 11's controlled live recovery acceptance remains pending.
+Checkpoint: 2026-11-03. Stage 11 now includes a separate executable policy, immutable approvals/cancellation, durable dispatch intent and exact-run reconciliation through a **local operator CLI and supervised dashboard/API flow**. Execution remains disabled. The dashboard separates review-only proposals from executable actions, with distinct approval and start confirmations. Stage 11's controlled live recovery acceptance remains pending.
 
 ## Supported action
 
@@ -88,6 +88,24 @@ Payloads are limited to 16 KiB and event facts to 2 KiB. Each dispatch retains a
 
 The isolated checks cover replay, expiry/staleness, review-policy exclusion, unapproved/rejected/cancelled actions, concurrent commands, different proposals for one failed run, preflight changes, SQL immutability, source response/identity failures, lost replies and simulated database failures. Real child processes are terminated with SIGKILL after intent and SIGTERM after a **synthetic** external-request marker; these tests never start Airflow and are not a host-power-loss experiment. The full regression and live disabled checks are recorded in the [execution checkpoint](recovery-execution-verification.md).
 
-Remaining acceptance: a deliberately approved live failure → fresh executable proposal → approval → new run → independent monitored outcome chain; actual API duplicate-ID/visibility checks; and any executable dashboard flow. Existing review controls remain unchanged. Until that work passes, Stage 11 stays in progress and both switches stay off.
+Remaining acceptance: a deliberately approved live failure → fresh executable proposal → approval → new run → independent monitored outcome chain; actual API duplicate-ID/visibility checks. The executable dashboard flow is now verified against a disposable source in the [dashboard checkpoint](recovery-dashboard-verification.md). Existing review controls remain unchanged. Until that work passes, Stage 11 stays in progress and both switches stay off.
 
 References: [Airflow 3.3.2 public API authentication](https://airflow.apache.org/docs/apache-airflow/3.3.2/security/api.html), [PostgreSQL session advisory locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS), [scoped Airflow authorization](recovery-airflow-authorization.md), [recovery design](recovery-design.md).
+
+## Scoped dashboard and HTTP interface
+
+The incident inspector has a separate **Executable recovery** section. Approval and starting a run require separate checkboxes bound to the exact proposal ID and hash. Rejection/cancellation are retained; cancellation cannot withdraw an existing dispatch intent. Pages contain at most five proposals, with expandable payload inspection and retained external observations. Refresh is explicit.
+
+Authenticated routes use the incident's integration scope; mutations require the administrator credential. Executable action IDs are checked against that incident before starting a worker. Reconciliation resolves the dispatch from the scoped action, never from a browser-selected external run ID.
+
+| Method | Route suffix under `/v1/incidents/{incident_id}` | Purpose |
+| --- | --- | --- |
+| GET | `/recovery-actions` | History, worker availability, disabled state and eligibility; `limit` 1–5 and optional `before` action UUID |
+| POST | `/recovery-actions` | Propose with a UUID `request_key` |
+| POST | `/recovery-actions/{action_id}/decisions` | `approve`, `reject` or `cancel`; request key, exact hash and literal `confirmed: true` |
+| POST | `/recovery-actions/{action_id}/dispatch` | Separate start request; request key, exact hash and literal `confirmed: true` |
+| POST | `/recovery-actions/{action_id}/reconcile` | Read the exact known external run; request key only |
+
+The API invokes only fixed CLI commands and validated arguments. The bridge checks that `.env.recovery` is an owner-private regular file, passes a minimal environment without API/Groq/owner-database credentials, and starts the worker offline without dependency synchronization. The API does not read the Airflow credentials into its own process. The existing worker supervisor remains responsible for its 45-second command deadline; the outer bridge bounds its wait and terminates its owned process group. `status` reads only the worker execution switch after restricted database validation; it makes no Airflow request. An unavailable worker leaves stored history readable and disables mutation controls.
+
+The browser accesses a same-origin local broker with fixed upstream paths and a server-only administrator credential. Mutation bodies are bounded to 2 KiB; responses to 2 MiB. It rejects unrecognized fields, cross-origin requests and arbitrary targets. An unresolved request is saved in session storage before submission and is never automatically retried. The operator can retry that exact saved request. Retrying a saved start **may start the first run if the original request never reached the worker**; it is not a read-only check. If intent already exists, replay returns that intent without another source POST. Checking external outcome is a separate operation. Session storage belongs to one browser session and is not the authoritative audit record; the database retains intent even if browser storage is lost.

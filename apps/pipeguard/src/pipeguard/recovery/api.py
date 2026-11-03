@@ -17,9 +17,8 @@ class ProposeRecovery(BaseModel):
     request_key: UUID
 
 
-class DecideRecovery(ProposeRecovery):
+class ConfirmRecovery(ProposeRecovery):
     proposal_hash: str = Field(pattern="^[0-9a-f]{64}$")
-    decision: Literal["approve", "reject"]
     confirmed: Literal[True]
 
     @field_validator("confirmed", mode="before")
@@ -28,6 +27,10 @@ class DecideRecovery(ProposeRecovery):
         if value is not True:
             raise ValueError("explicit_confirmation_required")
         return value
+
+
+class DecideRecovery(ConfirmRecovery):
+    decision: Literal["approve", "reject"]
 
 
 def install_routes(app, engine, authenticate, administrator):
@@ -45,7 +48,7 @@ def install_routes(app, engine, authenticate, administrator):
     async def rejection(request, error):
         code = str(error)
         return JSONResponse({"error": code}, status_code=404 if code in {
-            "incident_not_found", "recovery_proposal_not_found"} else 503 if code == "recovery_busy" else 409)
+            "incident_not_found", "recovery_proposal_not_found", "recovery_action_not_found", "recovery_dispatch_not_found"} else 503 if code == "recovery_busy" else 409)
 
     @app.get("/v1/incidents/{incident_id}/recovery-proposals")
     def history(incident_id: UUID, principal: Caller,

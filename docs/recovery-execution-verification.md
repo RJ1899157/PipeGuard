@@ -42,6 +42,6 @@ The first post-migration restore check found a textual cast-distribution differe
 
 1. Review a controlled live fault scenario, including the scheduling effects of unpausing the daily DAG, before enabling either switch or changing its schedule.
 2. Verify actual Airflow deterministic-ID conflict/visibility behavior and a deliberately approved failure → executable proposal → approval → new run → independently monitored outcome chain. Keep the earlier failure and every attempt visible.
-3. Deliver and verify any executable dashboard approval/dispatch/history flow; current buttons remain review-only.
+3. **Completed in the subsequent [dashboard checkpoint](recovery-dashboard-verification.md):** executable approval/dispatch/history controls and uncertain-response replay verified with a disposable source. The original test totals above describe the CLI checkpoint.
 
 The host-loss/off-host-backup, trusted-local-owner, bounded-history and cross-system timing limits remain. The current implementation provides durable uncertainty and prevents its own repeat dispatch; it does not establish exactly-once external execution or complete Stage 11 acceptance.

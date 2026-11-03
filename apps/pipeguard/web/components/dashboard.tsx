@@ -35,6 +35,7 @@ import { GraphText } from "./graph-text";
 import { WatchdogStatus } from "./watchdog-status";
 import { Investigations } from "./investigations";
 import { Recovery } from "./recovery";
+import { RecoveryActions } from "./recovery-actions";
 const Lineage = dynamic(() => import("./lineage"), {
   ssr: false,
   loading: () => <div className="empty">Loading lineage diagram…</div>,
@@ -263,6 +264,7 @@ export default function Dashboard() {
     revision,
   );
   const incident = incidents.data?.find((i) => i.id === selectedIncident);
+  const activeRecords = view === "Incidents" ? incidents : jobs;
   const history = useRead<History[]>(
     "history",
     view === "Incidents" && incident
@@ -447,9 +449,13 @@ export default function Dashboard() {
         <div className="freshness" aria-live="polite">
           {demo
             ? "Preview records"
-            : jobs.at
-              ? `Records fetched ${time(jobs.at)}`
-              : "Connecting to local API…"}
+            : activeRecords.error
+              ? "Records unavailable. Use Refresh to check again."
+              : activeRecords.at
+                ? `Records fetched ${time(activeRecords.at)}`
+                : activeRecords.loading
+                  ? "Fetching stored records…"
+                  : "No records fetched yet."}
           {!demo && (
             <span>
               Refresh is manual. Monitoring freshness is evaluated separately.
@@ -693,6 +699,11 @@ export default function Dashboard() {
                   )}
                   <Recovery
                     key={`recovery:${demo}:${incident.id}`}
+                    incidentId={incident.id}
+                    demo={demo}
+                  />
+                  <RecoveryActions
+                    key={`execution:${demo}:${incident.id}`}
                     incidentId={incident.id}
                     demo={demo}
                   />

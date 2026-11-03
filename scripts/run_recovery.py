@@ -29,15 +29,15 @@ def main():
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("propose", "inspect", "decide", "dispatch", "reconcile"):
+    for name in ("status", "propose", "inspect", "decide", "dispatch", "reconcile"):
         command = commands.add_parser(name)
         if name == "propose":
             command.add_argument("--incident", type=UUID, required=True)
         elif name == "reconcile":
             command.add_argument("--dispatch", type=UUID, required=True)
-        else:
+        elif name != "status":
             command.add_argument("--action", type=UUID, required=True)
-        if name != "inspect":
+        if name not in ("inspect", "status"):
             command.add_argument("--key", type=UUID, required=True)
         if name in ("decide", "dispatch"):
             command.add_argument("--hash", type=proposal_hash, required=True)
@@ -55,7 +55,9 @@ def main():
     try:
         with engine.connect() as connection:
             verify_runtime_access(connection)
-        if args.command == "propose":
+        if args.command == "status":
+            result = {"execution_enabled": os.environ.get("PIPEGUARD_RECOVERY_EXECUTION_ENABLED") == "1"}
+        elif args.command == "propose":
             result = execution.propose(engine, args.incident, args.key)
         elif args.command == "inspect":
             result = execution.inspect(engine, args.action)
