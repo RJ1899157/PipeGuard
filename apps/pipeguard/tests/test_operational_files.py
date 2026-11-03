@@ -207,7 +207,7 @@ def test_airflow_task_filters_credentials_and_cleans_timeout(tmp_path, monkeypat
             return -15
     context = {"dag": SimpleNamespace(dag_id="synthetic"), "run_id": "synthetic",
                "task": SimpleNamespace(task_id="synthetic"), "ti": SimpleNamespace(try_number=1),
-               "params": {"simulate_first_attempt_failure": False}}
+               "params": {"simulate_first_attempt_failure": False, "simulate_terminal_failure": False}}
     namespace = {"ROOT": tmp_path, "get_current_context": lambda: context,
                  "sha256": hashlib.sha256, "json": json, "signal": signal,
                  "os": SimpleNamespace(environ={"AIRFLOW_LOCAL_DB_PASSWORD": "synthetic", "POSTGRES_PASSWORD": "synthetic"},

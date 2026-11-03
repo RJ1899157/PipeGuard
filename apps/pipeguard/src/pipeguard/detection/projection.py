@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from pipeguard.db.models import Attempt, IngestedEvent, Job, Run
-from pipeguard.ingestion.service import TERMINAL
+from pipeguard.ingestion.service import TERMINAL, _apply
 from pipeguard.ingestion.contracts import ExecutionEvent
 
 
@@ -22,12 +22,15 @@ def reconcile(bind, job_id, snapshots):
             IngestedEvent.integration_id == job.integration_id,
             IngestedEvent.payload["job_id"].as_string() == str(job_id))))
         by_attempt = {}
+        processed_starts = {}
         for event in events:
             try:
                 payload = ExecutionEvent.model_validate(event.payload).model_dump(mode="json")
             except ValidationError:
                 continue
             by_attempt.setdefault((payload.get("external_run_id"), payload.get("attempt_number")), []).append(payload)
+            if event.processing_state == "processed" and payload["state"] == "running":
+                processed_starts.setdefault((payload["external_run_id"], payload["attempt_number"]), []).append(payload)
         for _, p in snapshots:
             session.execute(insert(Run).values(job_id=job_id, external_run_id=p["external_run_id"])
                             .on_conflict_do_nothing(index_elements=["job_id", "external_run_id"]))
@@ -43,6 +46,12 @@ def reconcile(bind, job_id, snapshots):
                                   projection_source="airflow", state="unknown", reconciliation_required=False)
                 session.add(attempt); attempts.append(attempt)
             producer = by_attempt.get((p["external_run_id"], p["attempt_number"]), [])
+            if attempt.projection_source == "producer" and attempt.started_at is None:
+                # Repair older handoffs from stored, validated producer starts.
+                # Applying a late start preserves terminal state and detects
+                # contradictory producer times through the ordinary reducer.
+                for start in processed_starts.get((p["external_run_id"], p["attempt_number"]), []):
+                    _apply(attempt, ExecutionEvent.model_validate(start))
             producer_terminal = {e["state"] for e in producer if e.get("state") in TERMINAL}
             if p["state"] in TERMINAL and producer_terminal and producer_terminal != {p["state"]}:
                 attempt.reconciliation_required = True

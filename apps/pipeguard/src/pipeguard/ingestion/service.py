@@ -117,6 +117,22 @@ def process(bind, event_id: UUID) -> ProcessingResult:
                         attempt.state, attempt.started_at, attempt.finished_at = "unknown", None, None
                         attempt.error_code, attempt.reconciliation_required = None, False
                         attempt.projection_source = "producer"
+                        # A scheduler scan may have won the race with the producer
+                        # start. Restore accepted workload boundaries before applying
+                        # its terminal; never substitute scheduler timestamps.
+                        starts = session.scalars(select(IngestedEvent.payload).where(
+                            IngestedEvent.integration_id == event.integration_id,
+                            IngestedEvent.processing_state == "processed",
+                            IngestedEvent.payload["job_id"].astext == str(event.job_id),
+                            IngestedEvent.payload["external_run_id"].astext == event.external_run_id,
+                            IngestedEvent.payload["attempt_number"].astext == str(event.attempt_number),
+                            IngestedEvent.payload["state"].astext == "running"))
+                        for payload in starts:
+                            try:
+                                start = ExecutionEvent.model_validate(payload)
+                            except ValidationError:
+                                continue
+                            _apply(attempt, start)
                         _apply(attempt, event)
                     # A delayed start cannot regress a terminal orchestrator observation.
                 else:

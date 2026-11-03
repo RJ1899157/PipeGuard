@@ -263,7 +263,7 @@ def test_source_projection_handles_lost_terminal_then_late_producer(migrated_dat
     from pipeguard.detection.projection import reconcile
     from pipeguard.db.models import Run,Attempt
     c,_=migrated_database;ids=setup(c)
-    send(c,event(ids))
+    send(c,event(ids,seconds=1))
     snapshots=[(T+timedelta(seconds=2),dict(external_run_id='run',attempt_number=1,state='failed',
                   started_at=T.isoformat(),finished_at=(T+timedelta(seconds=2)).isoformat()))]
     reconcile(c,ids[1],snapshots)
@@ -278,6 +278,7 @@ def test_source_projection_handles_lost_terminal_then_late_producer(migrated_dat
         attempt=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
         assert attempt.state=='failed' and attempt.projection_source=='producer'
         assert attempt.finished_at==T+timedelta(seconds=3) and not attempt.reconciliation_required
+        assert attempt.started_at==T+timedelta(seconds=1)
 
 
 @pytest.mark.parametrize('state',['queued','running','waiting','skipped','blocked','cancelled','unknown'])
@@ -590,3 +591,40 @@ def test_reconciliation_ignores_invalid_stored_producer_contracts(migrated_datab
     with Session(c) as s:
         attempt = s.scalar(select(Attempt).join(Run).where(Run.job_id == ids[1]))
         assert attempt.state == 'failed' and attempt.projection_source == 'airflow'
+
+
+@pytest.mark.parametrize('source_state',['queued','running','failed'])
+def test_source_first_handoff_restores_retained_producer_start(migrated_database,source_state):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run,Attempt
+    c,_=migrated_database;ids=setup(c)
+    snapshot=[(T,dict(external_run_id='run',attempt_number=1,state=source_state,
+                     started_at=T.isoformat(),finished_at=(T+timedelta(seconds=2)).isoformat() if source_state=='failed' else None))]
+    reconcile(c,ids[1],snapshot)
+    send(c,event(ids,seconds=1))
+    send(c,event(ids,'terminal',state='failed',seconds=3))
+    with Session(c) as s:
+        a=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
+        assert a.started_at==T+timedelta(seconds=1)
+        assert a.finished_at==T+timedelta(seconds=3)
+        assert a.state=='failed' and a.projection_source=='producer' and not a.reconciliation_required
+        a.started_at=None  # Reproduce the prior released projection without changing receipts.
+        s.commit()
+    reconcile(c,ids[1],snapshot)
+    with Session(c) as s:
+        a=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
+        assert a.started_at==T+timedelta(seconds=1) and a.state=='failed'
+
+
+def test_source_handoff_detects_conflicting_producer_starts(migrated_database):
+    from pipeguard.detection.projection import reconcile
+    from pipeguard.db.models import Run,Attempt
+    c,_=migrated_database;ids=setup(c)
+    reconcile(c,ids[1],[(T,dict(external_run_id='run',attempt_number=1,state='failed',
+                              started_at=T.isoformat(),finished_at=(T+timedelta(seconds=4)).isoformat()))])
+    send(c,event(ids,seconds=1));send(c,event(ids,'different-start',seconds=2))
+    send(c,event(ids,'terminal',state='failed',seconds=3))
+    with Session(c) as s:
+        a=s.scalar(select(Attempt).join(Run).where(Run.job_id==ids[1]))
+        assert a.state=='unknown' and a.reconciliation_required
+        assert a.started_at==T+timedelta(seconds=1)

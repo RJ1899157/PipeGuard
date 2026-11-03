@@ -33,12 +33,12 @@ apps/pipeguard/src/pipeguard/detection/__init__.py,backend review; operational t
 apps/pipeguard/src/pipeguard/detection/airflow.py,backend review; operational tests integrated,source/command review,8362,170,2ebb5569f89d0f82b199e2523892602017f5ea912c430a60abc62bd033a4d573
 apps/pipeguard/src/pipeguard/detection/api.py,backend review; operational tests integrated,source/command review,12160,245,2e2582ae43a8e3f8b99b9bdda6d598147ea6927683d90c164d5bd1cf1afaaf06
 apps/pipeguard/src/pipeguard/detection/contracts.py,backend review; operational tests integrated,source/command review,2377,65,666e40c6aa0a5b6ee2963b810f59235034eb20f4b2dffeef242fbb7dfd9741aa
-apps/pipeguard/src/pipeguard/detection/projection.py,backend review; operational tests integrated,source/command review,3671,63,f3dd4df1eb4c35603512a5d815f44fd99a1fdf1d9d0d7cbb4b5cfe496d24e0fa
+apps/pipeguard/src/pipeguard/detection/projection.py,live recovery phase 1 review,source/command review,4413,72,b0e7f512d45c0404232a5aba34ad24d4d7106069b7d5742494b0ce55390cb774
 apps/pipeguard/src/pipeguard/detection/service.py,backend review; operational tests integrated,source/command review,25569,378,a797d6e8cdcd15048decfd26881b3f88a4ec83caf9f650de31730044428c6183
 apps/pipeguard/src/pipeguard/detection/worker.py,backend review; operational tests integrated,source/command review,6613,130,f647305d643307fba0a96ff56e815e6b9b433d64a56dd8b8419684054d0aa39c
 apps/pipeguard/src/pipeguard/ingestion/__init__.py,backend review; operational tests integrated,source/command review,80,1,ee322c593fc39a1d5f51f598973968d112ca05d3c2ae9c6918a8df538640d534
 apps/pipeguard/src/pipeguard/ingestion/contracts.py,backend review; operational tests integrated,source/command review,1595,41,1cd4d4addd0021838e5f8b87e374a6cb1b4149d734389dc6e5bf34aca8a17476
-apps/pipeguard/src/pipeguard/ingestion/service.py,backend review; operational tests integrated,source/command review,9663,182,f2fdb19bb2ed47f9b01de2d65ad61d6331ec7ae1a488e8897b4ec78e83d210f5
+apps/pipeguard/src/pipeguard/ingestion/service.py,live recovery phase 1 review,source/command review,10834,198,18d73925ab8359b0284253c629b9fd2da155d8932a67acc089838aad97ff63b5
 apps/pipeguard/src/pipeguard/investigation/__init__.py,backend integration review,source/command review,83,1,919e071e30a679068ad321f87a2dec33576ffd3010bf4b7fdcbec5eea9047e9d
 apps/pipeguard/src/pipeguard/investigation/api.py,backend integration review,source/command review,4147,78,f3c478c87868368688a5faa2f463e70ea142ee80913d181d98654f845fee5a7a
 apps/pipeguard/src/pipeguard/investigation/core.py,backend integration review,source/command review,11219,211,1f267398c125914eefe77c094adf3565e652f17ab064b51e7a77d26d66c66a07
@@ -61,7 +61,7 @@ apps/pipeguard/src/pipeguard/recovery/service.py,recovery implementation review,
 apps/pipeguard/tests/conftest.py,backend review; operational tests integrated,source/command review,1353,42,3c6fc23ee4eb5595888a5bb5dabbbb8c6e7058aad152f5c70dc99fe660fbe001
 apps/pipeguard/tests/test_airflow_detection.py,backend review; operational tests integrated,source/command review,6180,126,a8945a2c8250712924e9eceb4139bf512d1197fc12d16a0852a0e3a36cd73dc9
 apps/pipeguard/tests/test_api.py,backend review; operational tests integrated,source/command review,12561,242,4eb9b6177031ed34fbe522d5803d1f1f8983e7e42a388f198357cf91c2ce177f
-apps/pipeguard/tests/test_detection.py,backend review; operational tests integrated,source/command review,31198,592,0a237c1890e068d3c1cd1a309779a59581ea64865f4fe30c86451c9ec60a3597
+apps/pipeguard/tests/test_detection.py,live recovery phase 1 review,source/command review,33319,630,869049f96f57d0c9a686f0ff26500056a49b5dde7b0b9a5ec1f0a6047161b012
 apps/pipeguard/tests/test_detection_api.py,backend review; operational tests integrated,source/command review,5994,94,2732bc74b154ca590b9caace2baed3fc1ab0f2be4c649ffa9d80e2643a68ca7f
 apps/pipeguard/tests/test_evidence.py,backend review; operational tests integrated,source/command review,6767,111,30e18e0483f1724ff7d786733605311b777cb1e671a0b74f1258177861d38350
 apps/pipeguard/tests/test_ingestion.py,backend review; operational tests integrated,source/command review,14031,301,c02b570469e92b91317a8ca43e3aaeff720e0eb583c2868689dc5c713a726bc7
@@ -69,7 +69,7 @@ apps/pipeguard/tests/test_investigation.py,backend integration review,source/com
 apps/pipeguard/tests/test_investigation_evaluation.py,investigation evaluation review,source and acceptance checks,8753,159,75f9d32b92f3ad029b072ec418e5b133244e5f7050237cb170dca986e2ea958d
 apps/pipeguard/tests/test_lineage.py,backend review; operational tests integrated,source/command review,16232,266,d1bb94e82d374a38779469aabd5a5b73f9363754f33a5d319f75f641d956caf5
 apps/pipeguard/tests/test_local_operations.py,operations and integrating review,source/command review,12034,252,6775333cea2a65f9463a1173e48674661dcd1441fd27992cc90a321db932cf88
-apps/pipeguard/tests/test_operational_files.py,recovery execution review,source and acceptance checks,12518,256,749f13e8be1943cf7245346e7fa1f881dc8667e2637480c2b1ea8efa34a93997
+apps/pipeguard/tests/test_operational_files.py,live recovery phase 1 review,source and acceptance checks,12554,256,b2a449707b2cb3dc3f2361c1c164063575097c139f675ad6ac109f00c4a5e281
 apps/pipeguard/tests/test_persistence.py,backend review; operational tests integrated,source/command review,6422,178,a4707306c5994ab7694e09ee13b99376a9ebd2077c7598219f08fe0a4774f86b
 apps/pipeguard/tests/test_read_snapshots.py,operations and integrating review,source/command review,10529,185,63b0049ee03d418693f82afdad932c877498c4ed08b202182e4a2885ca666683
 apps/pipeguard/tests/test_recovery.py,recovery execution review,source and acceptance checks,12710,216,886abf24c82b1f0b81ae1b6d5d0f0e7f8756219ca0d1c94ce5d29990b099b134
@@ -149,6 +149,7 @@ docs/audit/postgres-advisory-triage.json,operations and integrating review,sourc
 docs/audit/postgres-packages.tsv,operations and integrating review,source/command review,2942,142,2c1e624c7594486f4f434a3fc87aeff699e82b6ab3c9bd53571bd6524c4869a0
 docs/audit/recovery-desktop.png,recovery implementation review,visual check,57377,,7c352537f4302db77bebd1b3786618862e7f6f74fddfe4ba2471df7ac9e5e8b3
 docs/audit/recovery-mobile.png,recovery implementation review,visual check,53744,,7503da1bae274b266cd4eb63395930dd47d7934757aeadf0752137c84fe029ac
+docs/audit/recovery-phase1-attempts.png,live recovery phase 1 review,visual check,113096,,61f3559f0ee799f7d1e5fb8a27890eb6b1c0623000e7736df6c233c399d78cfa
 docs/audit/tablet-final.jpg,operations and integrating review,visual review,42467,,14f12fd976cb44429549bb8f25113cf80e134555d73b6608664786bbc2a1b381
 docs/container-security.md,operations and integrating review,documentation review,3888,27,5cb23ca0b58371d0e575a2a7c2b722cc702f23db7c845f8f0f6e30d2b61d2bc4
 docs/contracts/execution-event-v1.schema.json,operations and integrating review,runtime schema equality and semantic boundary review,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
@@ -175,17 +176,18 @@ docs/investigation-verification.md,operations and integrating review,documentati
 docs/lineage-operations.md,operations and integrating review,documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,operations and integrating review,documentation review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,operations and integrating review,documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,recovery scenario review,documentation review,5586,34,7b444521b8d16305ed3dcac0128582c56a4cf089aae1de9c2ec79096dd686568
+docs/next-session.md,live recovery phase 1 review,documentation review,5777,34,ac2ff55e731859856f7ef7bcfbad5e9b80777d01cb6021f5c6037f447a1127d9
 docs/recovery-airflow-authorization.md,recovery execution review,documentation review,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,recovery dashboard review,source/command review,5319,49,ac71a36c7ae94eeeb1a4c946267fd9172f88025fb39a771a147ce1445db42de4
 docs/recovery-design.md,recovery dashboard review,documentation review,5759,45,e6154abd8b7829f6d4ebf9fa871567477097609bbad6816fee844a1fe2305b17
 docs/recovery-execution-verification.md,recovery dashboard review,documentation review,7260,47,77da266ea3e2b8771f354376b64eaa3fa76fb8b889abf1b67085b7819e4be142
 docs/recovery-execution.md,recovery scenario review,documentation review,14617,111,d7040b23f2a08b2181e0fdb49ed8a2683b2f532d555b6fc8d56d9e24cdd46943
-docs/recovery-live-scenario.md,recovery scenario review,source/command review,8058,56,884f136c1492f3853e24f3c4f99cfba2e36c8413f94284fd12e32d3a4b9b1208
+docs/recovery-live-scenario.md,live recovery phase 1 review,source/command review,8167,56,366ac08dffbad007cb716f68b83458a9221073b2c3f3beb22a496c6a61a0ea38
 docs/recovery-operations.md,recovery dashboard review,documentation review,8937,65,2dbe3c71bf83f8af1a9410afa980e8b77ca2914308113835dbde87b287ed42de
+docs/recovery-phase1-verification.md,live recovery phase 1 review,source/command review,5279,44,4d536b9db74736c8d608a20f5b46dbce8fe9878dbab65ee53b4695de9e284dc4
 docs/recovery-verification.md,recovery execution review,documentation review,8137,66,c2e0bc28903902242e5d37584c7b4c8028648491a884c081b4af500519f5304d
-docs/roadmap.md,recovery scenario review,documentation review,12880,36,97d2726f597bbe4a2a6843b683be2874d8cda56ccefa7594de3253879eeb18af
-docs/system-audit.md,recovery scenario review,documentation review,15857,90,2b814c5633196396cd52156e35aba8737ad3f7e0cb31e9557c1ecb18e3061353
+docs/roadmap.md,live recovery phase 1 review,documentation review,12886,36,bbb1ff1bec389d8ab1ce8c1b2aa65aef5bbfefb50e60628d671e2609a30e8f59
+docs/system-audit.md,live recovery phase 1 review,documentation review,15840,90,aed8bfd6b3c0def24e9ac7ebf917a101c22c9a5f4932f3676ea9d93dd4bdb431
 infra/airflow/README.md,recovery scenario review,documentation review,13529,163,2567466103d3352101f3684c8ebb8a5e4856c4413530c00c03a59e0962139b50
 infra/airflow/auth/pipeguard_airflow_auth.py,recovery authorization review,source and acceptance checks,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c
 infra/airflow/constraints-3.12.txt,workload and operations review,"structural, resolver, provenance and advisory checks",18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c

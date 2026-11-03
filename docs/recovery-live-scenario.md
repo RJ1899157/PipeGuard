@@ -1,6 +1,6 @@
 # Controlled live recovery scenario
 
-Prepared: 2026-11-03. **Not executed or authorized yet.** This is the remaining Stage 11 acceptance procedure, following the [dashboard checkpoint](recovery-dashboard-verification.md). Local sample data only; no hosted AI calls or paid services are needed.
+Prepared: 2026-11-03. **Phase 1 approved and completed; recovery execution remains unauthorized.** See the [live failure checkpoint](recovery-phase1-verification.md). This is the remaining Stage 11 acceptance procedure, following the [dashboard checkpoint](recovery-dashboard-verification.md). Local sample data only; no hosted AI calls or paid services are needed.
 
 ## Scope and approval points
 
