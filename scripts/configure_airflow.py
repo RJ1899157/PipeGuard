@@ -67,6 +67,7 @@ def main():
         "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS":"RJ1899157:admin,pipeguard_observer:viewer,pipeguard_recovery:viewer",
         "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS":"False",
         "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED":"0",
+        "PIPEGUARD_AIRFLOW_MANUAL_ONLY":previous.get("PIPEGUARD_AIRFLOW_MANUAL_ONLY","0"),
         "AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE":str(password_file),
         "AIRFLOW__API_AUTH__JWT_SECRET":previous.get("AIRFLOW__API_AUTH__JWT_SECRET") or secrets.token_urlsafe(32),
         "AIRFLOW__CORE__FERNET_KEY":previous.get("AIRFLOW__CORE__FERNET_KEY") or base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),

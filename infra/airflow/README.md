@@ -107,7 +107,7 @@ SHA-256-based identifier derived from DAG ID, DAG run ID and task ID. Native
 `ti.try_number` maps to the PipeGuard attempt number. Retries reuse the run identity
 and create new attempts. The `simulate_first_attempt_failure` boolean parameter
 fails attempt 1 with a bounded synthetic category; attempt 2 runs the real workload.
-It is false by default and accepts no arbitrary input paths or commands.
+It is false by default and accepts no arbitrary input paths or commands. The separate `simulate_terminal_failure` boolean fails every attempt before warehouse work, so the one retry also fails. It is false by default; ordinary recovery runs do not carry this fault parameter.
 
 Use the UI or the documented CLI through the launcher:
 
@@ -154,3 +154,10 @@ See the sample README for durable event delivery semantics.
 ## Independent monitoring
 
 The incident worker uses a dedicated `pipeguard_observer:viewer` account and public Airflow APIs. It reads DAG runs, native try history and health without access to the Airflow database. Source coverage becomes explicitly incomplete on authentication, transport, health, history or pagination failures. See [incident operations](../../docs/incident-operations.md) and [failure coverage](../../docs/failure-coverage.md).
+
+
+## Manual scheduling for controlled recovery acceptance
+
+The optional private `.env.airflow` setting `PIPEGUARD_AIRFLOW_MANUAL_ONLY=1` selects `schedule=None` when the DAG is parsed; `0` or an absent setting retains `@daily`. Any other value refuses import. Changing it requires an owned launcher restart and verification that the serialized public DAG timetable changed, while the DAG remains paused. It does not unpause, enable recovery or remove queued runs. Provisioning preserves the selected scheduling mode.
+
+The [controlled recovery scenario](../../docs/recovery-live-scenario.md) describes the explicit approval, terminal fault, separate recovery and restoration procedure. Do not unpause for that scenario until the no-schedule timetable and idle source inventory are verified.

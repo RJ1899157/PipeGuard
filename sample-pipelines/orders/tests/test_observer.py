@@ -148,3 +148,34 @@ def test_invalid_acknowledgement_is_pending(observer, monkeypatch):
     monkeypatch.setattr("orders_pipeline.observer.build_opener", lambda *args: InvalidOpener())
     assert not observer.emit("invalid-ack", 1, "running")
     assert not list(observer.directory.glob("*.sent"))
+
+
+def test_terminal_fault_preserves_both_failed_attempts_and_new_run(monkeypatch):
+    import orders_pipeline.runner as runner
+    observed=[]
+    gaps=[]
+    work=[]
+    class Recording:
+        def emit(self,*args):
+            observed.append(args)
+            return True
+        def emit_lineage(self,*args):
+            gaps.append(args[:2])
+            return True
+    def build(*args):
+        work.append(True)
+        return {"dbt_succeeded":True}
+    monkeypatch.setattr(runner,"run",build)
+    for attempt in (1,2):
+        with pytest.raises(RuntimeError,match="controlled_source_unavailable"):
+            execute(None,None,Recording(),"terminal-failure",attempt,
+                    simulate_terminal_failure=True)
+    assert work==[]
+    assert observed==[("terminal-failure",1,"running"),
+                      ("terminal-failure",1,"failed","source_unavailable"),
+                      ("terminal-failure",2,"running"),
+                      ("terminal-failure",2,"failed","source_unavailable")]
+    assert gaps==[("terminal-failure",1),("terminal-failure",2)]
+    assert execute(None,None,Recording(),"separate-recovery",1)["dbt_succeeded"]
+    assert observed[-2:]==[("separate-recovery",1,"running"),("separate-recovery",1,"succeeded",None)]
+    assert len(work)==1

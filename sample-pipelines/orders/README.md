@@ -170,3 +170,8 @@ A completed dbt build produces a bounded quality report from matching manifest/r
 The adapter journals a bounded OpenLineage 2.0.2 profile alongside execution and quality events. It derives declared dataset dependencies from matching dbt artifacts and reports loader input/output boundaries separately. Expected step inventories prevent partial delivery from appearing complete. Source paths, SQL, rows, credentials and free-form errors are excluded. Failed early attempts retain explicit metadata gaps. See [contract](../../docs/contracts/lineage-events.md) and [operations](../../docs/lineage-operations.md).
 
 Private logical backup/restore verification is documented in [local resilience](../../docs/local-resilience.md). The workload remains a monitored sample with separate raw/dbt transactions, not an atomic whole-warehouse publication system.
+
+
+## Terminal fault for recovery acceptance
+
+`--simulate-terminal-failure` deliberately fails before loading source data or invoking dbt on every attempt, recording the bounded synthetic `source_unavailable` category and lineage gap when monitoring is configured. It defaults off. Unlike `--simulate-first-attempt-failure`, the second attempt also fails. A new run without either fault flag follows the ordinary workload path. This option is confined to the independent sample workload; the recovery worker cannot add arbitrary parameters. See the [controlled live scenario](../../docs/recovery-live-scenario.md) before executing it against the monitored DAG.

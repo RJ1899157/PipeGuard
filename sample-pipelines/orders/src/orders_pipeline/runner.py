@@ -138,18 +138,19 @@ def run(source: Path, settings: Warehouse):
     return summary
 
 
-def execute(source, settings, observer=None, run_id=None, attempt=1, simulate_first_failure=False):
+def execute(source, settings, observer=None, run_id=None, attempt=1, simulate_first_failure=False,
+            simulate_terminal_failure=False):
     run_id = run_id or "manual-" + uuid4().hex
     delivery = []
     if observer:
         delivery.append(observer.emit(run_id, attempt, "running"))
     try:
-        if simulate_first_failure and attempt == 1:
+        if simulate_terminal_failure or (simulate_first_failure and attempt == 1):
             raise RuntimeError("controlled_source_unavailable")
         summary = run(source, settings)
     except Exception as error:
         code = "validation_failed" if isinstance(error, InvalidSource) else "execution_error"
-        if simulate_first_failure and attempt == 1:
+        if simulate_terminal_failure or (simulate_first_failure and attempt == 1):
             code = "source_unavailable"
         if observer:
             observer.emit(run_id, attempt, "failed", code)
@@ -172,6 +173,7 @@ def main():
     parser.add_argument("--run-id")
     parser.add_argument("--attempt", type=int, default=1)
     parser.add_argument("--simulate-first-attempt-failure", action="store_true")
+    parser.add_argument("--simulate-terminal-failure", action="store_true")
     parser.add_argument("--replay-events", action="store_true")
     args = parser.parse_args()
     try:
@@ -183,7 +185,7 @@ def main():
             print(json.dumps(result))
             return 0 if result["pending"] == 0 else 1
         summary = execute(args.input, Warehouse.from_environment(), observer, args.run_id,
-                          args.attempt, args.simulate_first_attempt_failure)
+                          args.attempt, args.simulate_first_attempt_failure, args.simulate_terminal_failure)
         print(json.dumps(summary))
         return 0 if summary["dbt_succeeded"] else 1
     except InvalidSource as exc:

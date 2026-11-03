@@ -10,6 +10,9 @@ import subprocess
 from airflow.sdk import DAG, Param, get_current_context, task
 
 ROOT=Path(__file__).resolve().parents[3]
+MANUAL_ONLY=os.environ.get("PIPEGUARD_AIRFLOW_MANUAL_ONLY","0")
+if MANUAL_ONLY not in {"0","1"}:
+    raise ValueError("PIPEGUARD_AIRFLOW_MANUAL_ONLY must be 0 or 1")
 
 
 @task(retries=1,retry_delay=timedelta(seconds=5),execution_timeout=timedelta(minutes=4))
@@ -33,6 +36,8 @@ def build_orders():
              "--attempt",str(context["ti"].try_number)]
     if context["params"]["simulate_first_attempt_failure"]:
         command.append("--simulate-first-attempt-failure")
+    if context["params"]["simulate_terminal_failure"]:
+        command.append("--simulate-terminal-failure")
     process=None
     interruption=None
     handlers={kind:signal.getsignal(kind) for kind in (signal.SIGINT,signal.SIGTERM)}
@@ -70,9 +75,11 @@ def build_orders():
     return {key:summary[key] for key in ("external_run_id","attempt_number","dbt_succeeded","monitoring")}
 
 
-with DAG("pipeguard_orders",start_date=datetime(2026,10,1,tzinfo=timezone.utc),schedule="@daily",
+with DAG("pipeguard_orders",start_date=datetime(2026,10,1,tzinfo=timezone.utc),
+         schedule=None if MANUAL_ONLY == "1" else "@daily",
          catchup=False,max_active_runs=1,is_paused_upon_creation=True,
          default_args={"owner":"RJ1899157"},
-         params={"simulate_first_attempt_failure":Param(False,type="boolean")},
+         params={"simulate_first_attempt_failure":Param(False,type="boolean"),
+                 "simulate_terminal_failure":Param(False,type="boolean")},
          tags=["pipeguard","synthetic","orders"]) as dag:
     build_orders()
