@@ -21,6 +21,8 @@ the original three environments are preserved in private runtime rollback storag
 
 Runtime availability must be checked again after sleep, reboot or a closed session; these are verified checkpoint results, not a promise that services start automatically.
 
+- The [expanded AI evaluation](investigation-expanded-evaluation.md) passes its six-trial version-11 gate for quality failure, source gaps and conflicting attempt evidence. Two failed earlier cohorts remain retained. Current checks pass **566 cases**; the public ledger stays **16/16**, with **16 additional evaluation requests/outcomes** isolated separately. Confidence and broader real-world accuracy remain unestablished.
+
 ## Next work
 
 1. **Old CI run administrative cleanup (blocked).** Run 41809107524 is still stuck with zero jobs. The owner explicitly requested deletion; GitHub rejected DELETE with 403 and normal/force cancellation with 409. Do not delete successful run #3 or change billing to address this record. Its removal is unresolved but is separate from the now-passing hosted acceptance.
@@ -38,7 +40,7 @@ See the [roadmap](roadmap.md). Earlier audits provide a baseline; Stage 14 is th
 | Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion                            | Reviewed incremental processing/retention and cross-host fencing                                                                          |
 | Public multi-user access      | Local-owner interfaces on loopback                                                                                         | Named-user authentication, authorization, tenant isolation and deployment design                                                          |
 | Atomic workload publication   | Raw loading and dbt transformations use separate transactions                                                              | Reviewed publication design if atomic visibility is required; partial outcomes remain observable                                          |
-| Broader AI accuracy           | Bounded evaluation passed; live coverage is limited                                                                        | Representative incident-class evaluation before stronger accuracy claims                                                                  |
+| Broader AI accuracy           | Original bounded evaluation and three-class synthetic expansion passed; broader real-world coverage remains limited                                                                        | Representative incident-class evaluation before stronger accuracy claims                                                                  |
 
 These limits remain open; no external account, public endpoint, backup upload, unverified dependency switch or automatic recovery was introduced to hide them.
 

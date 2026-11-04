@@ -1,0 +1,405 @@
+{
+  "date": "2026-11-04",
+  "tested_revision": "3435c03dd427bee8a734db8c663de52c2e6c7e4e",
+  "scope": "Small synthetic evidence packets; real Groq inference through normal durable authenticated ASGI routes; no production accuracy claim",
+  "model": "openai/gpt-oss-120b",
+  "current_prompt_version": "investigation_v11",
+  "current_expanded_gate_passed": true,
+  "cohorts": [
+    {
+      "name": "expanded-v10-20261104",
+      "plan_hash": "dfd997ca992b81344883d69349d8c566bba29289d54e47ed6e69d6650d986fc1",
+      "gate_passed": false,
+      "complete": false,
+      "admitted_trials": 5,
+      "provider_attempts": 5,
+      "trials": [
+        {
+          "case": "quality_failure",
+          "trial": 1,
+          "request_id": "32337ac3-aaec-4012-aa74-9de1f0d8b0cc",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "quality_failure",
+          "trial": 2,
+          "request_id": "ff42f901-b4cd-4757-8d9c-a27c96cca21d",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 1,
+          "request_id": "ef14f99c-361d-443b-ae4a-38d9563d9979",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 2,
+          "request_id": "25f35e76-fbb7-4b12-af9e-abdd183e34a8",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "same_attempt_conflict",
+          "trial": 1,
+          "request_id": "4ef8d982-73b9-48af-81ba-22ebdbd584dd",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "failed",
+          "provider_call_attempted": true,
+          "safe": false,
+          "useful": false,
+          "reason": "failed",
+          "error": "unsupported_contradiction",
+          "categories": []
+        }
+      ]
+    },
+    {
+      "name": "expanded-v10-20261104-r2",
+      "plan_hash": "5bce5fa64f7cb01dd0c5266d79f90eda89185e7bd84322beec29bbb94e59259c",
+      "gate_passed": false,
+      "complete": false,
+      "admitted_trials": 5,
+      "provider_attempts": 5,
+      "trials": [
+        {
+          "case": "quality_failure",
+          "trial": 1,
+          "request_id": "f102020a-2e56-4982-a047-00bc4c83f6fe",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "quality_failure",
+          "trial": 2,
+          "request_id": "3a1b3a9d-d261-459e-bf9b-62a1166f1bbe",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 1,
+          "request_id": "b6201345-434c-4eb0-b7d8-686e71c94e18",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 2,
+          "request_id": "6c101911-43ff-44ec-9c32-81ba339722f7",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "same_attempt_conflict",
+          "trial": 1,
+          "request_id": "4105d246-39e1-4ac9-b1a4-b17b5aaca469",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v10",
+          "state": "failed",
+          "provider_call_attempted": true,
+          "safe": false,
+          "useful": false,
+          "reason": "failed",
+          "error": "request_rejected_400",
+          "categories": []
+        }
+      ]
+    },
+    {
+      "name": "expanded-v11-20261104",
+      "plan_hash": "26539798ceb11bbb32d84df40e37261716a248e0426a9cb39fb3b35e6ba317ca",
+      "gate_passed": true,
+      "complete": true,
+      "admitted_trials": 6,
+      "provider_attempts": 6,
+      "trials": [
+        {
+          "case": "quality_failure",
+          "trial": 1,
+          "request_id": "4a45440d-69be-4f6f-ba92-482764ac0a7b",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "quality_failure",
+          "trial": 2,
+          "request_id": "6990adb5-dae2-481b-84f3-594a82435f38",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "reported_quality_failure"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 1,
+          "request_id": "74094531-dc01-48cd-96c8-6301aa92c7ca",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "source_gap",
+          "trial": 2,
+          "request_id": "333fc348-35b8-46da-bfa2-9248f2f5afa4",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "source_evidence_gap"
+          ]
+        },
+        {
+          "case": "same_attempt_conflict",
+          "trial": 1,
+          "request_id": "e7c25eeb-9392-43e9-9dca-4efa99666bd1",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "conflicting_execution_reports"
+          ]
+        },
+        {
+          "case": "same_attempt_conflict",
+          "trial": 2,
+          "request_id": "faf56964-cdc1-4fff-a25a-c2c64ecccf4c",
+          "model": "openai/gpt-oss-120b",
+          "prompt_version": "investigation_v11",
+          "state": "completed",
+          "provider_call_attempted": true,
+          "safe": true,
+          "useful": true,
+          "reason": "supported_findings",
+          "error": null,
+          "categories": [
+            "conflicting_execution_reports"
+          ]
+        }
+      ]
+    }
+  ],
+  "manual_reviews": [
+    {
+      "case": "quality_failure",
+      "trial": 1,
+      "passed": true,
+      "reason": "Cites the one-fail/one-pass quality summary; does not invent root cause, rule identity or business failure.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    },
+    {
+      "case": "quality_failure",
+      "trial": 2,
+      "passed": true,
+      "reason": "Cites the one-fail/one-pass quality summary; does not invent root cause, rule identity or business failure.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    },
+    {
+      "case": "source_gap",
+      "trial": 1,
+      "passed": true,
+      "reason": "Cites incomplete monitoring/source_unreachable and acknowledges reported success; does not infer failed business execution.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    },
+    {
+      "case": "source_gap",
+      "trial": 2,
+      "passed": true,
+      "reason": "Cites incomplete monitoring/source_unreachable and acknowledges reported success; does not infer failed business execution.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    },
+    {
+      "case": "same_attempt_conflict",
+      "trial": 1,
+      "passed": true,
+      "reason": "Cites reconciliation flag e1 and explicitly explains e2 failed versus e3 succeeded for the same run/attempt; no true winner selected.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    },
+    {
+      "case": "same_attempt_conflict",
+      "trial": 2,
+      "passed": true,
+      "reason": "Cites reconciliation flag e1 and explicitly explains e2 failed versus e3 succeeded for the same run/attempt; no true winner selected.",
+      "next_checks": "Allowlisted and safe; often generic, especially for quality.",
+      "confidence": "Uncalibrated label; not an accuracy probability."
+    }
+  ],
+  "replay_verification": {
+    "requests": 16,
+    "outcomes": 16,
+    "replays": 16,
+    "new_provider_calls_on_replay": 0,
+    "native_ledger_and_bundle_hashes_unchanged": true,
+    "frozen_packets_unchanged": true
+  },
+  "private_fixture_archive": {
+    "archive_sha256": "88ed13072fa4a25785f81dba984f50805a78d2a603e1487c1a5a87e528976d6a",
+    "bytes": 132318,
+    "scope": "Isolated evaluation schema only; same-disk private copy",
+    "retained_schema_preserved": true
+  },
+  "retained_system": {
+    "preserved_rows_and_hashes": 7688,
+    "counts": {
+      "recovery_actions": 1,
+      "recovery_action_decisions": 1,
+      "recovery_dispatches": 1,
+      "recovery_dispatch_events": 2,
+      "investigation_requests": 16,
+      "investigation_outcomes": 16
+    },
+    "api_live": 200,
+    "api_ready": 200,
+    "dashboard": 200,
+    "stored_openapi_matches": true,
+    "recovery_flags": {
+      "PIPEGUARD_RECOVERY_EXECUTION_ENABLED": "0",
+      "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED": "0"
+    },
+    "dag_paused": true,
+    "source_runs": 8,
+    "source_attempts": 14,
+    "python": "3.12.16",
+    "node": "v22.23.4"
+  },
+  "suite_cases": {
+    "backend": 441,
+    "frontend": 48,
+    "workload": 64,
+    "airflow": 13
+  },
+  "total_suite_cases": 566,
+  "unchanged": [
+    "Dependencies",
+    "Migrations",
+    "Model",
+    "Request options",
+    "Local validator",
+    "Acceptance thresholds",
+    "Retained scheduling/recovery flags"
+  ],
+  "limitations": [
+    "Six current-policy live trials do not estimate population accuracy or calibrate confidence.",
+    "Original version-10 live results for other classes remain historical; version-11 regression coverage there is offline.",
+    "Quality recommendations were safe but generic; no direct quality-report comparison was selected.",
+    "Source narrative uses broad source/run wording; fixtures demonstrate missing monitoring evidence, not a proven business outage.",
+    "Only complete small synthetic packets were used; truncated evidence remains refused.",
+    "ASGI transport is in-process; no new independent browser/TCP verification claim."
+  ],
+  "checked_at": "2026-11-04T11:39:26.155054+00:00"
+}

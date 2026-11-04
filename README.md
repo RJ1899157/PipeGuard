@@ -101,3 +101,5 @@ All repository changes are owned by **RJ1899157**.
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
 
 Latest verification: [Stage 13 local acceptance](docs/stage13-verification.md) records 562 passing suite cases, bounded request/graph resources, measured graph improvements, actual HTTP deadline and database-access fault checks, three restore drills and preserved history. [Delivery operations](docs/delivery-operations.md) provides isolated checks and manual CI. Hosted Linux CI passed both jobs in [run #3](https://github.com/RJ1899157/PipeGuard/actions/runs/41818080465). The [roadmap](docs/roadmap.md) retains Stage 14's final full-project audit; [deployment risks](docs/security-threat-model.md#deployment-restrictions-and-unresolved-risks) remain explicit.
+
+The [expanded AI evaluation](docs/investigation-expanded-evaluation.md) passes six version-11 trials across quality failures, monitoring gaps and conflicting attempt evidence, retaining two earlier failed cohorts. Current local checks pass 566 cases; these small synthetic trials do not establish general root-cause accuracy.

@@ -4,7 +4,7 @@ path,review_area,method,bytes,text_lines,sha256
 .gitignore,2026-11-04 coordinating review,documentation/structure/provenance check,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .node-version,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,8,1,0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314
 .python-version,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,8,1,a05e0074505ce29f25abf3aebe4f7218d28e98411822f199e3272740be4e363c
-README.md,Stage 13 security and resource review,documentation/evidence consistency check,10005,103,0c362be23df875e2e87269d3ddc4b99d5b90b320064b97ada6cd389888d5528a
+README.md,Stage 13 security and resource review,documentation/evidence consistency check,10332,105,5251c8d6dd5888732eed7fcd7216b7532d22caca7b2f7dedbd1dfd5c3a764888
 alembic.ini,2026-11-04 coordinating review,documentation/structure/provenance check,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,1158,14,5c617779eb4a37ea9f36470944956caf4d15943ee2e7e2d2245330c3732a94c6
 apps/pipeguard/migrations/README,2026-11-04 persistence review,migration/constraint review; isolated schema regressions,38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -157,6 +157,7 @@ docs/audit/hardening-mobile.png,2026-11-04 coordinating review,asset/hash invent
 docs/audit/hardening-quality-mobile.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,43543,280,b76c9a0cac275029b82cfc326804722ed7123756b4a78d9c845d586d6c8ef0bd
 docs/audit/investigation-desktop.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,101201,717,08e303a81728002f1d4da9aff1210ba843cee55b340cd2f8faf9e6f66c798f04
 docs/audit/investigation-evaluation.json,2026-11-04 coordinating review,documentation/structure/provenance check,3366,107,55ed181e96f0373a37b2312da6d628c2aefd1a88630679da9687564b65b7d50d
+docs/audit/investigation-expanded-evaluation.json,Stage 13 security and resource review,documentation/evidence consistency check,13652,405,1ae4914237ccb2e276984e52a53f7149220b9f83a4d938fd0ccca6f1b93aaa17
 docs/audit/investigation-mobile.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,45862,418,f28dadd002bdd1c05637d5250cc7f89f9e9ecbeaaddfa53707ad5d20c6db5441
 docs/audit/mobile-top.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,34246,228,c0eded98a7c2b8cf291b3ad28f8ee5858448c6f097923f5d57379113d014ff30
 docs/audit/postgres-advisory-triage.json,2026-11-04 coordinating review,documentation/structure/provenance check,60459,1950,99f331bc5673c7129a4c39b6f0f3ae7eb5b43cf72af25b083c3ab876b0e84d95
@@ -189,14 +190,14 @@ docs/exploration-verification.md,2026-11-04 coordinating review,documentation/st
 docs/failure-coverage.md,2026-11-04 coordinating review,documentation/structure/provenance check,15356,87,ae68d0ede888003462e63a1910870fdea08e18b871365bd83628be8372015178
 docs/hardening-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,10599,61,30a856390301a24a2ad577d77b187c00c432d16b770040a87f4e6a7146d26fbf
 docs/incident-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,3834,67,f5c62f76f39f6b84f91687d1e969f58a92ac5557bdc4de69748574e09659dd61
-docs/investigation-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,8887,68,78ee22c3c497a292bca574daef286e9ac2eeea11177eb0d87b7be986e4fd8a1c
-docs/investigation-expanded-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,7001,112,50788b3cf42e29d998ea335500c00648b74d3491af0884ee44fa645014c3ec08
+docs/investigation-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,9009,68,28af315cce5c8bc1bbe74f6f67fd6e9cf5d2bb045a22df266266aeae450d78ab
+docs/investigation-expanded-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,9690,154,fcb68df795b63ecee8694fd74c084529c74934b5060d1194a271e3396acc0eac
 docs/investigation-operations.md,Stage 13 security and resource review,documentation/evidence consistency check,10019,72,703e61176eb3ffe84c42459eed89159eafef1212d5859b5123869e0799402fbd
 docs/investigation-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8123,50,169170bbae6977b12fedce6de48a2a6053ede70773b3afdc5eaf23dc6ecfae2b
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,2026-11-04 coordinating review,documentation/structure/provenance check,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7030,45,d61b8109e7801cbc99bde7294e271c7a6741d09e5ff81b5c437894628359a21c
+docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7520,47,21e8226a8f4f8f5257ad8bbe2c1a0dd01264aeca5ce81e33413eebe1ed3bc1a7
 docs/post-recovery-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16961,87,8c174984c9f8874f517dc7a8dfc0acc9d5f2736cd213fdd2175f1fb057e583f6
 docs/recovery-airflow-authorization.md,2026-11-04 coordinating review,documentation/structure/provenance check,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5527,51,535994c88accb9301d3c057ccc8a316bce87c64a14889242aacdf17bf759b486
