@@ -62,10 +62,12 @@ def response_schema(packet):
     schema["properties"]["hypotheses"]["maxItems"] = min(3, len(categories))
     fields = schema["$defs"]["Hypothesis"]["properties"]
     fields["category"]["enum"] = categories
+    primary = [item for item in packet["items"]
+               if any(supports(c, item.get("facts", {})) for c in categories)]
     fields["supporting_evidence"]["items"] = {"type": "string", "enum": [
-        item["citation"] for item in packet["items"] if any(supports(c, item.get("facts", {})) for c in categories)]}
+        item["citation"] for item in primary]}
     counters = [item["citation"] for item in packet["items"] if any(
-        incompatible(item.get("facts", {}), other.get("facts", {})) for other in packet["items"])]
+        incompatible(item.get("facts", {}), other.get("facts", {})) for other in primary)]
     if counters:
         fields["contradicting_evidence"] = {"type": "string", "enum": ["none", *counters]}
     else:

@@ -61,3 +61,27 @@ production configuration changed during preparation.
 Official references: [Groq structured outputs](https://console.groq.com/docs/structured-outputs)
 and [organization-wide rate limits](https://console.groq.com/docs/rate-limits).
 Schema adherence is separate from semantic correctness.
+
+## Initial cohort failure and decoder correction
+
+The initial frozen cohort completed both quality trials and both source-gap trials
+safely and usefully. Its first conflict trial failed with
+`unsupported_contradiction`; the outcome is durable. The sixth trial was not run.
+This is a **failed, incomplete cohort**, not a passing four-of-five benchmark.
+
+The response schema had offered contradiction citations that conflicted with each
+other but could not contradict any eligible primary support. The local validator
+correctly refused the result. Decoder candidates now must be incompatible with
+at least one eligible primary citation. A flag-only reconciliation finding thus
+permits `none`; a genuine same-attempt source-failure primary still permits its
+incompatible success citation. The validator, categories, model, system prompt,
+request options and scoring thresholds are unchanged. A regression covers both
+paths, and the focused offline set passes **40 cases**.
+
+A second cohort freezes all six trials again before generation, with new keys,
+the same immutable fixtures and explicit per-case response-schema hashes.
+Its private plan is `expanded-v10-20261104-r2/plan.json`, SHA-256
+`5bce5fa64f7cb01dd0c5266d79f90eda89185e7bd84322beec29bbb94e59259c`.
+The first cohort's five requests/outcomes stay in the same isolated ledger and
+count toward the same daily limit. No failed request is overwritten or regenerated.
+Second-cohort results are pending.

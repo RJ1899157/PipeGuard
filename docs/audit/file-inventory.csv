@@ -45,7 +45,7 @@ apps/pipeguard/src/pipeguard/investigation/__init__.py,2026-11-04 recovery and o
 apps/pipeguard/src/pipeguard/investigation/api.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4147,78,f3c478c87868368688a5faa2f463e70ea142ee80913d181d98654f845fee5a7a
 apps/pipeguard/src/pipeguard/investigation/core.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,11219,211,1f267398c125914eefe77c094adf3565e652f17ab064b51e7a77d26d66c66a07
 apps/pipeguard/src/pipeguard/investigation/evaluation.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,957,19,c2bb25e97f7899421521aef443eea5b2af0a51d16494b372aa511340ae8c930e
-apps/pipeguard/src/pipeguard/investigation/groq.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,9087,151,3c735b750a1e4800dc648a3f667c2b3254c77b3baef8ae4f6cd44582d2a6f363
+apps/pipeguard/src/pipeguard/investigation/groq.py,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,9135,153,4da70100d50a9790f7a923ffb27fea55b7bbb46dd7b6be70c439b69634960a23
 apps/pipeguard/src/pipeguard/investigation/service.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,8070,129,95b0c4a51a2d2b6e3f3debe1335ad4d3b1ea6454c09c5f0000f48a7b5515b20e
 apps/pipeguard/src/pipeguard/lineage/__init__.py,2026-11-04 core backend review,source review; isolated regressions and preservation,82,1,e2edf2bfa04f88bafe988e0c32c2c912970fa6203329439c2d242b3f96deb77f
 apps/pipeguard/src/pipeguard/lineage/api.py,2026-11-04 core backend review,source review; isolated regressions and preservation,5688,109,1b476d163c790a34daa378f0feeab7e11015207f456433721d7a83313e7b09ef
@@ -68,7 +68,8 @@ apps/pipeguard/tests/test_detection_api.py,2026-11-04 backend verification,full 
 apps/pipeguard/tests/test_evidence.py,2026-11-04 backend verification,full regression suite; affected test review,6767,111,30e18e0483f1724ff7d786733605311b777cb1e671a0b74f1258177861d38350
 apps/pipeguard/tests/test_ingestion.py,2026-11-04 backend verification,full regression suite; affected test review,14031,301,c02b570469e92b91317a8ca43e3aaeff720e0eb583c2868689dc5c713a726bc7
 apps/pipeguard/tests/test_investigation.py,2026-11-04 backend verification,full regression suite; affected test review,12795,252,c43033f5835ab225153727fc7a66bd80e250e14cbc3a6eab35c9f75355d02d8b
-apps/pipeguard/tests/test_investigation_evaluation.py,2026-11-04 backend verification,full regression suite; affected test review,8753,159,75f9d32b92f3ad029b072ec418e5b133244e5f7050237cb170dca986e2ea958d
+apps/pipeguard/tests/test_investigation_evaluation.py,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,10043,180,dc9470847559aec41957410efa95baf494fa4cb4e3dff3f29233d831b8d2c171
+apps/pipeguard/tests/test_investigation_expansion.py,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,4943,83,90505eb770aff564aae250cd91b16ea5050b357380730b31464d076ffdd36383
 apps/pipeguard/tests/test_lineage.py,2026-11-04 backend verification,full regression suite; affected test review,22187,376,01475c33eb0cf782519aeb66cc64f1af2f8520358f196054129780a8a0418841
 apps/pipeguard/tests/test_local_operations.py,2026-11-04 backend verification,full regression suite; affected test review,12034,252,6775333cea2a65f9463a1173e48674661dcd1441fd27992cc90a321db932cf88
 apps/pipeguard/tests/test_operational_files.py,2026-11-04 backend verification,full regression suite; affected test review,13066,266,4e8b8b521ca73b35b53a3ca3dcdc82b38daec4f54670d04feae87ee3978a5d96
@@ -189,6 +190,7 @@ docs/failure-coverage.md,2026-11-04 coordinating review,documentation/structure/
 docs/hardening-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,10599,61,30a856390301a24a2ad577d77b187c00c432d16b770040a87f4e6a7146d26fbf
 docs/incident-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,3834,67,f5c62f76f39f6b84f91687d1e969f58a92ac5557bdc4de69748574e09659dd61
 docs/investigation-evaluation.md,2026-11-04 coordinating review,documentation/structure/provenance check,8549,63,9f0f08bed8da08d273ff665165424fb95eeb8ca3b845d599f9dcc686c06b53a6
+docs/investigation-expanded-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,5506,87,ace4cb7faed49dbe90e3ac699d2ff6b971bbd16d3446b4fb5a0567baa6269e32
 docs/investigation-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,9749,70,7e7ffef4a842b0c5954095302989e07cd8fb6c46cd7ac387fd94ef352ea65477
 docs/investigation-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8123,50,169170bbae6977b12fedce6de48a2a6053ede70773b3afdc5eaf23dc6ecfae2b
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f

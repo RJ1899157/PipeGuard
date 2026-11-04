@@ -157,3 +157,24 @@ def test_evaluator_freezes_keys_and_checks_evidence_before_submitting(monkeypatc
     plan["prompt_version"] = "old"
     with pytest.raises(ValueError, match="policy_changed"):
         module.run(plan, 0, 1)
+
+
+def test_response_counters_must_contradict_an_eligible_primary_citation():
+    evidence = packet('execution_failure', {'run':'run_1','attempt':1,
+        'state':'unknown','reconciliation_required':True})
+    evidence['items'].extend([
+        {'citation':'e2','kind':'ingested_events','facts':{'run':'run_1','attempt':1,'state':'failed'}},
+        {'citation':'e3','kind':'ingested_events','facts':{'run':'run_1','attempt':1,'state':'succeeded'}},
+    ])
+    fields = response_schema(evidence)['$defs']['Hypothesis']['properties']
+    assert fields['supporting_evidence']['items']['enum'] == ['e1']
+    assert fields['contradicting_evidence']['enum'] == ['none']
+    assert score(answer('conflicting_execution_reports'), evidence,
+                 ['conflicting_execution_reports'])['useful']
+    # A source-failure primary really can be contradicted by its same-attempt success.
+    evidence['items'][1]['facts']['error_code'] = 'source_unavailable'
+    fields = response_schema(evidence)['$defs']['Hypothesis']['properties']
+    assert fields['contradicting_evidence']['enum'] == ['none', 'e3']
+    finding = answer('reported_source_failure', 'e3')
+    finding['hypotheses'][0]['supporting_evidence'] = ['e2']
+    assert score(finding, evidence, ['reported_source_failure'])['useful']
