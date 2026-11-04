@@ -1,5 +1,10 @@
 # Investigation evaluation gate
 
+This report records historical versions 8–10. The selected policy is now version 11;
+see the [expanded evaluation](investigation-expanded-evaluation.md). The evaluator
+refuses historical plans whose policy differs from the selected version. Existing
+records remain readable/replayable through the normal API without regenerating them.
+
 Protocol frozen on 2026-11-02 before the first `investigation_v8` trial. The same thresholds and evidence apply to the separately versioned `investigation_v9` and `investigation_v10` evaluations.
 
 ## Acceptance criteria

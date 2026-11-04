@@ -85,3 +85,28 @@ Its private plan is `expanded-v10-20261104-r2/plan.json`, SHA-256
 The first cohort's five requests/outcomes stay in the same isolated ledger and
 count toward the same daily limit. No failed request is overwritten or regenerated.
 Second-cohort results are pending.
+
+## Second cohort failure and version 11 protocol
+
+The second cohort also passed its four quality/source trials, then failed its
+first conflict trial with provider HTTP 400. The sanitized diagnostic reports a
+primary citation outside the allowed `e1`/`e4` reconciliation-flag citations.
+No invalid output became a finding. Its sixth trial was not run. Both cohorts
+remain failed/incomplete with five durable attempts each; they are not pooled
+into a passing score.
+
+`investigation_v11` explicitly tells the model to support conflict findings with
+a citation that itself has `reconciliation_required=true`, explain incompatible
+terminal claims without choosing a winner, and use `none` when the primary flag
+is not itself a terminal claim. Model, request options, local validator, fixture
+facts and usefulness thresholds remain unchanged. The earlier six-trial version-10
+results remain historical; they are not relabeled as version-11 live results.
+
+The version-11 cohort predeclares the same six new-class trials, testing both
+conflict trials first, then both quality trials, then both source-gap trials.
+This order checks the reproduced failure before spending calls on the other
+classes. Its plan is `expanded-v11-20261104/plan.json`, SHA-256
+`26539798ceb11bbb32d84df40e37261716a248e0426a9cb39fb3b35e6ba317ca`.
+The ten earlier attempts count toward the same 20/day cap; this cohort allows
+only six more. No automatic regeneration, fallback or quota bypass is introduced.
+Results are pending.

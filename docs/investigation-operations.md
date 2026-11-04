@@ -13,7 +13,7 @@ PIPEGUARD_INVESTIGATION_ENABLED=true
 
 The enable flag defaults to false in the example file. Restart the API after changing these values. The dashboard receives only its API credential; the Groq key never reaches browser code. The account's billing plan cannot be verified through the model-list endpoint. Keep the organization on Free: an operator confirmation or an application request limit cannot prevent charges after a paid-plan upgrade. No automatic model fallback, billing upgrade or retry exists.
 
-The configured model is `openai/gpt-oss-120b`, hosted by Groq, with low reasoning effort and policy `investigation_v10`. It replaces the preview Qwen model after the fixed evaluation exposed insufficient usefulness and a provider JSON-generation failure. Authenticated availability was verified on 2026-11-02. Availability and model status do not prove incident accuracy. See the [evaluation protocol and results](investigation-evaluation.md). No new Python or web dependency was required, and no OpenAI API credential is used.
+The configured model is `openai/gpt-oss-120b`, hosted by Groq, with low reasoning effort and policy `investigation_v11`. It replaces the preview Qwen model after the fixed evaluation exposed insufficient usefulness and a provider JSON-generation failure. Authenticated availability was verified on 2026-11-02. Availability and model status do not prove incident accuracy. See the [evaluation protocol and results](investigation-evaluation.md). No new Python or web dependency was required, and no OpenAI API credential is used.
 
 ## Dashboard and API
 
@@ -68,3 +68,5 @@ uv run --locked --env-file .env python scripts/investigate.py --verify-connectio
 The connectivity probe sends synthetic data and saves a private local file under ignored `data/local/investigations/`. It is a diagnostic exception, not the normal incident workflow. Initial prototype files predate durable API records and are not retroactively imported.
 
 See [verification](investigation-verification.md) and [evaluation](investigation-evaluation.md) for measured checks and remaining acceptance work, and [Stage 11 design](recovery-design.md) for the recovery boundary. Official references: [Groq structured outputs](https://console.groq.com/docs/structured-outputs), [model status](https://console.groq.com/docs/model/openai/gpt-oss-120b), [rate limits](https://console.groq.com/docs/rate-limits), [data handling](https://console.groq.com/docs/your-data), [billing](https://console.groq.com/docs/billing-faqs), [PostgreSQL advisory locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS).
+
+Version 11 adds explicit conflict-citation guidance after the [expanded evaluation](investigation-expanded-evaluation.md) exposed two fail-closed trials. Historical version-10 outputs retain their original policy identity and are not current-policy evaluation results.

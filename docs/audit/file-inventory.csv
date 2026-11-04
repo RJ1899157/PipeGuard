@@ -45,7 +45,7 @@ apps/pipeguard/src/pipeguard/investigation/__init__.py,2026-11-04 recovery and o
 apps/pipeguard/src/pipeguard/investigation/api.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4147,78,f3c478c87868368688a5faa2f463e70ea142ee80913d181d98654f845fee5a7a
 apps/pipeguard/src/pipeguard/investigation/core.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,11219,211,1f267398c125914eefe77c094adf3565e652f17ab064b51e7a77d26d66c66a07
 apps/pipeguard/src/pipeguard/investigation/evaluation.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,957,19,c2bb25e97f7899421521aef443eea5b2af0a51d16494b372aa511340ae8c930e
-apps/pipeguard/src/pipeguard/investigation/groq.py,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,9135,153,4da70100d50a9790f7a923ffb27fea55b7bbb46dd7b6be70c439b69634960a23
+apps/pipeguard/src/pipeguard/investigation/groq.py,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,9695,160,cd2213a5ca8c98ea6cf0003e2bafac01fbdd354afc80977d106574d1845210f6
 apps/pipeguard/src/pipeguard/investigation/service.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,8070,129,95b0c4a51a2d2b6e3f3debe1335ad4d3b1ea6454c09c5f0000f48a7b5515b20e
 apps/pipeguard/src/pipeguard/lineage/__init__.py,2026-11-04 core backend review,source review; isolated regressions and preservation,82,1,e2edf2bfa04f88bafe988e0c32c2c912970fa6203329439c2d242b3f96deb77f
 apps/pipeguard/src/pipeguard/lineage/api.py,2026-11-04 core backend review,source review; isolated regressions and preservation,5688,109,1b476d163c790a34daa378f0feeab7e11015207f456433721d7a83313e7b09ef
@@ -189,9 +189,9 @@ docs/exploration-verification.md,2026-11-04 coordinating review,documentation/st
 docs/failure-coverage.md,2026-11-04 coordinating review,documentation/structure/provenance check,15356,87,ae68d0ede888003462e63a1910870fdea08e18b871365bd83628be8372015178
 docs/hardening-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,10599,61,30a856390301a24a2ad577d77b187c00c432d16b770040a87f4e6a7146d26fbf
 docs/incident-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,3834,67,f5c62f76f39f6b84f91687d1e969f58a92ac5557bdc4de69748574e09659dd61
-docs/investigation-evaluation.md,2026-11-04 coordinating review,documentation/structure/provenance check,8549,63,9f0f08bed8da08d273ff665165424fb95eeb8ca3b845d599f9dcc686c06b53a6
-docs/investigation-expanded-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,5506,87,ace4cb7faed49dbe90e3ac699d2ff6b971bbd16d3446b4fb5a0567baa6269e32
-docs/investigation-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,9749,70,7e7ffef4a842b0c5954095302989e07cd8fb6c46cd7ac387fd94ef352ea65477
+docs/investigation-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,8887,68,78ee22c3c497a292bca574daef286e9ac2eeea11177eb0d87b7be986e4fd8a1c
+docs/investigation-expanded-evaluation.md,Stage 13 security and resource review,documentation/evidence consistency check,7001,112,50788b3cf42e29d998ea335500c00648b74d3491af0884ee44fa645014c3ec08
+docs/investigation-operations.md,Stage 13 security and resource review,documentation/evidence consistency check,10019,72,703e61176eb3ffe84c42459eed89159eafef1212d5859b5123869e0799402fbd
 docs/investigation-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8123,50,169170bbae6977b12fedce6de48a2a6053ede70773b3afdc5eaf23dc6ecfae2b
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
