@@ -2,7 +2,7 @@ path,review_area,method,bytes,text_lines,sha256
 .env.example,2026-11-04 coordinating review,documentation/structure/provenance check,1174,17,ad6fa0268da4456bb098b06dc089750274ea143035323a4c72a8e1adc060f535
 .gitignore,2026-11-04 coordinating review,documentation/structure/provenance check,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .python-version,2026-11-04 coordinating review,documentation/structure/provenance check,5,1,7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d
-README.md,2026-11-04 coordinating review,documentation/structure/provenance check,9605,103,0355bc7e432e03f8a576a80c80e7080ad1aac89feda3e4462f4200c04a945542
+README.md,2026-11-04 coordinating review,documentation/structure/provenance check,9703,103,4cc94d0e2d703b389cb03362f8bdfa5e00dc00672a27e5f4e2eaf6c64d917b3a
 alembic.ini,2026-11-04 coordinating review,documentation/structure/provenance check,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,1158,14,5c617779eb4a37ea9f36470944956caf4d15943ee2e7e2d2245330c3732a94c6
 apps/pipeguard/migrations/README,2026-11-04 persistence review,migration/constraint review; isolated schema regressions,38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -132,7 +132,7 @@ apps/pipeguard/web/tests/watchdog.test.ts,2026-11-04 frontend review,source revi
 apps/pipeguard/web/tsconfig.json,2026-11-04 frontend review,source review; regression/build/browser checks,655,28,9f75583e8c444090c24b67a4140ccd8e05ba34b601e5798ea557d09e5c5836d3
 compose.yaml,2026-11-04 coordinating review,documentation/structure/provenance check,682,18,1e33e331e46bac21033e9a4ad4659588b6c4ac592ec1a91dc109b49c4157e264
 design-qa.md,2026-11-04 coordinating review,documentation/structure/provenance check,7073,68,62965076a982bb6190691652fb957901ad432a3cb316471fe5ad264741830255
-docs/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,5462,83,6c92a33b7643fabb97fdbb5121f393da78169bd79a74cb7ed679113d171b9112
+docs/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,5462,83,dea33fcc2e0e775f10ca442c3eab2983304333ddb66130adc9becbf622c011f3
 docs/architecture/dashboard-foundation.md,2026-11-04 coordinating review,documentation/structure/provenance check,4845,47,4f0f422688a0e2d55c5a3062d0bfa820f995b413053f95371e8b0112c2d03a7b
 docs/architecture/domain-model.md,2026-11-04 coordinating review,documentation/structure/provenance check,20050,139,93e7b87936995dfd227f2284384a1b4650f345fbd6ecae25553aa804f1eb196c
 docs/architecture/incident-detection.md,2026-11-04 coordinating review,documentation/structure/provenance check,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835
@@ -187,8 +187,8 @@ docs/investigation-verification.md,2026-11-04 coordinating review,documentation/
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,2026-11-04 coordinating review,documentation/structure/provenance check,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,2026-11-04 coordinating review,documentation/structure/provenance check,3815,33,300aa66a583711ff53999459b110f0cf0105783fbc3b78ccdc7ba750215a0325
-docs/post-recovery-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,13225,86,aa16195149cc09f284f3eab55153bab503665280d39748a3fb78c8cda10f6955
+docs/next-session.md,2026-11-04 coordinating review,documentation/structure/provenance check,6193,37,2d1fe5f028e631690866f39e4bfa2ec71bb7798d7f22e60305642a1f66982f4f
+docs/post-recovery-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16961,87,8c174984c9f8874f517dc7a8dfc0acc9d5f2736cd213fdd2175f1fb057e583f6
 docs/recovery-airflow-authorization.md,2026-11-04 coordinating review,documentation/structure/provenance check,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5527,51,535994c88accb9301d3c057ccc8a316bce87c64a14889242aacdf17bf759b486
 docs/recovery-design.md,2026-11-04 coordinating review,documentation/structure/provenance check,5884,45,4099bd996bd0fdd1963633c7d76117b376915fe10b13f1818359aaad563b984f
@@ -199,7 +199,7 @@ docs/recovery-live-verification.md,2026-11-04 coordinating review,documentation/
 docs/recovery-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,8937,65,2dbe3c71bf83f8af1a9410afa980e8b77ca2914308113835dbde87b287ed42de
 docs/recovery-phase1-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5487,46,817d1746081d508fce5af5d5cfecc2d73d4393bd0cbeb913253e4366fc38c348
 docs/recovery-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8137,66,c2e0bc28903902242e5d37584c7b4c8028648491a884c081b4af500519f5304d
-docs/roadmap.md,2026-11-04 coordinating review,documentation/structure/provenance check,13187,38,78f1f8fc9f781375acc680ceaa3e1a5204474ae1ade5197ec6f94faab49a1770
+docs/roadmap.md,2026-11-04 coordinating review,documentation/structure/provenance check,15375,47,b4f06f54114217377c0f15499e0609559088e7b2089a8a73a60c0b227a097f03
 docs/system-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16065,92,edae829d8d8be2927615c0b16a54655f3d6786e5a58b0983c15575c3463f8730
 infra/airflow/README.md,2026-11-04 recovery and operations review,source/command review; isolated regressions,13529,163,2567466103d3352101f3684c8ebb8a5e4856c4413530c00c03a59e0962139b50
 infra/airflow/auth/pipeguard_airflow_auth.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c

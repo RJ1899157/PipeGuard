@@ -16,18 +16,22 @@ Runtime availability must be checked again after sleep, reboot or a closed sessi
 
 1. **Stage 12: integrated operations and delivery.** Inspect the current setup and add reproducible CI for the separate environments/frontend, isolated integrated checks and clean-checkout startup/shutdown procedures. No GitHub Actions workflow exists yet. Preserve least privilege, local evidence and the free-tier-only provider boundary.
 2. **Stage 13: final security, performance and debugging gate.** Revalidate the integrated delivery after Stage 12: threat model, permissions, secrets/injection boundaries, dependency risks, recovery authority, representative larger histories/graphs, measured query/process performance, interruption/outage/restore behavior and final issue closure.
+3. **Stage 14: final full-project multi-agent audit.** Independently review the final revision after Stage 13, covering all owned files, features, buttons/views, operating commands and documentation. Fix reproduced defects, retest affected behavior, measure optimization, preserve evidence and record unresolved risks before final sign-off.
 
 See the [roadmap](roadmap.md). The current audit provides a baseline; do not repeat it from scratch unless changes or runtime evidence justify it. No new live workload, recovery unpause or hosted generation is required to begin Stage 12.
 
 ## Explicit remaining limits
 
-| Boundary | Current state | Needed for broader guarantees |
-| --- | --- | --- |
-| Container advisories | 130 installed-source matches; no published nonzero trixie fixed versions in the matched records; official ARM64 image unchanged | Published compatible fixes or a separately reviewed image design; [current evidence](post-recovery-audit.md#dependency-and-container-findings) |
-| Total host/network loss | Watcher runs on this Mac | An independent always-on device or externally hosted watcher |
-| Disk/host loss | Verified backups remain on this disk | Separately protected backup destination and transfer/restore procedure |
-| Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion | Reviewed incremental processing/retention and cross-host fencing |
-| Public multi-user access | Local-owner interfaces on loopback | Named-user authentication, authorization, tenant isolation and deployment design |
-| Atomic workload publication | Raw loading and dbt transformations use separate transactions | Reviewed publication design if atomic visibility is required; partial outcomes remain observable |
+| Boundary                      | Current state                                                                                                                   | Needed for broader guarantees                                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Container advisories          | 130 installed-source matches; no published nonzero trixie fixed versions in the matched records; official ARM64 image unchanged | Published compatible fixes or a separately reviewed image design; [current evidence](post-recovery-audit.md#dependency-and-container-findings) |
+| Total host/network loss       | Watcher runs on this Mac                                                                                                        | An independent always-on device or externally hosted watcher                                                                                   |
+| Disk/host loss                | Verified backups remain on this disk                                                                                            | Separately protected backup destination and transfer/restore procedure                                                                         |
+| Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion                                 | Reviewed incremental processing/retention and cross-host fencing                                                                               |
+| Public multi-user access      | Local-owner interfaces on loopback                                                                                              | Named-user authentication, authorization, tenant isolation and deployment design                                                               |
+| Atomic workload publication   | Raw loading and dbt transformations use separate transactions                                                                   | Reviewed publication design if atomic visibility is required; partial outcomes remain observable                                               |
+| Broader AI accuracy           | Bounded evaluation passed; live coverage is limited                                                                             | Representative incident-class evaluation before stronger accuracy claims                                                                       |
 
 These limits remain open; no external account, public endpoint, backup upload, unverified dependency switch or automatic recovery was introduced to hide them.
+
+The follow-up before Stage 12 rechecked the official image manifest and advisory sources: 130 matches remain and the official ARM64 image is unchanged. No external backup volume is mounted. The reproduced code defects are closed in the preceding audit; the external-resource limits and optional deployment designs above are not represented as fixed. Stage 14 is now an explicit final gate rather than being implied by Stage 13.

@@ -100,4 +100,4 @@ All repository changes are owned by **RJ1899157**.
 
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
 
-Latest verification: the [2026-11-04 multi-agent audit](docs/post-recovery-audit.md) records 548 passing suite cases, browser checks, measured optimization, preserved evidence and remaining deployment limits. Stages 12–13 remain in the [roadmap](docs/roadmap.md).
+Latest verification: the [2026-11-04 multi-agent audit](docs/post-recovery-audit.md) records 548 passing suite cases, browser checks, measured optimization, preserved evidence and remaining deployment limits. Stages 12–14 remain in the [roadmap](docs/roadmap.md): integrated delivery, security/performance hardening and the final full-project multi-agent audit.

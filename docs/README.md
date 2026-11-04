@@ -13,7 +13,7 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 | [Domain model](architecture/domain-model.md)                 | Entity identity, relationships, event handling, and persistence invariants                |
 | [Dashboard foundation](architecture/dashboard-foundation.md) | Design checkpoint, graph technology decision, display invariants and planned verification |
 | [Development setup](development/setup.md)                    | Repository access, Python environment, dependencies, and verification status              |
-| [Delivery roadmap](roadmap.md)                               | Thirteen delivery stages with outputs and acceptance criteria                             |
+| [Delivery roadmap](roadmap.md)                               | Fourteen delivery stages, including the final full-project multi-agent audit              |
 
 ## Latest verification
 

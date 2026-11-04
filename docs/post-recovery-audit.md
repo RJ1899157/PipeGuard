@@ -10,18 +10,18 @@ Reviewed scopes cover all owned production API/auth/database/ingestion/detection
 
 ## Defects corrected
 
-| Area | Reproduced issue | Correction and regression evidence |
-| --- | --- | --- |
-| Lineage truthfulness | Missing indexed dataset edges could still yield `reported_complete` | Compare valid indexed input/output counts with the original declared payload. Missing edges produce partial coverage and `projection_payload_mismatch`; zero/one-of-two edge cases covered |
-| Artifact failure handling | Deeply nested JSON could escape quality/lineage fallback through `RecursionError` | Emit explicit incomplete evidence instead of failing an otherwise completed workload; nested artifact cases covered |
-| Workload acknowledgement | An incomplete HTTP response could turn successful business execution into failure | Preserve pending durable observations for replay; incomplete and recursive acknowledgement cases covered |
-| Recovery transport | Incomplete HTTP bodies escaped the uncertain-outcome path | Retain unknown transport outcome; no repeat business POST |
-| AI request lifecycle | Same-tick submissions could create distinct keys; aborted responses could clear retained requests | Synchronous in-flight latch, abort-aware completion and retained-key reconciliation, including unavailable session storage |
-| Review decisions | Local expiry was not reflected until refresh, and stale decisions remained actionable during refresh/error | One-next-deadline expiry hook, fail-closed date handling, cleared confirmations and blocked stale decisions; duplicate `expired` text removed |
-| Input admission | Some read/investigation identifiers accepted trailing newlines | Exact whole-string checks for UUIDs, attempt numbers and snapshot tokens |
-| Read transport | Browser read broker parsed an unbounded upstream JSON body | Cancel responses exceeding **16 MiB** before parsing; generous margin above the existing 8 MiB captured-content bound plus metadata. Exact-cap, split UTF-8, malformed and oversize stream checks covered |
-| Control naming | Wrapped selector labels did not give reliable exact accessible names | Explicit stable names and associated visible labels for all six selectors and graph search; verified in browser and source regression |
-| Documentation | Several architecture/application pages still described investigation/recovery as planned | Current boundaries, implemented ledgers, executable worker and documentation index corrected; historical milestones linked rather than rewritten as new evidence |
+| Area                      | Reproduced issue                                                                                           | Correction and regression evidence                                                                                                                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lineage truthfulness      | Missing indexed dataset edges could still yield `reported_complete`                                        | Compare valid indexed input/output counts with the original declared payload. Missing edges produce partial coverage and `projection_payload_mismatch`; zero/one-of-two edge cases covered                |
+| Artifact failure handling | Deeply nested JSON could escape quality/lineage fallback through `RecursionError`                          | Emit explicit incomplete evidence instead of failing an otherwise completed workload; nested artifact cases covered                                                                                       |
+| Workload acknowledgement  | An incomplete HTTP response could turn successful business execution into failure                          | Preserve pending durable observations for replay; incomplete and recursive acknowledgement cases covered                                                                                                  |
+| Recovery transport        | Incomplete HTTP bodies escaped the uncertain-outcome path                                                  | Retain unknown transport outcome; no repeat business POST                                                                                                                                                 |
+| AI request lifecycle      | Same-tick submissions could create distinct keys; aborted responses could clear retained requests          | Synchronous in-flight latch, abort-aware completion and retained-key reconciliation, including unavailable session storage                                                                                |
+| Review decisions          | Local expiry was not reflected until refresh, and stale decisions remained actionable during refresh/error | One-next-deadline expiry hook, fail-closed date handling, cleared confirmations and blocked stale decisions; duplicate `expired` text removed                                                             |
+| Input admission           | Some read/investigation identifiers accepted trailing newlines                                             | Exact whole-string checks for UUIDs, attempt numbers and snapshot tokens                                                                                                                                  |
+| Read transport            | Browser read broker parsed an unbounded upstream JSON body                                                 | Cancel responses exceeding **16 MiB** before parsing; generous margin above the existing 8 MiB captured-content bound plus metadata. Exact-cap, split UTF-8, malformed and oversize stream checks covered |
+| Control naming            | Wrapped selector labels did not give reliable exact accessible names                                       | Explicit stable names and associated visible labels for all six selectors and graph search; verified in browser and source regression                                                                     |
+| Documentation             | Several architecture/application pages still described investigation/recovery as planned                   | Current boundaries, implemented ledgers, executable worker and documentation index corrected; historical milestones linked rather than rewritten as new evidence                                          |
 
 ## Measured optimization
 
@@ -34,21 +34,21 @@ Ordinary warmed live read medians remained approximately **3–6 ms** in the sam
 
 ## Fresh verification
 
-| Check | Result |
-| --- | --- |
-| Combined backend suite | **425 passed**, one existing upstream Starlette/HTTPX deprecation warning |
-| Frontend suite | **46 passed** |
-| Independent workload suite | **64 passed** in isolated schemas |
-| Pinned Airflow interpreter | **13 DAG/authorization checks passed** |
-| Total distinct suite cases | **548 passed** across these four suites |
-| Static/build checks | Strict TypeScript unused checks, frontend formatting and production build passed |
-| Contracts | All three committed event/report JSON Schemas and OpenAPI match current runtime models |
-| Preservation | All **6,490** captured immutable row IDs and database-native hashes retained; mutable receipt-processing fields excluded; later monitoring receipts may be added |
-| Existing source | **8 native runs / 14 attempt snapshots**; DAG remains paused, recovery switches off; no new business run or real Groq generation |
-| Existing ledger/provider records | Still **1 action / 1 approval / 1 dispatch / 2 observations**, **16 investigation requests / 16 outcomes** |
-| Disposable UI dataset | Removed after verification; live API restored; no test schemas remain |
-| Services/network | API readiness/dashboard healthy; PostgreSQL, API, dashboard and Airflow bind to loopback; independent local watcher fresh |
-| Backups | Fresh backups of all three databases restored in disposable databases; schema/row checks passed; no live database replaced |
+| Check                            | Result                                                                                                                                                           |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Combined backend suite           | **425 passed**, one existing upstream Starlette/HTTPX deprecation warning                                                                                        |
+| Frontend suite                   | **46 passed**                                                                                                                                                    |
+| Independent workload suite       | **64 passed** in isolated schemas                                                                                                                                |
+| Pinned Airflow interpreter       | **13 DAG/authorization checks passed**                                                                                                                           |
+| Total distinct suite cases       | **548 passed** across these four suites                                                                                                                          |
+| Static/build checks              | Strict TypeScript unused checks, frontend formatting and production build passed                                                                                 |
+| Contracts                        | All three committed event/report JSON Schemas and OpenAPI match current runtime models                                                                           |
+| Preservation                     | All **6,490** captured immutable row IDs and database-native hashes retained; mutable receipt-processing fields excluded; later monitoring receipts may be added |
+| Existing source                  | **8 native runs / 14 attempt snapshots**; DAG remains paused, recovery switches off; no new business run or real Groq generation                                 |
+| Existing ledger/provider records | Still **1 action / 1 approval / 1 dispatch / 2 observations**, **16 investigation requests / 16 outcomes**                                                       |
+| Disposable UI dataset            | Removed after verification; live API restored; no test schemas remain                                                                                            |
+| Services/network                 | API readiness/dashboard healthy; PostgreSQL, API, dashboard and Airflow bind to loopback; independent local watcher fresh                                        |
+| Backups                          | Fresh backups of all three databases restored in disposable databases; schema/row checks passed; no live database replaced                                       |
 
 The frontend build was performed with the owned production server stopped, then the server was restarted. Disposable faults used a fake provider and fake source with external calls explicitly forbidden. No recovery capability was enabled and no DAG was unpaused during this audit.
 
@@ -83,4 +83,5 @@ Primary sources: [OSV query API](https://google.github.io/osv.dev/post-v1-queryb
 
 1. **Stage 12 — integrated operations and delivery.** Add CI for the independent environments and frontend, define reproducible isolated checks, exercise a clean checkout/start/stop procedure, and assemble operating procedures/evidence. No CI workflow currently exists. Optional application metrics should be introduced only with a concrete operating need.
 2. **Stage 13 — final security, measured performance and debugging acceptance.** Revalidate the delivered system after Stage 12 changes: threat model and permissions, input/injection/secret boundaries, dependency risks, recovery authority, larger representative histories/graphs, query/process performance, interruption/outage/restore scenarios, and closure of the final regression report. This audit supplies evidence but does not mark that later delivery gate complete.
-3. **Explicit deployment limits.** Same-host watcher/backups do not cover total host or disk loss; an independent watcher/backup destination is still absent. Public multi-user deployment, distributed fencing/retention and atomic workload publication need separate design if those scopes are chosen. Broader live AI incident-class accuracy remains unestablished. Container advisories need upstream fixes or a separately reviewed compatible image design.
+3. **Stage 14 — final full-project multi-agent audit.** Added after this audit at the user's request: independently review the final revision after Stage 13, covering owned source, every feature/button/view, commands, dependencies and documentation. Fix and retest reproduced defects, substantiate optimization with measurements and document remaining risks before final delivery sign-off. See the [roadmap](roadmap.md#how-the-final-reviews-differ) for the distinction between the two final gates.
+4. **Explicit deployment limits.** Same-host watcher/backups do not cover total host or disk loss; an independent watcher/backup destination is still absent. Public multi-user deployment, distributed fencing/retention and atomic workload publication need separate design if those scopes are chosen. Broader live AI incident-class accuracy remains unestablished. Container advisories need upstream fixes or a separately reviewed compatible image design.
