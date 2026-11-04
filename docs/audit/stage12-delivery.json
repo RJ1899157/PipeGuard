@@ -1,0 +1,187 @@
+{
+  "date": "2026-11-04",
+  "tested_revision": "c7bb0538132eb1ff92c989eb93cf04bec8b97cf6",
+  "platform": "macOS ARM64",
+  "scope": "fresh committed export; separate PostgreSQL tmpfs and three new virtual environments",
+  "passed": true,
+  "cleanup_passed": true,
+  "steps": [
+    {
+      "name": "application-environment",
+      "passed": true,
+      "seconds": 0.133
+    },
+    {
+      "name": "new-private-configuration",
+      "passed": true,
+      "seconds": 0.126
+    },
+    {
+      "name": "temporary-postgres",
+      "passed": true,
+      "seconds": 3.216
+    },
+    {
+      "name": "migrations",
+      "passed": true,
+      "seconds": 3.001
+    },
+    {
+      "name": "runtime-role",
+      "passed": true,
+      "seconds": 0.351
+    },
+    {
+      "name": "sample-warehouse",
+      "passed": true,
+      "seconds": 0.393
+    },
+    {
+      "name": "backend-suite",
+      "passed": true,
+      "seconds": 109.388
+    },
+    {
+      "name": "migration-consistency",
+      "passed": true,
+      "seconds": 0.781
+    },
+    {
+      "name": "workload-environment",
+      "passed": true,
+      "seconds": 0.288
+    },
+    {
+      "name": "workload-suite",
+      "passed": true,
+      "seconds": 24.722
+    },
+    {
+      "name": "airflow-environment",
+      "passed": true,
+      "seconds": 0.041
+    },
+    {
+      "name": "airflow-pinned-install",
+      "passed": true,
+      "seconds": 0.46
+    },
+    {
+      "name": "airflow-suite",
+      "passed": true,
+      "seconds": 6.673
+    },
+    {
+      "name": "application-dependency-consistency",
+      "passed": true,
+      "seconds": 0.124
+    },
+    {
+      "name": "workload-dependency-consistency",
+      "passed": true,
+      "seconds": 0.133
+    },
+    {
+      "name": "airflow-dependency-consistency",
+      "passed": true,
+      "seconds": 0.133
+    },
+    {
+      "name": "http-workload-acceptance",
+      "passed": true,
+      "seconds": 6.089
+    },
+    {
+      "name": "web-runtime",
+      "passed": true,
+      "seconds": 0.19
+    },
+    {
+      "name": "web-dependencies",
+      "passed": true,
+      "seconds": 3.028
+    },
+    {
+      "name": "web-types",
+      "passed": true,
+      "seconds": 3.615
+    },
+    {
+      "name": "web-suite",
+      "passed": true,
+      "seconds": 0.883
+    },
+    {
+      "name": "web-format",
+      "passed": true,
+      "seconds": 1.415
+    },
+    {
+      "name": "web-build",
+      "passed": true,
+      "seconds": 9.072
+    },
+    {
+      "name": "web-http-startup",
+      "passed": true,
+      "seconds": 0.432
+    },
+    {
+      "name": "temporary-postgres-stop",
+      "passed": true,
+      "seconds": 1.683
+    }
+  ],
+  "suite_cases": {
+    "backend": 425,
+    "frontend": 46,
+    "workload": 64,
+    "airflow": 13
+  },
+  "http_scenario": {
+    "passed": true,
+    "attempt_states": ["failed", "succeeded"],
+    "incident_state": "resolved",
+    "quality_checks": 14,
+    "lineage_coverage": "reported_complete",
+    "captured_evidence_unchanged": true,
+    "hosted_ai_calls": 0,
+    "recovery_dispatches": 0
+  },
+  "interruption": {
+    "signal": "SIGTERM",
+    "expected_nonzero_exit": true,
+    "reported_failure": true,
+    "cleanup_passed": true
+  },
+  "retained_system": {
+    "counts_unchanged": true,
+    "counts": {
+      "recovery_actions": 1,
+      "recovery_action_decisions": 1,
+      "recovery_dispatches": 1,
+      "recovery_dispatch_events": 2,
+      "investigation_requests": 16,
+      "investigation_outcomes": 16
+    },
+    "historical_row_ids_present": 6490,
+    "health": {
+      "api": 200,
+      "dashboard": 200
+    },
+    "dag_paused": true,
+    "source_runs": 8,
+    "hosted_workflows_started": 0,
+    "recovery_flags": {
+      "PIPEGUARD_RECOVERY_EXECUTION_ENABLED": "0",
+      "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED": "0"
+    }
+  },
+  "ci": {
+    "workflow_registered": true,
+    "trigger": "workflow_dispatch",
+    "hosted_runs": 0,
+    "linux_execution_verified": false,
+    "automatic_triggers_enabled": false
+  }
+}

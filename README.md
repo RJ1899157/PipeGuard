@@ -52,7 +52,7 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage                        | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented  |
 | Web application           | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local dashboard with explicit advisory investigation; pnpm lockfile committed                 |
 | Graphs and charts         | React Flow; Apache ECharts                                     | Attempt-scoped graph, execution timeline, quality charts and textual alternatives implemented |
-| Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | PostgreSQL Compose, backend/web checks and manual browser verification available; CI planned  |
+| Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | Isolated delivery checks and manual CI configured; hosted CI execution pending                |
 | Later integrations        | Marquez, Prometheus, optional GCP                              | Deferred                                                                                      |
 
 Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.
@@ -100,4 +100,4 @@ All repository changes are owned by **RJ1899157**.
 
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
 
-Latest verification: the [2026-11-04 multi-agent audit](docs/post-recovery-audit.md) records 548 passing suite cases, browser checks, measured optimization, preserved evidence and remaining deployment limits. Stages 12–14 remain in the [roadmap](docs/roadmap.md): integrated delivery, security/performance hardening and the final full-project multi-agent audit.
+Latest verification: [Stage 12 local delivery acceptance](docs/delivery-verification.md) repeats all 548 suite cases in a fresh committed export and verifies HTTP retry/evidence preservation, production-dashboard startup and interrupted-check cleanup. Manual GitHub Actions is registered but has not run on hosted Linux. The earlier [multi-agent audit](docs/post-recovery-audit.md) records browser checks, measured optimization and deployment limits. The [roadmap](docs/roadmap.md) retains the hosted-CI follow-up, Stage 13 security/performance hardening and Stage 14 final full-project audit.

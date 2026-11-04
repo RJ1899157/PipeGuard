@@ -1,6 +1,6 @@
 # Next-session checkpoint
 
-Verified: **2026-11-04**, after the [post-recovery multi-agent audit](post-recovery-audit.md).
+Verified: **2026-11-04**, after [Stage 12 local delivery acceptance](delivery-verification.md).
 
 ## Current verified state
 
@@ -10,15 +10,17 @@ Verified: **2026-11-04**, after the [post-recovery multi-agent audit](post-recov
 - Live services were restored after isolated browser faults. The source baseline remains **8 native runs / 14 attempt snapshots**. All **6,490** captured immutable records were preserved. The ledger remains **1 action / 1 approval / 1 dispatch / 2 observations**, with **16 investigation requests / 16 outcomes**.
 - The DAG is **daily-but-paused**. Keep `PIPEGUARD_AIRFLOW_RECOVERY_ENABLED=0` and `PIPEGUARD_RECOVERY_EXECUTION_ENABLED=0`. The expired historical proposal cannot authorize new work. AI findings never authorize actions.
 
+- Stage 12 local delivery acceptance passes on a fresh committed export: 548 suite cases, real HTTP/workload retry, quality/lineage, unchanged captured evidence, production-dashboard HTTP startup and controlled SIGTERM cleanup. The manual workflow is registered on GitHub; no hosted run has started and Linux execution remains unverified.
+
 Runtime availability must be checked again after sleep, reboot or a closed session; these are verified checkpoint results, not a promise that services start automatically.
 
 ## Next work
 
-1. **Stage 12: integrated operations and delivery.** Inspect the current setup and add reproducible CI for the separate environments/frontend, isolated integrated checks and clean-checkout startup/shutdown procedures. No GitHub Actions workflow exists yet. Preserve least privilege, local evidence and the free-tier-only provider boundary.
+1. **Stage 12 hosted-CI follow-up.** The isolated runner, manual workflow and operating procedures are implemented and locally verified. Confirm the private repository's free Actions allowance before starting a hosted run or enabling automatic triggers. Automatic triggers remain disabled. Linux runner execution remains pending.
 2. **Stage 13: final security, performance and debugging gate.** Revalidate the integrated delivery after Stage 12: threat model, permissions, secrets/injection boundaries, dependency risks, recovery authority, representative larger histories/graphs, measured query/process performance, interruption/outage/restore behavior and final issue closure.
 3. **Stage 14: final full-project multi-agent audit.** Independently review the final revision after Stage 13, covering all owned files, features, buttons/views, operating commands and documentation. Fix reproduced defects, retest affected behavior, measure optimization, preserve evidence and record unresolved risks before final sign-off.
 
-See the [roadmap](roadmap.md). The current audit provides a baseline; do not repeat it from scratch unless changes or runtime evidence justify it. No new live workload, recovery unpause or hosted generation is required to begin Stage 12.
+See the [roadmap](roadmap.md). The current audit provides a baseline; do not repeat it from scratch unless changes or runtime evidence justify it. No new retained workload, recovery unpause or hosted generation is needed for the remaining delivery/hardening work.
 
 ## Explicit remaining limits
 
@@ -34,4 +36,4 @@ See the [roadmap](roadmap.md). The current audit provides a baseline; do not rep
 
 These limits remain open; no external account, public endpoint, backup upload, unverified dependency switch or automatic recovery was introduced to hide them.
 
-The follow-up before Stage 12 rechecked the official image manifest and advisory sources: 130 matches remain and the official ARM64 image is unchanged. No external backup volume is mounted. The reproduced code defects are closed in the preceding audit; the external-resource limits and optional deployment designs above are not represented as fixed. Stage 14 is now an explicit final gate rather than being implied by Stage 13.
+The follow-up preceding Stage 12 rechecked the official image manifest and advisory sources: 130 matches remain and the official ARM64 image is unchanged. No external backup volume is mounted. The reproduced code defects are closed in the preceding audit; the external-resource limits and optional deployment designs above are not represented as fixed. Stage 14 is now an explicit final gate rather than being implied by Stage 13.
