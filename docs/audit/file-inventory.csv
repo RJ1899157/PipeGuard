@@ -165,9 +165,9 @@ docs/audit/recovery-live-success.png,2026-11-04 coordinating review,asset/hash i
 docs/audit/recovery-mobile.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,53744,511,7503da1bae274b266cd4eb63395930dd47d7934757aeadf0752137c84fe029ac
 docs/audit/recovery-phase1-attempts.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,113096,629,61f3559f0ee799f7d1e5fb8a27890eb6b1c0623000e7736df6c233c399d78cfa
 docs/audit/stage12-delivery.json,Stage 12 delivery review,documentation/evidence review,4701,206,b313b4c5b0802fa44033e8aa3164c3a59209bddbbefbde8ee682ae98d32354ce
-docs/audit/stage13-verification.json,Stage 13 security and resource review,documentation/evidence consistency check,12696,501,8cd0cab6c42600042d8d3e3e441cc464819b0a4c39cbf9a858c30ec588439eaa
+docs/audit/stage13-verification.json,Stage 13 security and resource review,documentation/evidence consistency check,13343,514,e58b6566e2df9efa622cb99a5997da1ea91265c41ca50a8f57c64ab4fc34872a
 docs/audit/tablet-final.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,42467,237,14f12fd976cb44429549bb8f25113cf80e134555d73b6608664786bbc2a1b381
-docs/container-security.md,Stage 13 security and resource review,documentation/evidence consistency check,4295,29,3f247a167793c7663a3e06e1263e4fed9ad913fb557d36ad288057c86e9c0307
+docs/container-security.md,Stage 13 security and resource review,documentation/evidence consistency check,5165,42,9ff89b333ee9071ba4557c3c79de60efe527d037b25ad2d333c4287684036149
 docs/contracts/execution-event-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
 docs/contracts/execution-events.md,2026-11-04 coordinating review,documentation/structure/provenance check,6762,116,f547adad9945fa24759be4f75180f113c20ced9f220146b98fd2d6c8f8ff8451
 docs/contracts/http-api-v1.openapi.json,2026-11-04 coordinating review,runtime model comparison,212240,8088,e880037e70d3e8b737d6e23b97367249606067dcc6399cef71ee1c6646176106
@@ -194,7 +194,7 @@ docs/investigation-verification.md,2026-11-04 coordinating review,documentation/
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,2026-11-04 coordinating review,documentation/structure/provenance check,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7003,45,15a6c449a8a8251ee6d515927fe1c263960fac7a96212867646ccbd011d1515b
+docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7030,45,d61b8109e7801cbc99bde7294e271c7a6741d09e5ff81b5c437894628359a21c
 docs/post-recovery-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16961,87,8c174984c9f8874f517dc7a8dfc0acc9d5f2736cd213fdd2175f1fb057e583f6
 docs/recovery-airflow-authorization.md,2026-11-04 coordinating review,documentation/structure/provenance check,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5527,51,535994c88accb9301d3c057ccc8a316bce87c64a14889242aacdf17bf759b486

@@ -2,6 +2,19 @@
 
 **Current follow-up:** [Stage 13 verification](stage13-verification.md#current-dependency-findings) retains 130 matches without a published compatible fixed version. One GnuTLS record is absent from the bulk feed but remains vulnerable/unfixed on its individual tracker page; that discrepancy is explicit. The official ARM64 image is unchanged. The historical counts below describe the earlier checkpoint.
 
+## Follow-up after hosted CI
+
+On 2026-11-04, a fresh registry/OSV/Debian check verified all **95** source/version
+pairs against the running container. **130** advisory matches remain, with no
+published nonzero compatible fixed version in the matched trixie records. The
+official PostgreSQL 17 index is `sha256:3b0cda93be7c8dba2ed484d19393d93845dc3dafb88973e248ba8e6d99d784e1`,
+but its ARM64 child remains `sha256:ac359420747e1f5f8ac4d23f40d7ce022c0a39090ed6cdd8dde5f596affbe41d`,
+identical to the pinned image's ARM64 child. Updating only the index pin would
+not change this Mac's container contents or remediate these matches. The existing
+bulk-feed gap remains recorded; lack of a fix does not establish safety.
+No image, package, container or database was changed. Remediation remains blocked
+on compatible upstream fixes or a separately reviewed base-image design.
+
 Checkpoint: 2026-11-01. This is a time-specific installed-package comparison, not a reachability proof. The container remains bound to loopback, with separate administrator, application, Airflow, workload and minimal watcher roles.
 
 The pinned official `postgres:17` image is already the current official PostgreSQL 17 image: registry index `sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f`, PostgreSQL 17.11, Debian trixie slim, published October 28, 2026. A same-family image update is unavailable at this check. No image, container, package, or database was changed.

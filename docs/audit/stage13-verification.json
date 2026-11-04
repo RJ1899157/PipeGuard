@@ -379,6 +379,19 @@
       "source": "https://security-tracker.debian.org/tracker/CVE-2026-95209",
       "source_sha256": "83755dc4e0ddeed28f57686837cbeb3e0f7cefe38d92b3335b93622bebab7aaa",
       "finding": "Individual tracker still lists trixie vulnerable/unfixed, urgency unimportant; security impact disputed upstream. Retained as unresolved."
+    },
+    "latest_recheck": {
+      "checked_at": "2026-11-04T11:09:11.067663+00:00",
+      "installed_source_inventory_verified": true,
+      "source_version_pairs": 95,
+      "advisory_matches": 130,
+      "published_fixed_versions": [],
+      "arm64_manifest_unchanged": true,
+      "arm64_manifest": "sha256:ac359420747e1f5f8ac4d23f40d7ce022c0a39090ed6cdd8dde5f596affbe41d",
+      "official_index_digest": "sha256:3b0cda93be7c8dba2ed484d19393d93845dc3dafb88973e248ba8e6d99d784e1",
+      "tracker_sha256": "1524d84e9596f2816a28244543d6a79e3978d17e92032740d7ad3a658102f3e3",
+      "runtime_modified": false,
+      "remediation_complete": false
     }
   },
   "backup_restore_checks": {
