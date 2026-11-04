@@ -150,6 +150,27 @@ def test_invalid_acknowledgement_is_pending(observer, monkeypatch):
     assert not list(observer.directory.glob("*.sent"))
 
 
+@pytest.mark.parametrize('fault', ['incomplete_body','recursive_json'])
+def test_interrupted_or_recursive_ack_preserves_success_and_replay(observer,monkeypatch,fault):
+    from http.client import IncompleteRead
+    import orders_pipeline.runner as runner
+    class BrokenResponse(Response):
+        def read(self,*args):
+            if fault=='incomplete_body':
+                raise IncompleteRead(b'partial acknowledgement')
+            return b'['*10000+b']'*10000
+    class BrokenOpener:
+        def open(self,*args,**kwargs):return BrokenResponse()
+    monkeypatch.setattr('orders_pipeline.observer.build_opener',lambda *args:BrokenOpener())
+    monkeypatch.setattr(runner,'run',lambda *args:{'dbt_succeeded':True})
+    result=execute(None,None,observer,'ack-failure',1)
+    assert result['dbt_succeeded'] and result['monitoring']=='pending'
+    assert len(list(observer.directory.glob('*.json')))==2
+    assert not list(observer.directory.glob('*.sent'))
+    monkeypatch.setattr('orders_pipeline.observer.build_opener',lambda *args:Opener())
+    assert observer.replay()=={'observations':2,'acknowledged':2,'pending':0}
+
+
 def test_terminal_fault_preserves_both_failed_attempts_and_new_run(monkeypatch):
     import orders_pipeline.runner as runner
     observed=[]

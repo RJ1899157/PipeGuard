@@ -9,14 +9,7 @@ import subprocess
 import sys
 from uuid import UUID
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine import make_url
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "apps/pipeguard/src"))
-from pipeguard.db.permissions import verify_runtime_access
-from pipeguard.recovery import execution
-from pipeguard.recovery.airflow import AirflowRecoveryClient
-from pipeguard.recovery.service import RecoveryRejected
 
 
 def proposal_hash(value):
@@ -26,6 +19,14 @@ def proposal_hash(value):
 
 
 def main():
+    # Only the supervised child needs database and recovery modules. Keeping
+    # these out of the parent avoids loading the entire application twice.
+    from sqlalchemy import create_engine
+    from sqlalchemy.engine import make_url
+    from pipeguard.db.permissions import verify_runtime_access
+    from pipeguard.recovery import execution
+    from pipeguard.recovery.airflow import AirflowRecoveryClient
+    from pipeguard.recovery.service import RecoveryRejected
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -76,6 +77,7 @@ def main():
 
 
 def guarded_main():
+    from pipeguard.recovery.service import RecoveryRejected
     try:
         main()
     except RecoveryRejected as error:

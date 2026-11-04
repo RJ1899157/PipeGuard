@@ -16,10 +16,13 @@ def extract(artifacts):
         matching = (manifest["metadata"].get("invocation_id") is not None and
                     manifest["metadata"].get("invocation_id") == results.get("metadata", {}).get("invocation_id"))
         checks = []
-        for key, node in sorted(expected.items()):
+        macros = {key: value.get("macro_sql") for key, value in manifest.get("macros", {}).items()}
+        # Reports admit at most 100 checks. Do not hash discarded rules from an
+        # unexpectedly large manifest; keep the sampled inventory incomplete.
+        for key, node in sorted(expected.items())[:100]:
             code = {"test": node.get("raw_code"), "config": node.get("config"),
                     "dbt_version": manifest["metadata"]["dbt_version"],
-                    "macros": {k: v.get("macro_sql") for k, v in manifest.get("macros", {}).items()},
+                    "macros": macros,
                     "parents": {k: nodes.get(k, {}).get("checksum") for k in node.get("depends_on", {}).get("nodes", [])}}
             version = sha256(json.dumps(code, sort_keys=True).encode()).hexdigest()
             result = actual.get(key, {})
@@ -30,7 +33,7 @@ def extract(artifacts):
             checks.append({"rule_id": key if len(key) <= 255 else "dbt." + sha256(key.encode()).hexdigest(),
                            "rule_version": version, "status": status,
                            "failures": failures if type(failures) is int and 0 <= failures <= 2147483647 else None})
-        complete = bool(expected) and expected.keys() <= actual.keys() and len(checks) <= 100 and not duplicates and matching and actual.keys() <= nodes.keys()
-        return {"checks": checks[:100], "inventory_complete": complete}
-    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        complete = bool(expected) and len(expected) <= 100 and expected.keys() <= actual.keys() and not duplicates and matching and actual.keys() <= nodes.keys()
+        return {"checks": checks, "inventory_complete": complete}
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError):
         return {"checks": [], "inventory_complete": False}

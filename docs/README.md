@@ -15,6 +15,10 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 | [Development setup](development/setup.md)                    | Repository access, Python environment, dependencies, and verification status              |
 | [Delivery roadmap](roadmap.md)                               | Thirteen delivery stages with outputs and acceptance criteria                             |
 
+## Latest verification
+
+- [2026-11-04 post-recovery audit](post-recovery-audit.md): fixes, measured optimization, fresh suite/browser/restore evidence and remaining work.
+
 ## Dashboard
 
 - [Setup and local access](../apps/pipeguard/web/README.md)
@@ -32,6 +36,12 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 - [Container security triage](container-security.md): installed-package advisories, release classifications and unresolved upstream risks.
 - [Local resilience operations](local-resilience.md): watcher, private backups, restore verification and limits.
+
+## Recovery
+
+- [Review-only operations](recovery-operations.md): immutable proposals and human decisions, separate from execution.
+- [Executable operations](recovery-execution.md): fixed action, approval/start separation, durable intent and exact-run reconciliation.
+- [Live acceptance](recovery-live-verification.md): verified successful recovery, preserved earlier failures and disabled-state restoration.
 
 ## Sample workloads
 

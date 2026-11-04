@@ -5,6 +5,7 @@ import {
   recoveryMutation,
   type ReviewRequest,
 } from "@/lib/recovery-boundary";
+import { proposalExpired, useExpiry } from "@/lib/use-expiry";
 
 type Proposal = {
   id: string;
@@ -75,6 +76,8 @@ export function Recovery({
     mutation = useRef<AbortController | null>(null);
   const inFlight = useRef(false);
   const storage = `pipeguard-recovery-review:${incidentId}`;
+  const now = useExpiry(page?.items);
+  const blocked = busy || loading || !!pending || !!error;
   const load = useCallback(
     async (before?: string) => {
       if (demo) return;
@@ -212,9 +215,7 @@ export function Recovery({
           <div className="action-row">
             <button
               className="button"
-              disabled={
-                busy || loading || !!pending || !page?.eligibility.can_propose
-              }
+              disabled={blocked || !page?.eligibility.can_propose}
               onClick={() =>
                 void submit({
                   operation: "propose",
@@ -241,7 +242,7 @@ export function Recovery({
               </p>
               <button
                 className="button"
-                disabled={busy}
+                disabled={busy || loading}
                 onClick={() => void submit(pending)}
               >
                 Retry saved review request
@@ -270,7 +271,9 @@ export function Recovery({
             <article className="attempt-card" key={row.id}>
               <h4>
                 {row.state.replaceAll("_", " ")}
-                {row.expired ? " · expired" : ""}
+                {row.state !== "expired" && proposalExpired(row, now)
+                  ? " · expired"
+                  : ""}
               </h4>
               {!row.integrity_valid ? (
                 <p>Proposal integrity failed. Approval is unavailable.</p>
@@ -285,13 +288,13 @@ export function Recovery({
                     <summary>Inspect exact proposal and hash</summary>
                     <pre>{JSON.stringify(row, null, 2)}</pre>
                   </details>
-                  {!row.decision && !row.expired && (
+                  {!row.decision && !proposalExpired(row, now) && (
                     <>
                       <label>
                         <input
                           type="checkbox"
                           checked={reviewed === row.id}
-                          disabled={busy || !!pending}
+                          disabled={blocked}
                           onChange={(e) =>
                             setReviewed(e.target.checked ? row.id : "")
                           }
@@ -304,7 +307,7 @@ export function Recovery({
                           <button
                             className="button"
                             key={decision}
-                            disabled={reviewed !== row.id || busy || !!pending}
+                            disabled={reviewed !== row.id || blocked}
                             onClick={() =>
                               void submit({
                                 operation: "decide",

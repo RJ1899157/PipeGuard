@@ -32,17 +32,21 @@ export function GraphText({
         Search to inspect dense graphs without reading tiny labels. Filtering
         this list does not remove graph data or evidence.
       </p>
-      <label className="quality-picker">
+      <label className="quality-picker" htmlFor="lineage-node-search">
         Search nodes by name, namespace or ID
         <input
+          id="lineage-node-search"
+          aria-label="Search nodes by name, namespace or ID"
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
       </label>
-      <label className="quality-picker">
+      <label className="quality-picker" htmlFor="lineage-node-type">
         Node type
         <select
+          id="lineage-node-type"
+          aria-label="Node type"
           value={kind}
           onChange={(event) => setKind(event.target.value as NodeKindFilter)}
         >

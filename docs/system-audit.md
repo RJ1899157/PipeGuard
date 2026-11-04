@@ -1,5 +1,7 @@
 # System audit and interruption recovery
 
+**Current follow-up:** [2026-11-04 multi-agent audit](post-recovery-audit.md) records the latest fixes, dependency findings, measured optimization and fresh checks. The dated results below describe the earlier audit.
+
 **Follow-up:** [2026-11-01 hardening verification](hardening-verification.md) closes the actionable pagination, conflict-summary, service-watcher, backup, concurrency and browser-script gaps from this initial audit. Counts below describe the original checkpoint.
 
 Date: 2026-10-31. Scope: all implemented PipeGuard features through the initial Stage 9 exploration checkpoint. Three specialist reviewers covered monitoring/persistence/contracts, the frontend, and workload/infrastructure/operations; the integrating reviewer checked fixes, runtime behavior, browser flows and evidence preservation.
@@ -73,7 +75,7 @@ The first test invocation omitted private environment loading and therefore prod
 
 ## Review coverage and commands
 
-The [file inventory](audit/file-inventory.csv) was refreshed at the 2026-11-03 live recovery acceptance checkpoint and lists 255 current repository files (excluding the inventory itself), their size, text line count and SHA-256, with reviewer area. The original audit covered 163 files. Application source, tests, SQL, migrations and operational commands were inspected across the three review scopes. Generated OpenAPI/event schemas were compared completely with runtime models. Lockfiles and upstream constraint data received structural/resolution/advisory/provenance checks; screenshot assets received visual checks. This is not a claim of manually auditing every line of third-party packages, generated bundles, or every historical interactive shell command.
+The [file inventory](audit/file-inventory.csv) was refreshed at the 2026-11-04 post-recovery audit checkpoint and lists 266 current repository files (excluding the inventory itself), their size, text line count and SHA-256, with reviewer area. The original audit covered 163 files. Application source, tests, SQL, migrations and operational commands were inspected across the three review scopes. Generated OpenAPI/event schemas were compared completely with runtime models. Lockfiles and upstream constraint data received structural/resolution/advisory/provenance checks; screenshot assets received visual checks. This is not a claim of manually auditing every line of third-party packages, generated bundles, or every historical interactive shell command.
 
 Reviewed repeatable command surfaces include all `scripts/*.py`, the Airflow task subprocess, Compose/PostgreSQL initialization, dbt invocation/profile/macros/models/checks, package scripts, migration setup and documentation command blocks. Checks used the existing local environments, not global package installation. Provisioning commands that create credentials were inspected and tested synthetically rather than rerun against live credentials unnecessarily. Destructive migration paths were exercised only in disposable schemas. No real Airflow workload was triggered by this audit.
 

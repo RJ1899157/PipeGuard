@@ -86,3 +86,11 @@ def test_lineage_outbox_survives_outage_and_replay(observer,monkeypatch):
     opener=Opener();monkeypatch.setattr('orders_pipeline.observer.build_opener',lambda *args:opener)
     assert observer.replay()['pending']==0
     assert opener.requests[0].full_url.endswith('/v1/lineage-events')
+
+
+def test_deeply_nested_artifact_is_an_explicit_gap(tmp_path):
+    artifacts(tmp_path)
+    (tmp_path/'manifest.json').write_text('['*10000+']'*10000)
+    result=extract(tmp_path,'run',1)
+    assert len(result)==1 and result[0]['coverage']=='partial'
+    assert result[0]['missing_metadata']==['invalid_artifacts']

@@ -219,9 +219,11 @@ export function QualityResults({
         </p>
       ) : (
         <>
-          <label className="quality-picker">
+          <label className="quality-picker" htmlFor="quality-report">
             Report (receipt order)
             <select
+              id="quality-report"
+              aria-label="Report (receipt order)"
               value={report.id}
               onChange={(e) => setSelected(e.target.value)}
             >

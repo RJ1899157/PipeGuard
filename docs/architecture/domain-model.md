@@ -1,6 +1,6 @@
 # PipeGuard domain model
 
-Status: execution ingestion, deterministic incidents, quality observations, lineage and immutable evidence are implemented on PostgreSQL 17. The conceptual table below includes future investigation/recovery entities; the implementation sections identify the current schema.
+Status: execution ingestion, deterministic incidents, quality observations, lineage and immutable evidence are implemented on PostgreSQL 17. The conceptual table below includes some future entities; the implementation sections identify the current schema, including durable investigation and separate review-only/executable recovery records.
 
 [Architecture overview](overview.md) · [Documentation index](../README.md) · [Delivery roadmap](../roadmap.md)
 
@@ -47,13 +47,15 @@ IDs are application-generated UUIDs unless an external identifier is explicitly 
 | Evidence artifact       | A captured observation: kind, capture time, source locator/event, redacted content or artifact locator, content hash, redaction version           | Immutable snapshot; hash demonstrates consistency, not source truth or tamper-proof storage                           |
 | Incident evidence link  | An incident uses an evidence artifact                                                                                                             | Unique `(incident_id, evidence_id)`; one artifact may support several incidents                                       |
 
-The initial schema implemented integrations, datasets, jobs, runs, attempts and ingested events. Subsequent migrations add quality observations, deterministic incidents, lineage and immutable evidence bundles as described below. Investigation and recovery remain planned.
+The initial schema implemented integrations, datasets, jobs, runs, attempts and ingested events. Subsequent migrations add quality observations, deterministic incidents, lineage and immutable evidence bundles as described below. Investigation and bounded human-authorized recovery are implemented through separate immutable audit records.
 
 ## Investigation and recovery extension
 
 An investigation stores incident ID, input evidence IDs/hashes, model/provider version, prompt version, start/finish times, status, and output. Each hypothesis stores a claim, rank, limitations, and explicit support/contradiction links to evidence. Evidence identifiers must belong to the supplied investigation bundle. Citation presence alone does not prove that evidence supports a claim; evaluate that separately.
 
 A recovery proposal stores a typed allowlisted action, target, parameters, expected impact, evidence revision, and expiry. Approval records an authenticated human actor, exact proposal revision, decision, and time. An execution refers to that approval and stores an idempotency key, status, and outcome. Reject an expired or changed proposal, missing authorization, and duplicate execution. Approval does not authorize arbitrary shell commands. AI output cannot create an approval or directly invoke execution.
+
+The implemented investigation ledger uses `investigation_requests` and `investigation_outcomes`, linked to immutable evidence bundles. Review-only records use `recovery_proposals` and `recovery_decisions`; they cannot authorize execution. Executable records use separate `recovery_actions`, `recovery_action_decisions`, `recovery_dispatches` and `recovery_dispatch_events`. A dispatch intent is committed before its external request. Approval binds the exact hash, and replay/reconciliation retain the original intent and observations. See the [execution contract](../recovery-execution.md) and [live acceptance](../recovery-live-verification.md).
 
 ## Database rules and reasons
 

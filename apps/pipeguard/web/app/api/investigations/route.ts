@@ -2,9 +2,12 @@ import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { boundedJSON } from "@/lib/bounded-json";
 import { localRequestAllowed } from "@/lib/boundary";
+import {
+  investigationId,
+  investigationSubmission,
+} from "@/lib/investigation-boundary";
 
 export const dynamic = "force-dynamic";
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 async function broker(request: NextRequest, submit: boolean) {
   if (!localRequestAllowed(request.headers))
     return NextResponse.json(
@@ -26,23 +29,12 @@ async function broker(request: NextRequest, submit: boolean) {
         { status: 403 },
       );
     try {
-      const value = await boundedJSON(request.body, 1024);
-      if (
-        !value ||
-        Object.keys(value).sort().join(",") !==
-          "free_plan_confirmed,incident_id,request_key" ||
-        typeof value.incident_id !== "string" ||
-        !uuid.test(value.incident_id) ||
-        typeof value.request_key !== "string" ||
-        !uuid.test(value.request_key) ||
-        value.free_plan_confirmed !== true
-      )
-        throw new Error("invalid_body");
-      id = value.incident_id;
-      body = JSON.stringify({
-        request_key: value.request_key,
-        free_plan_confirmed: true,
-      });
+      const target = investigationSubmission(
+        await boundedJSON(request.body, 1024),
+      );
+      if (!target) throw new Error("invalid_body");
+      id = target.id;
+      body = target.body;
     } catch {
       return NextResponse.json(
         { error: "invalid_investigation_request" },
@@ -51,7 +43,7 @@ async function broker(request: NextRequest, submit: boolean) {
     }
   } else {
     id = request.nextUrl.searchParams.get("id") || "";
-    if (!uuid.test(id) || (before !== null && !uuid.test(before)))
+    if (!investigationId(id) || (before !== null && !investigationId(before)))
       return NextResponse.json(
         { error: "invalid_investigation_request" },
         { status: 400 },

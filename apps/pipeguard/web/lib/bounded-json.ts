@@ -1,5 +1,3 @@
-import "server-only";
-
 export async function boundedJSON(
   stream: ReadableStream<Uint8Array> | null,
   cap: number,

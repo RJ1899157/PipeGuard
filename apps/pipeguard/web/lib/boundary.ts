@@ -29,6 +29,7 @@ export function localDocumentAllowed(
   );
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const validId = (value: string) => value.length === 36 && uuid.test(value);
 export const snapshotKinds = [
   "jobs",
   "runs",
@@ -42,7 +43,10 @@ export function readPath(query: URLSearchParams): string | null {
   if (
     snapshot !== null &&
     (!snapshotKinds.includes(query.get("kind") || "") ||
-      !/^(new|[A-Za-z0-9_-]{43})$/.test(snapshot))
+      !(
+        snapshot === "new" ||
+        (snapshot.length === 43 && /^[A-Za-z0-9_-]{43}$/.test(snapshot))
+      ))
   )
     return null;
   const path = baseReadPath(query);
@@ -62,13 +66,13 @@ function baseReadPath(query: URLSearchParams): string | null {
     const page = `limit=50&offset=${offset}`;
     if (kind === "jobs") return `/v1/jobs?${page}`;
     if (kind === "incidents") return `/v1/incidents?${page}`;
-    if (!uuid.test(id)) return null;
+    if (!validId(id)) return null;
     if (kind === "runs") return `/v1/runs?job_id=${id}&${page}`;
     if (kind === "attempts") return `/v1/runs/${id}/attempts?${page}`;
     return `/v1/incidents/${id}/history?${page}`;
   }
   if (kind === "coverage") return "/v1/monitoring/coverage";
-  if (!uuid.test(id)) return null;
+  if (!validId(id)) return null;
   if (kind === "lineage" || kind === "quality") {
     const run = query.get("run");
     const attempt = query.get("attempt");
@@ -77,6 +81,7 @@ function baseReadPath(query: URLSearchParams): string | null {
       run.length > 255 ||
       !attempt ||
       !/^[1-9][0-9]{0,9}$/.test(attempt) ||
+      String(Number(attempt)) !== attempt ||
       Number(attempt) > 2147483647
     )
       return null;

@@ -53,7 +53,7 @@ Snapshots contain at most 100 evidence items and 512 KiB of serialized item cont
 
 Every item names its table/UUID, summary and hash basis. `summary_v1` hashes the allowlisted summary; `source_content_v1` hashes canonical stored source content (or the selected canonical history fields). Execution and lineage source hashes are checked before claims are included. Bundle SHA-256 covers its canonical payload, excluding its database capture timestamp. Hashes establish content consistency, not source honesty or verified causation.
 
-AI investigation and recovery execution remain later stages. Metadata identifiers must be treated as untrusted data when building those features.
+Manual advisory investigation and bounded human-authorized recovery now consume these snapshots. Metadata identifiers remain untrusted data; model output cannot authorize an action. See the [investigation contract](../investigation-operations.md) and [live recovery acceptance](../recovery-live-verification.md).
 
 ## Compatibility references
 

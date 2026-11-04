@@ -1,6 +1,6 @@
 # PipeGuard dashboard
 
-The local monitoring UI uses Next.js 16, React 19, TypeScript, React Flow and ECharts. It belongs to the monitoring application; it does not execute sample workloads or access their warehouse.
+The local monitoring UI uses Next.js 16, React 19, TypeScript, React Flow and ECharts. It belongs to the monitoring application and reads stored monitoring evidence. Its separate executable recovery controls can request one approved sample run through a supervised worker; that run may change the sample warehouse. The browser has no direct warehouse access or Airflow credentials.
 
 ## Start
 
@@ -42,7 +42,7 @@ pnpm --dir apps/pipeguard/web build
 pnpm --dir apps/pipeguard/web exec prettier --check app components lib tests proxy.ts next.config.ts
 ```
 
-See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. See [exploration verification](../../../docs/exploration-verification.md) for charts, timeline and measured graph fixtures. Advisory AI investigation is now available from selected incidents; recovery controls and public hosting are not implemented.
+See [dashboard verification](../../../docs/dashboard-verification.md) and the root design QA report for the actual checks and remaining boundaries. See [exploration verification](../../../docs/exploration-verification.md) for charts, timeline and measured graph fixtures. Selected incidents offer advisory AI investigation, review-only recovery and separate executable recovery controls. Public hosting is not implemented.
 
 ## Hardening follow-up
 
@@ -59,3 +59,11 @@ Incidents now offer explicit manual generation through a fixed same-origin broke
 Select **Incidents → an incident → Recovery review**. This section precedes investigation history so it remains reachable as retained AI history grows. The server admits proposals only for the explicitly configured sample job and eligible current failure evidence. Preview never submits review operations. The current paused DAG and resolved incidents remain blocked.
 
 Creating a proposal does not start a run. Review approval or rejection requires checking the exact-proposal confirmation; both decisions are immutable. The proposal/hash inspector shows the exact impact, parameters and expiry. Unknown responses retain the original body/key for explicit replay. These are review-only decisions and cannot authorize current or future execution. See [operations](../../../docs/recovery-operations.md) and [verification](../../../docs/recovery-verification.md).
+
+## Executable recovery
+
+The separate **Executable recovery** section requires an eligible incident, fresh monitoring evidence and both operator-controlled execution switches. It uses a fixed same-origin route and a supervised worker with its own restricted credentials. Approval of the exact proposal and starting its run are separate confirmations. Proposals expire after five minutes; review-only approvals cannot authorize execution.
+
+Saved uncertain requests retain their exact body and key for explicit replay. A replay cannot dispatch a second start for an existing intent. Refresh history or check the external run outcome to inspect uncertainty; neither operation assumes that a lost response means no run started. Earlier failures and successive dispatch observations remain retained. History is paged five proposals at a time.
+
+Execution is normally disabled and the sample DAG paused. Preview submits no recovery commands. See [execution operations](../../../docs/recovery-execution.md), [dashboard verification](../../../docs/recovery-dashboard-verification.md) and [controlled live verification](../../../docs/recovery-live-verification.md).

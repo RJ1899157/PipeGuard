@@ -5,6 +5,7 @@ import {
   actionMutation,
   type ActionRequest,
 } from "@/lib/recovery-actions-boundary";
+import { proposalExpired, useExpiry } from "@/lib/use-expiry";
 
 type Dispatch = {
   id: string;
@@ -89,7 +90,7 @@ export function RecoveryActions({
   const [approvalCheck, setApprovalCheck] = useState(""),
     [startCheck, setStartCheck] = useState("");
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
-  const [now, setNow] = useState(() => Date.now());
+  const now = useExpiry(page?.items);
   const [expanded, setExpanded] = useState("");
   const read = useRef<AbortController | null>(null),
     write = useRef<AbortController | null>(null),
@@ -117,7 +118,6 @@ export function RecoveryActions({
         if (!controller.signal.aborted) {
           setPage(data);
           setCursors(trail);
-          setNow(Date.now());
         }
       } catch (e) {
         if (!controller.signal.aborted)
@@ -144,19 +144,6 @@ export function RecoveryActions({
       write.current?.abort();
     };
   }, [demo, incidentId, storage, load]);
-  useEffect(() => {
-    const next = Math.min(
-      ...(page?.items || [])
-        .map((row) => Date.parse(row.expires_at))
-        .filter((time) => time > now),
-    );
-    if (!Number.isFinite(next)) return;
-    const timer = setTimeout(
-      () => setNow(Date.now()),
-      Math.min(next - now + 50, 2147483647),
-    );
-    return () => clearTimeout(timer);
-  }, [page, now]);
   async function submit(value: ActionRequest) {
     if (demo || inFlight.current) return;
     inFlight.current = true;
@@ -336,7 +323,7 @@ export function RecoveryActions({
               ),
               rejected = row.decisions.some((d) => d.decision === "reject"),
               approved = row.decisions.some((d) => d.decision === "approve");
-            const expired = row.expired || Date.parse(row.expires_at) <= now;
+            const expired = proposalExpired(row, now);
             const binding = `${row.id}:${row.payload_hash}`;
             return (
               <details

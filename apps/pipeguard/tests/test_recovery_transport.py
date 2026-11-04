@@ -36,7 +36,7 @@ def test_identity_mismatch_is_never_accepted(field, value):
     assert AirflowRecoveryClient._fact(action, result)['state']=='conflict'
 
 
-@pytest.mark.parametrize('fault', ['timeout','unreachable','invalid_json','oversize','recursive_json'])
+@pytest.mark.parametrize('fault', ['timeout','unreachable','invalid_json','oversize','recursive_json','incomplete_body'])
 def test_mutation_transport_failure_is_unknown_and_redacted(fault):
     action=uuid4(); client=AirflowRecoveryClient(USER, 'PRIVATE_PASSWORD'); client._token='PRIVATE_TOKEN'
     requests=[]
@@ -46,6 +46,9 @@ def test_mutation_transport_failure_is_unknown_and_redacted(fault):
         def __exit__(self,*args):pass
         def read(self, limit):
             assert limit==2_000_001
+            if fault=='incomplete_body':
+                from http.client import IncompleteRead
+                raise IncompleteRead(b'PRIVATE')
             if fault=='invalid_json':return b'PRIVATE_INVALID_JSON'
             if fault=='recursive_json':return b'['*10000+b']'*10000
             return b'x'*2_000_001

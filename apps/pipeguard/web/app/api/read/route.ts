@@ -1,6 +1,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { localRequestAllowed, readPath } from "@/lib/boundary";
+import { boundedJSON } from "@/lib/bounded-json";
 export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   if (!localRequestAllowed(request.headers))
@@ -53,7 +54,8 @@ export async function GET(request: NextRequest) {
                   : 503,
         },
       );
-    const data = await upstream.json();
+    // Captured list content is bounded at 8 MiB; allow room for its envelope.
+    const data = await boundedJSON(upstream.body, 16 * 1024 * 1024);
     return NextResponse.json(data, {
       headers: { "Cache-Control": "no-store" },
     });

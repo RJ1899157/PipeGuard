@@ -577,9 +577,11 @@ export default function Dashboard() {
             <section className="panel">
               <div className="section-heading">
                 <h2>Open and resolved</h2>
-                <label className="compact-label">
+                <label className="compact-label" htmlFor="incident-state">
                   State
                   <select
+                    id="incident-state"
+                    aria-label="State"
                     value={incidentFilter}
                     onChange={(e) => {
                       setIncidentFilter(e.target.value);
@@ -724,9 +726,11 @@ export default function Dashboard() {
               empty={jobs.data?.items.length === 0}
             >
               <div className="scope-controls">
-                <label>
+                <label htmlFor="pipeline-picker">
                   Pipeline
                   <select
+                    id="pipeline-picker"
+                    aria-label="Pipeline"
                     value={job?.id || ""}
                     onChange={(e) => selectJob(e.target.value)}
                   >
@@ -737,9 +741,11 @@ export default function Dashboard() {
                     ))}
                   </select>
                 </label>
-                <label className="run-picker">
+                <label className="run-picker" htmlFor="execution-picker">
                   Execution
                   <select
+                    id="execution-picker"
+                    aria-label="Execution"
                     value={run?.id || ""}
                     onChange={(e) => {
                       setRun(e.target.value);
@@ -758,9 +764,11 @@ export default function Dashboard() {
                     ))}
                   </select>
                 </label>
-                <label>
+                <label htmlFor="graph-scope">
                   Graph scope
                   <select
+                    id="graph-scope"
+                    aria-label="Graph scope"
                     value={attempt?.id || ""}
                     onChange={(e) => {
                       setAttempt(e.target.value);

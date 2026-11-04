@@ -77,6 +77,39 @@ def test_delivery_permutations_duplicates_and_late_failure(migrated_database):
             assert s.scalar(select(func.count()).select_from(IngestedEvent).where(IngestedEvent.integration_id == ids[0])) == 3
 
 
+@pytest.mark.parametrize('run_count', [1, 2])
+def test_source_projection_locks_and_loads_each_run_once(migrated_database, run_count):
+    from sqlalchemy import event as sql_event
+    from pipeguard.db.models import Run, Attempt
+    from pipeguard.detection.projection import reconcile
+
+    connection, _ = migrated_database
+    ids = setup(connection)
+    snapshots = [(T + timedelta(seconds=number), {
+        'external_run_id': f'many-attempts-{index}', 'attempt_number': number,
+        'state': 'succeeded' if number == 20 else 'failed',
+        'started_at': T.isoformat(), 'finished_at': (T + timedelta(seconds=number)).isoformat(),
+    }) for number in range(1, 21) for index in range(run_count)]
+    statements = []
+    def record(conn, cursor, statement, parameters, context, executemany):
+        statements.append(statement)
+    sql_event.listen(connection, 'before_cursor_execute', record)
+    try:
+        reconcile(connection, ids[1], snapshots)
+    finally:
+        sql_event.remove(connection, 'before_cursor_execute', record)
+    assert sum(statement.startswith('INSERT INTO runs ') for statement in statements) == run_count
+    assert sum('FROM runs ' in statement and 'FOR UPDATE' in statement for statement in statements) == run_count
+    assert sum(statement.startswith('SELECT attempts.') for statement in statements) == run_count
+    with Session(connection) as session:
+        runs = list(session.scalars(select(Run).where(Run.job_id == ids[1])))
+        assert len(runs) == run_count
+        for run in runs:
+            assert run.state == 'succeeded' and not run.reconciliation_required
+            attempts = list(session.scalars(select(Attempt).where(Attempt.run_id == run.id).order_by(Attempt.attempt_number)))
+            assert [attempt.state for attempt in attempts] == ['failed'] * 19 + ['succeeded']
+
+
 @pytest.mark.parametrize("a,b", [(a,b) for a in ("failed","succeeded","cancelled") for b in ("failed","succeeded","cancelled") if a!=b])
 def test_all_contradictory_terminal_pairs_stay_open(migrated_database, a, b):
     c,_=migrated_database; ids=setup(c)

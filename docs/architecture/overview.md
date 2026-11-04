@@ -1,6 +1,6 @@
 # Architecture overview
 
-**Status:** target architecture with implemented local monitoring, detection, lineage and evidence slices. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; quality reports, deterministic incident services and independent source reconciliation are implemented; bounded lineage ingestion, historical traversal and evidence snapshots are implemented; a local read-only dashboard with attempt-scoped React Flow lineage is implemented; Durable manual advisory investigation is integrated through scoped APIs and the dashboard; the bounded local advisory evaluation gate passes, while broader live-model coverage remains limited. Review-only recovery proposals and human decisions are implemented. The dedicated Airflow recovery account and disabled scoped permissions are [verified](../recovery-airflow-authorization.md); a separate manual executable CLI now records approvals, dispatch intent and reconciliation, with execution disabled pending controlled live acceptance.
+**Status:** target architecture with implemented local monitoring, detection, lineage and evidence slices. PostgreSQL configuration, metadata tables, authenticated ingestion/read APIs, migrations and integration checks exist; the independent orders workload is implemented; Airflow orchestration and scoped event reporting are implemented; quality reports, deterministic incident services and independent source reconciliation are implemented; bounded lineage ingestion, historical traversal and evidence snapshots are implemented; a local dashboard with attempt-scoped React Flow lineage is implemented; durable manual advisory investigation is integrated through scoped APIs and the dashboard; the bounded local advisory evaluation gate passes, while broader live-model coverage remains limited. Review-only recovery proposals and human decisions are implemented. The dedicated Airflow recovery account and disabled scoped permissions are [verified](../recovery-airflow-authorization.md); the separate supervised CLI/API/dashboard execution flow passes [bounded local live acceptance](../recovery-live-verification.md), with durable intent and exact-run reconciliation. Both recovery capability switches are disabled again and the DAG is paused.
 
 ## Scope
 
@@ -46,7 +46,7 @@ The diagram shows intended data flow, not deployed services. It does not prescri
 
 ## Data ownership
 
-Plan separate PostgreSQL databases and roles for:
+The local deployment uses separate PostgreSQL databases and roles for:
 
 - `pipeguard`: application metadata, incidents, evidence references, and audit records.
 - `airflow`: orchestrator-managed metadata.

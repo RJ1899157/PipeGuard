@@ -150,6 +150,16 @@ def test_recovery_command_deadline_terminates_only_its_owned_child_group(monkeyp
                    ('signal',Process.pid,script.signal.SIGKILL),('wait',None)]
 
 
+def test_recovery_supervisor_import_does_not_load_application_modules():
+    import subprocess
+    import sys
+    root = Path(__file__).resolve().parents[3]
+    check = ('import runpy, sys; runpy.run_path("scripts/run_recovery.py", run_name="supervisor_check"); '
+             'assert "sqlalchemy" not in sys.modules; '
+             'assert not any(name.startswith("pipeguard.") for name in sys.modules)')
+    subprocess.run([sys.executable, '-c', check], cwd=root, check=True, capture_output=True, timeout=5)
+
+
 def test_airflow_launcher_cleans_groups_after_leader_exits(tmp_path, monkeypatch):
     launcher_spec = importlib.util.spec_from_file_location("run_airflow", Path(__file__).resolve().parents[3] / "scripts/run_airflow.py")
     launcher = importlib.util.module_from_spec(launcher_spec)

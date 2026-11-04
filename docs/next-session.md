@@ -1,36 +1,33 @@
 # Next-session checkpoint
 
-**Superseded:** [2026-11-02 investigation checkpoint](investigation-verification.md). Stage 10 now includes durable API/dashboard investigations and a passing bounded [evaluation gate](investigation-evaluation.md). GPT-OSS 120B replaces Qwen. The historical pre-break snapshot below is retained for context; the [Stage 11 review milestone](recovery-verification.md) now includes durable proposals and explicit review decisions. The [Airflow authorization prerequisite](recovery-airflow-authorization.md) is now verified with execution disabled. The [2026-11-03 executable CLI checkpoint](recovery-execution-verification.md) now includes separate executable approvals, durable intent and reconciliation; the [executable dashboard checkpoint](recovery-dashboard-verification.md) adds scoped HTTP controls, separate approval/start confirmations and uncertain-response replay. The [live recovery checkpoint](recovery-live-verification.md) now records completed local acceptance, with both switches disabled again and the DAG paused.
+Verified: **2026-11-04**, after the [post-recovery multi-agent audit](post-recovery-audit.md).
 
-Saved on 2026-11-01 (Asia/Kolkata), after the pre-investigation hardening audit.
+## Current verified state
 
-## Verified before the break
+- Stage 10's bounded advisory evaluation gate passes; broader live incident-class accuracy remains unestablished.
+- Stage 11 passes [bounded local live acceptance](recovery-live-verification.md): separate approval/start, durable intent, one successful new run, 14 passing quality checks, complete recorded lineage, replay/conflict checks and disabled-state restoration. Earlier failures remain retained.
+- The fresh audit passed **425 backend + 46 frontend + 64 workload + 13 Airflow cases**, strict TypeScript/format checks and production build. Contracts match runtime models. Fresh backups of all three databases passed disposable restore checks.
+- Live services were restored after isolated browser faults. The source baseline remains **8 native runs / 14 attempt snapshots**. All **6,490** captured immutable records were preserved. The ledger remains **1 action / 1 approval / 1 dispatch / 2 observations**, with **16 investigation requests / 16 outcomes**.
+- The DAG is **daily-but-paused**. Keep `PIPEGUARD_AIRFLOW_RECOVERY_ENABLED=0` and `PIPEGUARD_RECOVERY_EXECUTION_ENABLED=0`. The expired historical proposal cannot authorize new work. AI findings never authorize actions.
 
-- API liveness, authenticated readiness and dashboard returned HTTP 200. The independent user watcher was running and reported API/database healthy and monitor fresh.
-- Fresh logical backups of PipeGuard, Airflow and the sample warehouse were created and restore-verified in disposable databases. Schema and data checks passed; no live database was replaced and no restore-check databases remained. Private backup identifiers and manifests stay under ignored `data/local/backups/`.
-- The official `postgres:17` registry digest still matched the pinned image. All 116 recorded Debian advisory matches were rechecked against the primary trixie tracker: no release-record changes or newly published fixed-version candidates.
-- The previous implementation checkpoint passed 342 automated tests plus build, browser and runtime checks. This final pass changed documentation only; it did not rerun those suites or introduce a new implementation.
+Runtime availability must be checked again after sleep, reboot or a closed session; these are verified checkpoint results, not a promise that services start automatically.
 
-## Remaining requirements and dependencies
+## Next work
 
-| Requirement                          | Current boundary                                                          | What is needed                                                                                                          |
-| ------------------------------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Unfixed container library advisories | Current official PostgreSQL 17 image; unresolved upstream issues remain   | Published compatible fixes, followed by image review and regression/restore checks; see [triage](container-security.md) |
-| Detect this Mac losing power         | The watcher runs on this Mac                                              | An independent always-on device or externally hosted watcher                                                            |
-| Survive loss of this disk/host       | Verified backups are private but on the same disk                         | A separately protected backup destination and reviewed transfer/restore procedure                                       |
-| Larger or distributed deployment     | Bounded snapshots, growing retained history and local warehouse exclusion | Reviewed incremental processing/retention and cross-host fencing; no evidence deletion or unsafe lock removal           |
-| Public multi-user access             | Services remain local-owner interfaces bound to loopback                  | Separate authentication, authorization, tenant isolation and deployment design before exposing them                     |
-| Atomic workload publication          | Raw loading and dbt transformations use separate transactions             | A reviewed publication design if atomic visibility becomes a requirement; partial outcomes remain observable            |
+1. **Stage 12: integrated operations and delivery.** Inspect the current setup and add reproducible CI for the separate environments/frontend, isolated integrated checks and clean-checkout startup/shutdown procedures. No GitHub Actions workflow exists yet. Preserve least privilege, local evidence and the free-tier-only provider boundary.
+2. **Stage 13: final security, performance and debugging gate.** Revalidate the integrated delivery after Stage 12: threat model, permissions, secrets/injection boundaries, dependency risks, recovery authority, representative larger histories/graphs, measured query/process performance, interruption/outage/restore behavior and final issue closure.
 
-These requirements are not marked complete. No external account, public endpoint, backup upload, dependency-base switch or automatic recovery was introduced to work around them.
+See the [roadmap](roadmap.md). The current audit provides a baseline; do not repeat it from scratch unless changes or runtime evidence justify it. No new live workload, recovery unpause or hosted generation is required to begin Stage 12.
 
-## Resume
+## Explicit remaining limits
 
-1. Confirm Docker and the local services are available using the existing [setup guide](development/setup.md) and [resilience procedures](local-resilience.md). Service availability after sleep, reboot or a closed development session must be checked again.
-2. Keep the sample DAG paused until a deliberate scenario requires a run.
-3. Keep `PIPEGUARD_AIRFLOW_RECOVERY_ENABLED=0`. The dedicated scoped account is verified; its capability switch is not human approval. Existing `recovery_review_v1` approvals remain non-executable.
-4. Keep `PIPEGUARD_RECOVERY_EXECUTION_ENABLED=0` in `.env.recovery`. Stage 11's [live recovery acceptance](recovery-live-verification.md) is complete for the fixed local action: one successful new run, 14 passing quality checks, complete recorded lineage, exact saved-request replay, real 409 conflict and disabled-source 403. All prior failures remain retained. The final baseline is eight native runs / fourteen native attempt snapshots. The DAG is daily-but-paused; both recovery switches are off. Do not reuse the expired proposal to start work or infer ongoing execution authority. AI findings must never authorize an action.
-5. Begin Stage 12 by inspecting existing CI and operating procedures, then prepare integrated checks and clean-environment delivery without enabling recovery or deleting retained evidence.
+| Boundary | Current state | Needed for broader guarantees |
+| --- | --- | --- |
+| Container advisories | 130 installed-source matches; no published nonzero trixie fixed versions in the matched records; official ARM64 image unchanged | Published compatible fixes or a separately reviewed image design; [current evidence](post-recovery-audit.md#dependency-and-container-findings) |
+| Total host/network loss | Watcher runs on this Mac | An independent always-on device or externally hosted watcher |
+| Disk/host loss | Verified backups remain on this disk | Separately protected backup destination and transfer/restore procedure |
+| Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion | Reviewed incremental processing/retention and cross-host fencing |
+| Public multi-user access | Local-owner interfaces on loopback | Named-user authentication, authorization, tenant isolation and deployment design |
+| Atomic workload publication | Raw loading and dbt transformations use separate transactions | Reviewed publication design if atomic visibility is required; partial outcomes remain observable |
 
-
-Stage 10's bounded advisory gate passes, Stage 11 passes bounded local acceptance, and Stages 12–13 remain planned in the [roadmap](roadmap.md). The next session does not require repeating the completed audit from scratch; recheck runtime state and any upstream changes first.
+These limits remain open; no external account, public endpoint, backup upload, unverified dependency switch or automatic recovery was introduced to hide them.

@@ -1,5 +1,6 @@
 """Fixed local recovery transport. No mutation retry, redirect, proxy or raw output."""
 import json
+from http.client import HTTPException
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import ProxyHandler, Request, build_opener
@@ -47,7 +48,7 @@ class AirflowRecoveryClient:
             code = error.code
             error.close()
             return code, None  # Never retain error bodies, URLs, headers or credentials.
-        except (URLError, TimeoutError, OSError):
+        except (URLError, HTTPException, TimeoutError, OSError):
             raise TransportFailure("recovery_source_unreachable") from None
         except (ValueError, TypeError, RecursionError):
             raise TransportFailure("recovery_source_invalid_response") from None

@@ -196,6 +196,29 @@ def test_graph_checks_indexed_edges_against_original_payload(api):
     assert all(n['name']!='not.in.source' for n in b['nodes'])
 
 
+@pytest.mark.parametrize('keep_input', [False, True])
+def test_graph_missing_indexed_edges_cannot_claim_complete_lineage(api, keep_input):
+    client, _, engine, _ = api
+    headers, execution, _ = producer(api)
+    accepted = post(client, headers, report(execution))
+    # Simulate an incomplete imported projection without mutating immutable evidence.
+    payload = LineageReport.model_validate(report(execution, key='unindexed')).model_dump(mode='json')
+    with Session(engine) as session, session.begin():
+        original = session.get(LineageEvent, accepted['event_id'])
+        payload['event']['run']['runId'] = str(session.get(LineageRun, original.lineage_run_id).run_uuid)
+        incomplete = LineageEvent(integration_id=original.integration_id, lineage_run_id=original.lineage_run_id,
+            event_key='unindexed', event_type='COMPLETE', occurred_at=original.occurred_at,
+            payload=payload, payload_hash=digest(payload))
+        session.add(incomplete)
+        session.flush()
+        if keep_input:
+            dataset = session.scalar(select(Dataset).where(Dataset.name == 'raw.orders'))
+            session.add(DatasetMention(event_id=incomplete.id, dataset_id=dataset.id, role='input'))
+    body = graph(client, headers, execution).json()
+    assert body['coverage'] == 'partial'
+    assert 'projection_payload_mismatch' in body['missing_metadata']
+
+
 def test_invalid_stored_source_hash_never_claims_complete_lineage(api):
     client,_,engine,_=api;headers,e,_=producer(api)
     accepted=post(client,headers,report(e))

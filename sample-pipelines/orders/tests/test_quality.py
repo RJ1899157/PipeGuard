@@ -67,3 +67,27 @@ def test_oversized_or_wrong_shape_artifacts_are_incomplete(tmp_path):
     assert extract(tmp_path)=={'checks':[],'inventory_complete':False}
     files(tmp_path);(tmp_path/'manifest.json').write_text('{"nodes":[]}')
     assert not extract(tmp_path)['inventory_complete']
+
+
+def test_deeply_nested_artifact_is_incomplete_instead_of_crashing(tmp_path):
+    files(tmp_path)
+    (tmp_path/'manifest.json').write_text('['*10000+']'*10000)
+    assert extract(tmp_path)=={'checks':[],'inventory_complete':False}
+
+
+def test_only_returned_checks_are_hashed_for_oversized_inventory(tmp_path,monkeypatch):
+    from orders_pipeline import quality
+    files(tmp_path)
+    manifest=json.loads((tmp_path/'manifest.json').read_text())
+    template=next(iter(manifest['nodes'].values()))
+    manifest['nodes']={f'test.orders.rule_{index:04}':template for index in range(1000)}
+    (tmp_path/'manifest.json').write_text(json.dumps(manifest))
+    calls=[]
+    original=quality.sha256
+    def counted(value):
+        calls.append(1)
+        return original(value)
+    monkeypatch.setattr(quality,'sha256',counted)
+    result=extract(tmp_path)
+    assert len(result['checks'])==100 and len(calls)==100
+    assert not result['inventory_complete']

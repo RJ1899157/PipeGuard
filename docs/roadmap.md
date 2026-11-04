@@ -22,6 +22,8 @@ This roadmap records product delivery milestones. Stage numbers correspond to th
 
 See the [investigation evaluation](investigation-evaluation.md) for thresholds, retained failed runs and coverage limits, and the [Stage 11 recovery design](recovery-design.md) for the implementation boundary. See the [recovery review checkpoint](recovery-verification.md) for review verification and the [execution checkpoint](recovery-execution-verification.md) for the disabled manual CLI and the [dashboard checkpoint](recovery-dashboard-verification.md) for scoped HTTP controls. The [live recovery checkpoint](recovery-live-verification.md) records completed local acceptance.
 
+The [2026-11-04 post-recovery audit](post-recovery-audit.md) fixes reproduced regressions and records fresh suite, browser, preservation and restore evidence before Stage 12. It does not mark the final Stage 13 delivery gate complete.
+
 ## Review gates
 
 - Review database ownership and the logical model before committing to the first schema.

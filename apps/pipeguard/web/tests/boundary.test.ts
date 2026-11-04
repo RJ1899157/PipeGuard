@@ -58,6 +58,8 @@ test("invalid identifiers, bounds and traversal attempts are rejected", () => {
     "x",
     "http://evil.test",
     id + "/process",
+    id + "\n",
+    id + "\r\n",
   ])
     assert.equal(
       readPath(new URLSearchParams({ kind: "attempts", id: value })),
@@ -65,7 +67,7 @@ test("invalid identifiers, bounds and traversal attempts are rejected", () => {
     );
   for (const offset of ["-1", "1.5", "NaN", "100001"])
     assert.equal(readPath(new URLSearchParams({ kind: "jobs", offset })), null);
-  for (const attempt of ["0", "-1", "1.1", "Infinity", "2147483648"])
+  for (const attempt of ["0", "-1", "1.1", "Infinity", "2147483648", "1\n"])
     assert.equal(
       readPath(
         new URLSearchParams({ kind: "lineage", id, run: "run", attempt }),
@@ -143,6 +145,8 @@ test("snapshot cursors stay bounded and only reach supported read lists", () => 
     "../events",
     "https://evil.test",
     "a".repeat(129),
+    "new\n",
+    "a".repeat(43) + "\n",
   ])
     assert.equal(
       readPath(new URLSearchParams({ kind: "jobs", snapshot })),

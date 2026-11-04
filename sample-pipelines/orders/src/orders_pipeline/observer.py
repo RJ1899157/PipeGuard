@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from hashlib import sha256
+from http.client import HTTPException
 import json
 import os
 from pathlib import Path
@@ -134,7 +135,7 @@ class Observer:
                 UUID(answer["event_id"])
             marker.touch(mode=0o600)
             return True
-        except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError):
+        except (HTTPError, URLError, HTTPException, TimeoutError, OSError, ValueError, KeyError, TypeError, AttributeError, RecursionError):
             return False
 
     def replay(self):

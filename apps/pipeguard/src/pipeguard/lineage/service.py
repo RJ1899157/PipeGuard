@@ -114,6 +114,7 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
     if any(len(states & {"COMPLETE", "FAIL", "ABORT"}) > 1 for states in outcomes.values()):
         gaps.add("contradictory_run_outcomes")
     if event_map:
+        indexed_counts = dict.fromkeys(event_map, 0)
         mentions = session.execute(select(DatasetMention, Dataset).join(Dataset).where(
             DatasetMention.event_id.in_(list(event_map))).order_by(DatasetMention.id))
         for mention, dataset in mentions:
@@ -122,6 +123,7 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
             if {"namespace": dataset.namespace, "name": dataset.name} not in declared:
                 gaps.add("projection_payload_mismatch")
                 continue
+            indexed_counts[event.id] += 1
             dataset_id, step_id = "dataset:" + str(dataset.id), "step:" + str(run.id)
             nodes[dataset_id] = {"id": dataset_id, "kind": "dataset", "namespace": dataset.namespace, "name": dataset.name}
             source, target = (dataset_id, step_id) if mention.role == "input" else (step_id, dataset_id)
@@ -132,6 +134,11 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
                                          "occurred_at": event.occurred_at.isoformat(), "received_at": event.created_at.isoformat()})
             else:
                 truncated = True
+        # Matching individual edges cannot establish that all declared edges exist.
+        # The unique event/dataset/role key makes a valid-edge count sufficient.
+        if any(indexed_counts[event.id] != len(event.payload["event"]["inputs"]) +
+               len(event.payload["event"]["outputs"]) for event, _ in event_map.values()):
+            gaps.add("projection_payload_mismatch")
     if root is not None:
         root_key = "dataset:" + str(root)
         if root_key not in nodes:

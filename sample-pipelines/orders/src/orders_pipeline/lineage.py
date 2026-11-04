@@ -89,5 +89,5 @@ def extract(artifacts, run_id, attempt, summary=None, prefix=''):
         for entry in entries:
             entry['expected_steps'] = expected
         return entries
-    except (OSError,ValueError,KeyError,TypeError,AttributeError):
+    except (OSError,ValueError,KeyError,TypeError,AttributeError,RecursionError):
         return gap(run_id,attempt,'invalid_artifacts')

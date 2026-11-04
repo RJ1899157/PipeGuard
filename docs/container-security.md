@@ -1,5 +1,7 @@
 # PostgreSQL container advisory triage
 
+**Current follow-up:** The [2026-11-04 audit](post-recovery-audit.md#dependency-and-container-findings) finds 130 matches, including 14 additional GCC/SQLite records. No matched trixie fixed version is published. The official multi-platform tag changed, but its ARM64 image used on this Mac is unchanged. The historical counts below describe the earlier checkpoint.
+
 Checkpoint: 2026-11-01. This is a time-specific installed-package comparison, not a reachability proof. The container remains bound to loopback, with separate administrator, application, Airflow, workload and minimal watcher roles.
 
 The pinned official `postgres:17` image is already the current official PostgreSQL 17 image: registry index `sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f`, PostgreSQL 17.11, Debian trixie slim, published October 28, 2026. A same-family image update is unavailable at this check. No image, container, package, or database was changed.

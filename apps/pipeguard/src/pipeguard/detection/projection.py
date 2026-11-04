@@ -31,12 +31,18 @@ def reconcile(bind, job_id, snapshots):
             by_attempt.setdefault((payload.get("external_run_id"), payload.get("attempt_number")), []).append(payload)
             if event.processing_state == "processed" and payload["state"] == "running":
                 processed_starts.setdefault((payload["external_run_id"], payload["attempt_number"]), []).append(payload)
+        run_attempts = {}
         for _, p in snapshots:
-            session.execute(insert(Run).values(job_id=job_id, external_run_id=p["external_run_id"])
-                            .on_conflict_do_nothing(index_elements=["job_id", "external_run_id"]))
-            run = session.scalar(select(Run).where(Run.job_id == job_id, Run.external_run_id == p["external_run_id"])
-                                 .with_for_update())
-            attempts = list(session.scalars(select(Attempt).where(Attempt.run_id == run.id)))
+            key = p["external_run_id"]
+            if key not in run_attempts:
+                session.execute(insert(Run).values(job_id=job_id, external_run_id=key)
+                                .on_conflict_do_nothing(index_elements=["job_id", "external_run_id"]))
+                run = session.scalar(select(Run).where(Run.job_id == job_id, Run.external_run_id == key)
+                                     .with_for_update())
+                # The run lock is held until commit. Reuse its in-transaction attempts
+                # across source tries instead of reloading every earlier attempt.
+                run_attempts[key] = run, list(session.scalars(select(Attempt).where(Attempt.run_id == run.id)))
+            run, attempts = run_attempts[key]
             if any(a.attempt_key != "job" for a in attempts):
                 run.reconciliation_required = True
                 continue

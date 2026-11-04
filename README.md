@@ -12,7 +12,7 @@ PipeGuard is a local-first platform designed to help operators understand pipeli
 
 A pipeline can complete successfully while still producing stale, incomplete, or invalid data. Operators need to connect execution history with dataset dependencies and quality observations to understand impact and choose a recovery action.
 
-PipeGuard's planned workflow is:
+PipeGuard's workflow is:
 
 1. **Observe:** receive execution events, transformation artifacts, quality results, and lineage.
 2. **Detect:** evaluate explicit policies and group related failures into incidents.
@@ -99,3 +99,5 @@ All repository changes are owned by **RJ1899157**.
 [Hardening verification](docs/hardening-verification.md) records independent local service monitoring, dedicated minimal credentials, verified database restore drills, consistent captured pagination, full-scope quality conflict summaries and measured query improvements. [Operating procedures](docs/local-resilience.md) describe the supported local boundaries and recovery checks.
 
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
+
+Latest verification: the [2026-11-04 multi-agent audit](docs/post-recovery-audit.md) records 548 passing suite cases, browser checks, measured optimization, preserved evidence and remaining deployment limits. Stages 12–13 remain in the [roadmap](docs/roadmap.md).

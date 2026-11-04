@@ -101,6 +101,8 @@ export function Investigations({
   const [unconfirmed, setUnconfirmed] = useState("");
   const active = useRef<AbortController | null>(null);
   const historyRequest = useRef<AbortController | null>(null);
+  const inFlight = useRef(false);
+  const submissionKey = useRef("");
   const storageKey = `pipeguard-investigation:${incidentId}`;
   const load = useCallback(
     async (before?: string) => {
@@ -132,17 +134,18 @@ export function Investigations({
                 ]
               : data.items,
           }));
-          try {
-            const key = sessionStorage.getItem(storageKey);
-            if (
-              key &&
-              data.items.some((r: RecordView) => r.request_key === key)
-            ) {
+          const key = submissionKey.current;
+          if (
+            key &&
+            data.items.some((r: RecordView) => r.request_key === key)
+          ) {
+            submissionKey.current = "";
+            setUnconfirmed("");
+            try {
               sessionStorage.removeItem(storageKey);
-              setUnconfirmed("");
+            } catch {
+              /* The in-memory key is reconciled even when storage is unavailable. */
             }
-          } catch {
-            /* Storage may be unavailable; durable server history remains authoritative. */
           }
         }
       } catch (e) {
@@ -156,7 +159,8 @@ export function Investigations({
   );
   useEffect(() => {
     try {
-      setUnconfirmed(sessionStorage.getItem(storageKey) || "");
+      submissionKey.current = sessionStorage.getItem(storageKey) || "";
+      setUnconfirmed(submissionKey.current);
     } catch {
       /* Optional recovery hint. */
     }
@@ -167,9 +171,11 @@ export function Investigations({
     };
   }, [load, storageKey]);
   async function submit(replay = false) {
-    if (!confirmed || busy || demo) return;
+    if (!confirmed || inFlight.current || demo) return;
     const key = replay ? unconfirmed : crypto.randomUUID();
     if (!key) return;
+    inFlight.current = true;
+    submissionKey.current = key;
     setUnconfirmed(key);
     try {
       sessionStorage.setItem(storageKey, key);
@@ -192,12 +198,14 @@ export function Investigations({
         }),
       });
       const data = await response.json();
+      if (controller.signal.aborted) return;
       if (!response.ok) {
         // A validated rejection did not start a request; network failures remain unconfirmed.
         const rejectedBeforeGeneration = submissionDefinitelyRejected(
           data.error,
         );
         if (rejectedBeforeGeneration) {
+          submissionKey.current = "";
           setUnconfirmed("");
           try {
             sessionStorage.removeItem(storageKey);
@@ -212,6 +220,7 @@ export function Investigations({
         );
       }
       if (!controller.signal.aborted) {
+        submissionKey.current = "";
         setUnconfirmed("");
         try {
           sessionStorage.removeItem(storageKey);
@@ -226,6 +235,7 @@ export function Investigations({
           e instanceof Error ? e.message : "investigation_connection_unknown",
         );
     } finally {
+      inFlight.current = false;
       if (!controller.signal.aborted) setBusy(false);
     }
   }
