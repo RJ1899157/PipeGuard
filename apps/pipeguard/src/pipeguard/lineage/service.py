@@ -1,5 +1,7 @@
 """Transactional lineage receipt and explicitly scoped, bounded historical graph reads."""
 from collections import deque
+from hashlib import sha256
+import json
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
@@ -9,6 +11,8 @@ from pipeguard.db.models import Dataset, DatasetMention, Integration, Job, Linea
 from pipeguard.detection.service import digest, observe, now_utc, _lock_job
 from pipeguard.ingestion.service import IngestionRejected
 from pipeguard.lineage.completeness import missing_metadata
+
+GRAPH_PAYLOAD_BYTES = 8 * 1024 * 1024
 
 
 class LineageRejected(IngestionRejected):
@@ -88,24 +92,32 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
         query = query.where(LineageRun.external_run_id == external_run_id)
     if attempt_number is not None:
         query = query.where(LineageRun.attempt_number == attempt_number)
-    rows = list(session.execute(query.order_by(LineageEvent.occurred_at, LineageEvent.created_at, LineageEvent.id).limit(1001)))
-    truncated = len(rows) > 1000
-    rows = rows[:1000]
+    query = query.order_by(LineageEvent.occurred_at, LineageEvent.created_at, LineageEvent.id).limit(1001)
+    truncated = False
+    event_count = payload_bytes = 0
     event_map = {}
     nodes, links, gaps = {}, {}, set()
     outcomes = {}
-    for event, run in rows:
-        if digest(event.payload) != event.payload_hash:
-            gaps.add("source_hash_mismatch")
-            continue
-        event_map[event.id] = (event, run)
-        step_id = "step:" + str(run.id)
-        nodes[step_id] = {"id": step_id, "kind": "step", "namespace": run.step_namespace,
-                          "name": run.step_name, "external_run_id": run.external_run_id,
-                          "attempt_number": run.attempt_number, "openlineage_run_id": str(run.run_uuid)}
-        outcomes.setdefault(run.id, set()).add(event.event_type)
-        if event.payload["coverage"] != "complete":
-            gaps.update(event.payload["missing_metadata"])
+    # Stream bounded batches rather than materializing 1,000 maximum-size payloads.
+    with session.execute(query.execution_options(yield_per=50)) as rows:
+        for event, run in rows:
+            encoded = json.dumps(event.payload, sort_keys=True, separators=(",", ":")).encode()
+            if event_count == 1000 or payload_bytes + len(encoded) > GRAPH_PAYLOAD_BYTES:
+                truncated = True
+                break
+            event_count += 1
+            payload_bytes += len(encoded)
+            if sha256(encoded).hexdigest() != event.payload_hash:
+                gaps.add("source_hash_mismatch")
+                continue
+            event_map[event.id] = (event, run)
+            step_id = "step:" + str(run.id)
+            nodes[step_id] = {"id": step_id, "kind": "step", "namespace": run.step_namespace,
+                              "name": run.step_name, "external_run_id": run.external_run_id,
+                              "attempt_number": run.attempt_number, "openlineage_run_id": str(run.run_uuid)}
+            outcomes.setdefault(run.id, set()).add(event.event_type)
+            if event.payload["coverage"] != "complete":
+                gaps.update(event.payload["missing_metadata"])
     attempts = {}
     for event, run in event_map.values():
         attempts.setdefault((run.external_run_id, run.attempt_number), []).append(event.payload)
@@ -114,10 +126,16 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
     if any(len(states & {"COMPLETE", "FAIL", "ABORT"}) > 1 for states in outcomes.values()):
         gaps.add("contradictory_run_outcomes")
     if event_map:
+        # Output limits alone do not bound the work needed to construct a graph.
+        mention_limit = 10000
+        mention_scan_limited = False
         indexed_counts = dict.fromkeys(event_map, 0)
         mentions = session.execute(select(DatasetMention, Dataset).join(Dataset).where(
-            DatasetMention.event_id.in_(list(event_map))).order_by(DatasetMention.id))
-        for mention, dataset in mentions:
+            DatasetMention.event_id.in_(list(event_map))).order_by(DatasetMention.id).limit(mention_limit + 1))
+        for number, (mention, dataset) in enumerate(mentions):
+            if number == mention_limit:
+                truncated = mention_scan_limited = True
+                break
             event, run = event_map[mention.event_id]
             declared = event.payload["event"]["inputs" if mention.role == "input" else "outputs"]
             if {"namespace": dataset.namespace, "name": dataset.name} not in declared:
@@ -136,7 +154,7 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
                 truncated = True
         # Matching individual edges cannot establish that all declared edges exist.
         # The unique event/dataset/role key makes a valid-edge count sufficient.
-        if any(indexed_counts[event.id] != len(event.payload["event"]["inputs"]) +
+        if not mention_scan_limited and any(indexed_counts[event.id] != len(event.payload["event"]["inputs"]) +
                len(event.payload["event"]["outputs"]) for event, _ in event_map.values()):
             gaps.add("projection_payload_mismatch")
     if root is not None:
@@ -171,10 +189,10 @@ def graph(session, job_id, *, external_run_id=None, attempt_number=None, as_of=N
         result_links = result_links[:1000]
     if truncated:
         gaps.add("graph_limit")
-    if not rows:
+    if not event_count and not truncated:
         gaps.add("no_lineage_observed")
     return {"schema_version": 1, "semantics": "observed_union", "job_id": str(job_id),
             "as_of": as_of.isoformat(), "known_at": known_at.isoformat(),
             "nodes": [nodes[k] for k in sorted(selected)], "edges": result_links,
             "coverage": "partial" if gaps else "reported_complete", "missing_metadata": sorted(gaps),
-            "truncated": truncated, "event_count": len(rows)}
+            "truncated": truncated, "event_count": event_count}

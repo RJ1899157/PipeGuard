@@ -22,7 +22,7 @@ apps/pipeguard/migrations/versions/f102b8e6d391_recovery_review.py,2026-11-04 pe
 apps/pipeguard/migrations/versions/fc50161412bd_preserve_execution_projection_source_.py,2026-11-04 persistence review,migration/constraint review; isolated schema regressions,2016,41,0bd14db31f695cd998f7327915b51de80418042309eed487bca65e0d4ff6a2e0
 apps/pipeguard/src/pipeguard/__init__.py,2026-11-04 core backend review,source review; isolated regressions and preservation,40,1,084b514ffcc39f51dfb09cb565e6add5d6959791221add77b0adc26aed2f3a58
 apps/pipeguard/src/pipeguard/api/__init__.py,2026-11-04 core backend review,source review; isolated regressions and preservation,30,1,9e2f3b2514b09bee469a5daf76ec2bcc16c893d98520e9e2bf48d08f5d829fc7
-apps/pipeguard/src/pipeguard/api/app.py,2026-11-04 core backend review,source review; isolated regressions and preservation,17122,330,3513dd333316e3c611b59f0ad21f8fc437ecccaf2896e94f19625cac65539da6
+apps/pipeguard/src/pipeguard/api/app.py,2026-11-04 core backend review,source review; isolated regressions and preservation,18592,365,f121f1b6e0c4f3ae46fb82caa335826e1eeb303954bd0463b35273aff6339fd7
 apps/pipeguard/src/pipeguard/api/pagination.py,2026-11-04 core backend review,source review; isolated regressions and preservation,3576,84,75c0d77471e214d449b027e52167d37acc3d8a97db9788eaa3d9b7d22018d10b
 apps/pipeguard/src/pipeguard/api/schemas.py,2026-11-04 core backend review,source review; isolated regressions and preservation,1988,101,67b92d4c63456fb87625892c8652bdc7d46dde6730715ce9676765b4a31c4e8b
 apps/pipeguard/src/pipeguard/api/settings.py,2026-11-04 core backend review,source review; isolated regressions and preservation,894,24,f2dfd0e7c9dec710b57665bae2467051b1a0536cb783a83ea2d394dcdc3ad3e7
@@ -47,11 +47,11 @@ apps/pipeguard/src/pipeguard/investigation/evaluation.py,2026-11-04 recovery and
 apps/pipeguard/src/pipeguard/investigation/groq.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,9087,151,3c735b750a1e4800dc648a3f667c2b3254c77b3baef8ae4f6cd44582d2a6f363
 apps/pipeguard/src/pipeguard/investigation/service.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,8070,129,95b0c4a51a2d2b6e3f3debe1335ad4d3b1ea6454c09c5f0000f48a7b5515b20e
 apps/pipeguard/src/pipeguard/lineage/__init__.py,2026-11-04 core backend review,source review; isolated regressions and preservation,82,1,e2edf2bfa04f88bafe988e0c32c2c912970fa6203329439c2d242b3f96deb77f
-apps/pipeguard/src/pipeguard/lineage/api.py,2026-11-04 core backend review,source review; isolated regressions and preservation,5414,102,2d017a49ac7874f40757373b3c80785956cbe96404912f87b65c1a14e9bc092a
+apps/pipeguard/src/pipeguard/lineage/api.py,2026-11-04 core backend review,source review; isolated regressions and preservation,5688,109,1b476d163c790a34daa378f0feeab7e11015207f456433721d7a83313e7b09ef
 apps/pipeguard/src/pipeguard/lineage/completeness.py,2026-11-04 core backend review,source review; isolated regressions and preservation,1418,32,f29619ecb1859941f13e1ed2835f23476a63deb490294e17acea34038df44a22
 apps/pipeguard/src/pipeguard/lineage/contracts.py,2026-11-04 core backend review,source review; isolated regressions and preservation,4254,114,68050de0acae5b628f9bb8c36dbafee326baf7f860187ae7294afd50314b1524
 apps/pipeguard/src/pipeguard/lineage/evidence.py,2026-11-04 core backend review,source review; isolated regressions and preservation,15848,242,3e1088559db78a5b227f7f2044501df75117da557b43b5b5fbfb01c547a07846
-apps/pipeguard/src/pipeguard/lineage/service.py,2026-11-04 core backend review,source review; isolated regressions and preservation,10633,180,805eaf3a037158621e25ae5e7c3efca366380a73775994353cbc7647bb74d1ab
+apps/pipeguard/src/pipeguard/lineage/service.py,2026-11-04 core backend review,source review; isolated regressions and preservation,11582,198,17bf58e7ffce89c13df3146ac11f9f87c80436bd06384128caeac8c934a47d1d
 apps/pipeguard/src/pipeguard/recovery/__init__.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,79,1,dea5b2b3bd1eaf4f3f6316034621b2c9a6002a71ceb0cd7d6b2177eb1dd20374
 apps/pipeguard/src/pipeguard/recovery/airflow.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,7917,146,d9ca14a12ff81431ac326583b9d116f5dfdb7f98e4fde157dd9b413fc3382321
 apps/pipeguard/src/pipeguard/recovery/api.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4670,89,20fb07fe6617a275deb8ff2f3006eba065ab012652a0bf871b4093859db685f1
@@ -68,7 +68,7 @@ apps/pipeguard/tests/test_evidence.py,2026-11-04 backend verification,full regre
 apps/pipeguard/tests/test_ingestion.py,2026-11-04 backend verification,full regression suite; affected test review,14031,301,c02b570469e92b91317a8ca43e3aaeff720e0eb583c2868689dc5c713a726bc7
 apps/pipeguard/tests/test_investigation.py,2026-11-04 backend verification,full regression suite; affected test review,12795,252,c43033f5835ab225153727fc7a66bd80e250e14cbc3a6eab35c9f75355d02d8b
 apps/pipeguard/tests/test_investigation_evaluation.py,2026-11-04 backend verification,full regression suite; affected test review,8753,159,75f9d32b92f3ad029b072ec418e5b133244e5f7050237cb170dca986e2ea958d
-apps/pipeguard/tests/test_lineage.py,2026-11-04 backend verification,full regression suite; affected test review,17615,289,0aac7aa016499a33784db91131871803afdcb605523c232bb9b012b17bd19d26
+apps/pipeguard/tests/test_lineage.py,2026-11-04 backend verification,full regression suite; affected test review,22187,376,01475c33eb0cf782519aeb66cc64f1af2f8520358f196054129780a8a0418841
 apps/pipeguard/tests/test_local_operations.py,2026-11-04 backend verification,full regression suite; affected test review,12034,252,6775333cea2a65f9463a1173e48674661dcd1441fd27992cc90a321db932cf88
 apps/pipeguard/tests/test_operational_files.py,2026-11-04 backend verification,full regression suite; affected test review,13066,266,4e8b8b521ca73b35b53a3ca3dcdc82b38daec4f54670d04feae87ee3978a5d96
 apps/pipeguard/tests/test_persistence.py,2026-11-04 backend verification,full regression suite; affected test review,6422,178,a4707306c5994ab7694e09ee13b99376a9ebd2077c7598219f08fe0a4774f86b
@@ -78,6 +78,7 @@ apps/pipeguard/tests/test_recovery_bridge.py,2026-11-04 backend verification,ful
 apps/pipeguard/tests/test_recovery_execution.py,2026-11-04 backend verification,full regression suite; affected test review,18979,359,b9622daf50ececae909f510003f04b5bead5c4202c4348dc95c842ac90f368ae
 apps/pipeguard/tests/test_recovery_execution_api.py,2026-11-04 backend verification,full regression suite; affected test review,6267,112,d2ca55b90657c90af9adb1fdca1ab5aa056872041aced2cac52058a6124044cd
 apps/pipeguard/tests/test_recovery_transport.py,2026-11-04 backend verification,full regression suite; affected test review,6177,121,9976838c9b11b83ae2e571d80802c2a73a61555b3b02d0214fab8343a9877ff7
+apps/pipeguard/tests/test_request_boundary.py,Stage 13 hardening review,source/documentation review; targeted regression checks,4275,112,342b68b4001cf0a273482f0caa3e7d55f9e1112017cd6838ecc80be2262c3abd
 apps/pipeguard/web/README.md,2026-11-04 frontend review,source review; regression/build/browser checks,7839,69,9a0c387a264ae7689484f709bfe94eaef814e9d6031557015c0363ffbd5dbfa0
 apps/pipeguard/web/app/api/investigations/route.ts,2026-11-04 frontend review,source review; regression/build/browser checks,2878,93,eee988cb855014144a03ae34c99b5ed3642c336f4ae288be68024615980f6d8a
 apps/pipeguard/web/app/api/read/route.ts,2026-11-04 frontend review,source review; regression/build/browser checks,2201,65,d91a4c1c332740e6177de707cb57dc630c56d841bd1443113daa01c0bef58a6a
@@ -98,7 +99,7 @@ apps/pipeguard/web/components/recovery.tsx,2026-11-04 frontend review,source rev
 apps/pipeguard/web/components/watchdog-status.tsx,2026-11-04 frontend review,source review; regression/build/browser checks,1737,50,f2d4ee9e3a822fee63415f79382fee27e1f17e42e722f6339edcfa2a2c10f4b7
 apps/pipeguard/web/lib/analytics.ts,2026-11-04 frontend review,source review; regression/build/browser checks,1828,60,56cffe1234bf89504816b51ab95f88d3fc3a9499499780532d64e4343b11ab0f
 apps/pipeguard/web/lib/boundary.ts,2026-11-04 frontend review,source review; regression/build/browser checks,3356,92,3a05a20db21956becbac0529e2b33f97552d90c39317b03e2dd5c88ab4c55a09
-apps/pipeguard/web/lib/bounded-json.ts,2026-11-04 frontend review,source review; regression/build/browser checks,754,27,44efebfa58fcd6bf133fc59a50b2936c92214de11f16e04ad6e2198041ee8091
+apps/pipeguard/web/lib/bounded-json.ts,2026-11-04 frontend review,source review; regression/build/browser checks,1450,47,12abfff4b7c428edcd69a583bae7631bdb36804c6bafad4dd84f4a0bb194f547
 apps/pipeguard/web/lib/demo.ts,2026-11-04 frontend review,source review; regression/build/browser checks,8154,281,d8e5a2c1547789a779bb35239d9ecf74f3491bc38d0b51c95f3bcbd37d6d0c41
 apps/pipeguard/web/lib/exploration-fixtures.ts,2026-11-04 frontend review,source review; regression/build/browser checks,2874,92,a1de1b0c8fa1d1e2abe6a2877b06baa8578c290926152848025baa9bdf3d245a
 apps/pipeguard/web/lib/graph-evidence.ts,2026-11-04 frontend review,source review; regression/build/browser checks,968,30,81f64fb89d75b6f960f6adbea59b0e6601a8f2991538a483499602bd010f5820
@@ -120,7 +121,7 @@ apps/pipeguard/web/proxy.ts,2026-11-04 frontend review,source review; regression
 apps/pipeguard/web/tests/accessibility.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,1803,52,4f46634795683cd3256e0b3e1880bd08603456c9b03c18cefa47a92559336184
 apps/pipeguard/web/tests/analytics.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,5476,173,921fc5db8430f060f85811127d4e62c31f87017b722c2326f242aa1132763080
 apps/pipeguard/web/tests/boundary.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,5533,196,7c937753b0f8f8dc9c14340173383c7a60fe9014269f3fccda1df9cf2bdfbb5b
-apps/pipeguard/web/tests/bounded-json.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,1580,55,9ad5bbd3a1a4c488dbad97d9f1f3f0510ee505606f4c2c01db38d6c9f0a9f14b
+apps/pipeguard/web/tests/bounded-json.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,2495,87,cccf84e687908669525bb8510198930fd96c20c8bada1d31826f8858efae7963
 apps/pipeguard/web/tests/demo.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,4096,119,17dda7fed1eec0c302c5e62a1c183d65b9ccc2d8e3d91735798105719d2db082
 apps/pipeguard/web/tests/expiry.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,779,17,dc3afb152522c0bb353b9c31dd6bc7a0c0170fd7bc05e0138fdead56bfccf3d7
 apps/pipeguard/web/tests/graph-filter.test.ts,2026-11-04 frontend review,source review; regression/build/browser checks,1560,42,fb3cfda97a54e1a3c21692b594c426c3a221f5d63d068ee7c462cc34820838dc
@@ -133,7 +134,7 @@ apps/pipeguard/web/tests/watchdog.test.ts,2026-11-04 frontend review,source revi
 apps/pipeguard/web/tsconfig.json,2026-11-04 frontend review,source review; regression/build/browser checks,655,28,9f75583e8c444090c24b67a4140ccd8e05ba34b601e5798ea557d09e5c5836d3
 compose.yaml,2026-11-04 coordinating review,documentation/structure/provenance check,682,18,1e33e331e46bac21033e9a4ad4659588b6c4ac592ec1a91dc109b49c4157e264
 design-qa.md,2026-11-04 coordinating review,documentation/structure/provenance check,7073,68,62965076a982bb6190691652fb957901ad432a3cb316471fe5ad264741830255
-docs/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,5750,87,57b7894bb4ce782abad2de3e4ed3a6f59a6b98f2b99762cf8f207dcbcc88812c
+docs/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,5983,92,ae4b5d9600b9586507d63a12202796d0033da79aed3d03b5d78355a11a8ea6c8
 docs/architecture/dashboard-foundation.md,2026-11-04 coordinating review,documentation/structure/provenance check,4845,47,4f0f422688a0e2d55c5a3062d0bfa820f995b413053f95371e8b0112c2d03a7b
 docs/architecture/domain-model.md,2026-11-04 coordinating review,documentation/structure/provenance check,20050,139,93e7b87936995dfd227f2284384a1b4650f345fbd6ecae25553aa804f1eb196c
 docs/architecture/incident-detection.md,2026-11-04 coordinating review,documentation/structure/provenance check,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835
@@ -167,14 +168,14 @@ docs/audit/tablet-final.jpg,2026-11-04 coordinating review,asset/hash inventory;
 docs/container-security.md,2026-11-04 coordinating review,documentation/structure/provenance check,4255,29,126b8046d6cda63c4a237bf95b43aff9a1ddc514b5f5f9baa1ca39c69eb929e8
 docs/contracts/execution-event-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
 docs/contracts/execution-events.md,2026-11-04 coordinating review,documentation/structure/provenance check,6762,116,f547adad9945fa24759be4f75180f113c20ced9f220146b98fd2d6c8f8ff8451
-docs/contracts/http-api-v1.openapi.json,2026-11-04 coordinating review,runtime model comparison,189056,7248,2eb4608051d0ed278f07fb3bd34fde94ca0109afb71245f03323fc3165c95def
-docs/contracts/http-api.md,2026-11-04 coordinating review,documentation/structure/provenance check,11477,133,596a6b19f5650d457a2caba8e49b0fafcb2e83f2d25cb03fccd72c7f0dbcbc0b
-docs/contracts/lineage-events.md,2026-11-04 coordinating review,documentation/structure/provenance check,3754,30,8b38d0a921294c3d1aeb6fe2b97020e904b3cfa329be2b5e7a7d79c55a8ae7d6
+docs/contracts/http-api-v1.openapi.json,2026-11-04 coordinating review,runtime model comparison,212240,8088,e880037e70d3e8b737d6e23b97367249606067dcc6399cef71ee1c6646176106
+docs/contracts/http-api.md,2026-11-04 coordinating review,documentation/structure/provenance check,12037,139,b7686a448fb00a22d73557c4448c36d36e8d2c9b9a4d9f2ccf231cd9778e3fa8
+docs/contracts/lineage-events.md,2026-11-04 coordinating review,documentation/structure/provenance check,4609,34,a0f0b488a625d8428bda5554f70def445c8a03cc77efe0cce08ab20fa12767ac
 docs/contracts/lineage-report-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,5983,271,a1d83118a3f9679730f2353c14635d1111c32aca7e52ba74ec7d112f98b303ec
 docs/contracts/quality-report-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,2612,121,efe8ea6bdc3ede10defc7e2a2e709b903f5c322e753cfc1f65318d28519b9901
 docs/contracts/quality-reports.md,2026-11-04 coordinating review,documentation/structure/provenance check,3864,28,4b04f37e6005974d09054676c5dfee65450bf84bf34355e8bcefeb6f13f7d62f
 docs/dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4606,56,c3f37bfa540019b0d7590ff431c84c6fd6e41cff75779914ecda55b31e3c9886
-docs/delivery-operations.md,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,7588,126,acb040e985afc2018b74ad9822df9814efca8ed9ece0dd00b7911b56791c5b9c
+docs/delivery-operations.md,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,7743,128,27867b821693ea4ec359fb99cabc79bedb494cf748ca9de7c30a188635d85e06
 docs/delivery-verification.md,Stage 12 delivery review,documentation/evidence review,7165,98,bfa479fb64850931a06ebda0687713bd9907c73c175654055f1b45647c793db5
 docs/design/dashboard-attempts.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,24914,,3903d0f2aa427e7d78b36ce9e3244cd9a286809de1185569b0a78b4f672c981d
 docs/design/dashboard-desktop.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,107273,,1c312f4e0444695ad15bf61af11932a09fe4f719ced434f2e106d522f3a91a91
@@ -203,8 +204,10 @@ docs/recovery-live-verification.md,2026-11-04 coordinating review,documentation/
 docs/recovery-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,8937,65,2dbe3c71bf83f8af1a9410afa980e8b77ca2914308113835dbde87b287ed42de
 docs/recovery-phase1-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5487,46,817d1746081d508fce5af5d5cfecc2d73d4393bd0cbeb913253e4366fc38c348
 docs/recovery-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8137,66,c2e0bc28903902242e5d37584c7b4c8028648491a884c081b4af500519f5304d
-docs/roadmap.md,2026-11-04 coordinating review,documentation/structure/provenance check,15375,47,1e423d7618db63c55ef17f66bb00efcae738e5a6fc7ef55e3e7b0783f315c079
-docs/system-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16092,92,b5458d00767ac181bc60d010b83bdaaf918180b91e8b324b15aaea067cb4fefb
+docs/roadmap.md,2026-11-04 coordinating review,documentation/structure/provenance check,15375,47,c0fa8dc1e7f10b8500c7afb06b28d46357e5fbddb9bf3945759d88cc75e3f33d
+docs/security-threat-model.md,Stage 13 hardening review,source/documentation review; targeted regression checks,9675,72,28ea1d011f5736892e5ddb0ddf6e5e7bab9971f784fd36e7aef3c8592cdcfbf5
+docs/stage13-verification.md,Stage 13 hardening review,source/documentation review; targeted regression checks,3055,53,3b265ca745e9a4ebad384a56fba9b2afdc65e8cc377c4fcf2bf2d776c9518ca4
+docs/system-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16092,92,6d76332ae46f1c19d24c99eb6fffe2e2095bd87bc84e32982f836c185b1ba2a7
 infra/airflow/README.md,2026-11-04 recovery and operations review,source/command review; isolated regressions,13529,163,2567466103d3352101f3684c8ebb8a5e4856c4413530c00c03a59e0962139b50
 infra/airflow/auth/pipeguard_airflow_auth.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c
 infra/airflow/constraints-3.12.txt,2026-11-04 recovery and operations review,dependency/compatibility/advisory check,18572,726,821effd0f491975682f2774fca3427d7bc2f59ca6de68dcb413ad2c8f890e58c
@@ -246,8 +249,8 @@ sample-pipelines/orders/tests/test_process.py,2026-11-04 recovery and operations
 sample-pipelines/orders/tests/test_quality.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4493,93,4c7866785e9e02eb2677c8a8fe1b9a68cd20ff60eced25a78c0f0276a61c5757
 sample-pipelines/orders/uv.lock,2026-11-04 recovery and operations review,dependency/compatibility/advisory check,104107,944,9576ed61183df695755811369a814344927902f1d22f377679e423118e139267
 scripts/backup_local.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,19919,366,bab2c5bdbae1d62cbb98cfcd347dbfa0a51a6aa51692f41d51542e46c0d65102
-scripts/check_delivery.py,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,12339,232,9658434aaba919a1c8760738e49e87f2449999019f2fd8296ad894b3d42e928d
-scripts/check_delivery_scenario.py,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,9702,166,7298753628d190aa684e0026551027c0ad42bd4dfcbae1696e8cd4a9ff93b98d
+scripts/check_delivery.py,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,12364,232,201aec580ea705dc651fa40312f4cf5c6b7d76dada594d47e6a152a8c1dfeec0
+scripts/check_delivery_scenario.py,Stage 12 delivery review,source/configuration review; local fresh-export acceptance passed; hosted Linux pending,12032,194,ead2e8a22f1e8c0432a9f122bdd91a0f42a9d3b09364e9b51c69f4b13deac407
 scripts/compile_airflow_requirements.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,1680,35,67b86499f38453d552e3de4143d88097548ecf22ac8ca4a2b79f1a1ced019c82
 scripts/configure_airflow.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,5046,86,8d21442ef91ea8dc93c7b33dc8ed36721ca9f6455386eb97b091a43079c328f4
 scripts/configure_api.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,2776,53,4f551e615f1a88b2e81caa6f76dd1b221bd2b6dd7adea526b14455f14c3beb43

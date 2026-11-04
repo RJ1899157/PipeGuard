@@ -53,3 +53,35 @@ test("missing, malformed and invalid UTF-8 bodies fail closed", async () => {
     TypeError,
   );
 });
+
+test("stalled reads time out even if source cancellation never finishes", async () => {
+  let cancelled = false;
+  const body = new ReadableStream<Uint8Array>({
+    cancel() {
+      cancelled = true;
+      return new Promise<void>(() => {});
+    },
+  });
+  await assert.rejects(boundedJSON(body, 100, 20), /body_timeout/);
+  assert.equal(cancelled, true);
+});
+
+test("trickling bytes do not reset the absolute body deadline", async () => {
+  let chunks = 0;
+  let cancelled = false;
+  const body = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      if (!cancelled) {
+        chunks += 1;
+        controller.enqueue(Uint8Array.of(32));
+      }
+    },
+    cancel() {
+      cancelled = true;
+    },
+  });
+  await assert.rejects(boundedJSON(body, 10000, 30), /body_timeout/);
+  assert.equal(cancelled, true);
+  assert.ok(chunks < 100);
+});

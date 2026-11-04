@@ -85,3 +85,8 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 ## Integrated delivery
 
 [Delivery operations](delivery-operations.md) describes isolated fresh-export checks, manual GitHub Actions, and retained-stack startup/shutdown. [Local delivery verification](delivery-verification.md) records the passing checks and the pending hosted-Linux run.
+
+## Security and performance
+
+- [Local threat model](security-threat-model.md): assets, trust boundaries, controls and residual risks.
+- [Stage 13 verification](stage13-verification.md): hardening, measurements and acceptance state.

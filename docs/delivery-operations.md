@@ -7,6 +7,8 @@ configuration or the running local warehouse as test fixtures.
 
 Prerequisites: Git, Python 3.12, uv 0.11.23, Docker with Compose 2.24.4 or later,
 Node.js 22 and pnpm 11.25.0. Start Docker Desktop before the Python checks.
+The runner also checks Node as invoked through pnpm: a launcher that silently
+selects another Node major fails admission even if the shell's `node` is 22.
 From the repository root:
 
 ```sh

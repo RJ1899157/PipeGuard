@@ -68,14 +68,20 @@ source payloads are omitted from monitoring reads.
 
 ## Errors and boundaries
 
-Errors use `{"error": "code"}`. Common statuses are 401 authentication required,
+Errors use `{"error": "code"}`. Common statuses are 400 invalid body framing, 401 authentication required,
 403 forbidden, 404 missing/inaccessible, 409 duplicate identity or event-content
-conflict, 413 oversized body, 422 invalid input, and 503 database unavailable.
+conflict, 408 body-read deadline exceeded, 413 oversized body, 422 invalid input, and 503 database or body-reader capacity unavailable.
 Validation errors do not echo input, request bodies, token strings or database
 exception details. PostgreSQL constraints remain the authority for concurrent
 identity conflicts.
 
-The API bounds actual bodies to 64 KiB including chunked delivery, validates Host
+The API bounds actual bodies to 64 KiB including chunked delivery, admits at most
+32 concurrent body reads per worker, and imposes a 15-second absolute body-read
+deadline. A trickle does not renew the deadline. Oversized declared lengths are
+rejected without reading the body; malformed or repeated length headers fail closed.
+Body-reader overload returns `request_body_busy` (503) and expiry returns
+`request_body_timeout` (408). These admission controls are not a general per-user
+rate limiter or a total request-processing deadline. The API validates Host
 headers for local use, rejects browser Origin headers; the dashboard uses an allowlisted same-origin server broker, and does not enable CORS. Origin/Host validation does not
 replace authentication. The server uses database connection, statement and lock
 timeouts. Public exposure, rate limiting, browser sessions, multi-user audit identity,

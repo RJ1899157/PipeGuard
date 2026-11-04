@@ -1,5 +1,6 @@
 """Fresh-export HTTP acceptance: real orders/dbt retry, no scheduler, AI or recovery start."""
 import json
+from http.client import HTTPResponse
 import os
 from pathlib import Path
 import signal
@@ -96,6 +97,15 @@ def main():
                     return response.json()
 
                 require(httpx.get(base + "/v1/jobs", trust_env=False).status_code == 401, "Metadata must require authentication")
+                for length, expected in ((65537, 413), (1, 408)):
+                    with socket.create_connection(("127.0.0.1", port), timeout=20) as connection:
+                        connection.sendall(("POST /v1/events HTTP/1.1\r\nHost: 127.0.0.1\r\n"
+                            f"Content-Length: {length}\r\nConnection: close\r\n\r\n").encode())
+                        response = HTTPResponse(connection)
+                        response.begin()
+                        require(response.status == expected, "Body admission must reject oversize/stalled HTTP requests")
+                        require(response.getheader("Cache-Control") == "no-store", "Admission errors must not be cached")
+                        response.read()
                 integration = request("POST", "/v1/integrations", expected=201,
                     json={"name": "delivery-orders", "environment": "test", "kind": "synthetic"})
                 job = request("POST", "/v1/jobs", expected=201,
@@ -150,9 +160,27 @@ def main():
                 require(len(checks) == 14 and all(c["status"] == "pass" for c in checks), "Expected 14 passing quality checks")
                 graph = request("GET", f"/v1/jobs/{job['id']}/lineage", params={"external_run_id": "delivery-retry", "attempt_number": 2})
                 require(graph["coverage"] == "reported_complete" and graph["nodes"] and graph["edges"], "Successful attempt must report lineage")
+                # Fail only this isolated cluster's API account; preserve its data.
+                administrator = create_engine(url.set(username="postgres", password=os.environ["POSTGRES_PASSWORD"]), hide_parameters=True)
+                try:
+                    with administrator.begin() as connection:
+                        connection.exec_driver_sql("ALTER ROLE pipeguard_api NOLOGIN")
+                        connection.exec_driver_sql("SELECT pg_terminate_backend(pid, 1000) FROM pg_stat_activity WHERE usename='pipeguard_api'")
+                    try:
+                        require(request("GET", "/health/live") == {"status": "alive"}, "Database access loss must not imply process death")
+                        require(request("GET", "/health/ready", expected=503) == {"error": "database_unavailable"}, "Readiness must fail closed")
+                    finally:
+                        with administrator.begin() as connection:
+                            connection.exec_driver_sql("ALTER ROLE pipeguard_api LOGIN")
+                    require(request("GET", "/health/ready") == {"status": "ready"}, "Readiness must recover after runtime access restoration")
+                    require(request("GET", f"/v1/evidence-bundles/{evidence['id']}") == frozen, "Evidence must survive runtime access outage")
+                finally:
+                    administrator.dispose()
                 print(json.dumps({"passed": True, "attempt_states": [a["state"] for a in attempts],
                     "incident_state": "resolved", "quality_checks": len(checks), "lineage_coverage": graph["coverage"],
-                    "captured_evidence_unchanged": True, "hosted_ai_calls": 0, "recovery_dispatches": 0}))
+                    "captured_evidence_unchanged": True, "body_admission_statuses": [413, 408],
+                    "runtime_database_access_outage": {"live": 200, "ready": 503, "restored_ready": 200},
+                    "hosted_ai_calls": 0, "recovery_dispatches": 0}))
     finally:
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGINT, signal.SIG_IGN)

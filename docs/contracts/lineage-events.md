@@ -14,17 +14,21 @@ The shared HTTP body cap is 64 KiB. Normalized defaults, UTC timestamps and sort
 
 ## Read and operational endpoints
 
-| Route | Contract |
-| --- | --- |
-| `GET /v1/lineage-events/{id}` | Scoped normalized source payload, content hash and event/receipt times |
-| `GET /v1/jobs/{id}/lineage` | Scoped observed union, provenance per link, explicit coverage and limits |
-| `POST /v1/lineage-expectations` | Administrator enrollment: job UUID and bounded positive grace seconds |
-| `GET /v1/jobs/{id}/lineage-expectation` | Scoped versioned expectation inspection |
+| Route                                      | Contract                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| `GET /v1/lineage-events/{id}`              | Scoped normalized source payload, content hash and event/receipt times    |
+| `GET /v1/jobs/{id}/lineage`                | Scoped observed union, provenance per link, explicit coverage and limits  |
+| `POST /v1/lineage-expectations`            | Administrator enrollment: job UUID and bounded positive grace seconds     |
+| `GET /v1/jobs/{id}/lineage-expectation`    | Scoped versioned expectation inspection                                   |
 | `POST /v1/incidents/{id}/evidence-bundles` | Scoped repeatable-read immutable capture; identical content reuses its ID |
-| `GET /v1/evidence-bundles/{id}` | Scoped retained snapshot with hash and capture time |
+| `GET /v1/evidence-bundles/{id}`            | Scoped retained snapshot with hash and capture time                       |
 
 Graph parameters: optional `external_run_id`, positive `attempt_number`, timezone-aware `as_of` and `known_at`, `root_dataset_id`, direction (`upstream`, `downstream`, `both`), depth 1–12 and node budget 1–200. A root must be visible in the job scope. Truncation and missing metadata are explicit. No route automatically fetches a dataset namespace, producer URL or schema URL.
 
 Expectations are immutable and apply to run records created after enrollment. Complete absence and partial inventories do not count as healthy lineage. Existing execution policies and recovery approval boundaries are unchanged.
 
 Machine-readable contract: [Lineage report schema](lineage-report-v1.schema.json) and [OpenAPI](http-api-v1.openapi.json). See [architecture](../architecture/lineage-evidence.md) for source authority and completeness semantics.
+
+## Graph resource admission
+
+Graph reads admit two builders per API worker after job-scope validation; excess work returns `lineage_busy` (503). Reads stream event batches and inspect at most 1,000 events, 8 MiB of canonical event payloads and 10,000 dataset mentions, with one extra row used to detect overflow. Existing output limits still apply. Hitting a scan/payload limit reports partial coverage and `graph_limit`; it does not imply missing source records or projection corruption. Source observations remain retained.

@@ -36,6 +36,93 @@ def graph(client,headers,execution,query=''):
     return client.get('/v1/jobs/'+execution['job_id']+'/lineage'+query,headers=headers)
 
 
+def test_dense_graph_scan_is_bounded_and_reports_incompleteness_without_false_corruption(db):
+    from sqlalchemy import insert, event as sql_event
+    from pipeguard.lineage.service import graph as build_graph
+    from test_persistence import make_job
+    job = make_job(db)
+    datasets = [dict(id=uuid4(), namespace='postgresql://local/sample_warehouse',
+                     name=f'dataset.{number}', kind='table') for number in range(64)]
+    db.execute(insert(Dataset), datasets)
+    runs, events, mentions = [], [], []
+    for number in range(160):
+        external, run_id, event_id, source_id = f'dense-{number}', uuid4(), uuid4(), uuid4()
+        execution = dict(integration_id=str(job.integration_id), job_id=str(job.id), external_run_id=external, attempt_number=1)
+        payload = LineageReport.model_validate(report(execution, key=external, run_uuid=source_id,
+            inputs=tuple(row['name'] for row in datasets[:32]),
+            outputs=tuple(row['name'] for row in datasets[32:]))).model_dump(mode='json')
+        runs.append(dict(id=run_id, integration_id=job.integration_id, job_id=job.id,
+                         external_run_id=external, attempt_number=1, run_uuid=source_id,
+                         step_namespace='local-orders', step_name='staging'))
+        events.append(dict(id=event_id, integration_id=job.integration_id, lineage_run_id=run_id,
+                           event_key=external, event_type='COMPLETE', occurred_at=T,
+                           payload=payload, payload_hash=digest(payload)))
+        mentions.extend(dict(id=uuid4(), event_id=event_id, dataset_id=row['id'],
+                             role='input' if index < 32 else 'output') for index, row in enumerate(datasets))
+    db.execute(insert(LineageRun), runs)
+    db.execute(insert(LineageEvent), events)
+    db.execute(insert(DatasetMention), mentions)
+    db.flush()
+    fetched = []
+
+    def counted(connection, cursor, statement, parameters, context, many):
+        if statement.lstrip().upper().startswith('SELECT') and 'dataset_mentions' in statement:
+            fetched.append(cursor.rowcount)
+
+    connection = db.connection()
+    sql_event.listen(connection, 'after_cursor_execute', counted)
+    try:
+        result = build_graph(db, job.id)
+    finally:
+        sql_event.remove(connection, 'after_cursor_execute', counted)
+    assert fetched == [10001]
+    assert result['coverage'] == 'partial' and result['truncated']
+    assert 'graph_limit' in result['missing_metadata']
+    assert 'projection_payload_mismatch' not in result['missing_metadata']
+    assert len(result['nodes']) <= 200 and len(result['edges']) <= 1000
+    assert db.scalar(select(func.count()).select_from(DatasetMention)) == 10240
+
+
+def test_graph_payload_budget_reports_partial_without_claiming_no_observations(api, monkeypatch):
+    from pipeguard.lineage import service
+    client, _, _, _ = api
+    headers, execution, _ = producer(api)
+    post(client, headers, report(execution))
+    monkeypatch.setattr(service, 'GRAPH_PAYLOAD_BYTES', 1)
+    result = graph(client, headers, execution).json()
+    assert result['coverage'] == 'partial' and result['truncated'] and result['event_count'] == 0
+    assert result['missing_metadata'] == ['graph_limit'] and not result['nodes']
+
+
+def test_graph_concurrency_is_bounded_after_scope_checks_and_releases_slots(api, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier, Event
+    from pipeguard.lineage import api as lineage_api
+    client, _, _, _ = api
+    headers, execution, _ = producer(api)
+    started, finish = Barrier(3), Event()
+
+    def held(*args, **kwargs):
+        started.wait(timeout=5)
+        assert finish.wait(timeout=5)
+        return {'bounded_fixture': True}
+
+    monkeypatch.setattr(lineage_api, 'graph', held)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(graph, client, headers, execution) for _ in range(2)]
+        try:
+            started.wait(timeout=5)
+            denied = graph(client, headers, execution)
+            assert denied.status_code == 503 and denied.json() == {'error': 'lineage_busy'}
+            unknown = client.get(f'/v1/jobs/{uuid4()}/lineage', headers=headers)
+            assert unknown.status_code == 404
+        finally:
+            finish.set()
+        assert all(future.result().status_code == 200 for future in futures)
+    monkeypatch.setattr(lineage_api, 'graph', lambda *args, **kwargs: {'released': True})
+    assert graph(client, headers, execution).json() == {'released': True}
+
+
 def test_replay_preserves_event_hash_mentions_and_binding(api):
     client,_,_,connection=api;headers,execution,_=producer(api)
     body=report(execution)

@@ -191,7 +191,7 @@ def main():
             run("http-workload-acceptance", uv("python", "scripts/check_delivery_scenario.py"), timeout=240)
         if args.suite in ("web", "all"):
             web = source / "apps/pipeguard/web"
-            run("web-runtime", ["node", "--eval", "if(process.versions.node.split('.')[0]!=='22')process.exit(1)"])
+            run("web-runtime", ["pnpm", "exec", "node", "--eval", "if(process.versions.node.split('.')[0]!=='22')process.exit(1)"], cwd=web)
             run("web-dependencies", ["pnpm", "install", "--frozen-lockfile"], cwd=web)
             run("web-types", ["pnpm", "exec", "tsc", "--noEmit", "--noUnusedLocals", "--noUnusedParameters"], cwd=web)
             run("web-suite", ["pnpm", "test"], cwd=web)

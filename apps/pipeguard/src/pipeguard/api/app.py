@@ -1,4 +1,5 @@
 """Authenticated local API. Synchronous routes run database work in worker threads."""
+import asyncio
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from hashlib import sha256
@@ -30,26 +31,65 @@ from pipeguard.ingestion.service import IngestionRejected, process, receive
 
 
 class RequestBoundary:
-    """Bound actual body bytes, including chunked requests, before JSON parsing."""
+    """Bound actual bytes, absolute read time and concurrent body reads before parsing."""
+    max_body_bytes = 65536
+    body_timeout_seconds = 15
+    max_body_readers = 32
+
     def __init__(self, app):
         self.app = app
+        self._body_readers = 0
 
     async def __call__(self, scope, receive_message, send):
         if scope["type"] != "http":
             return await self.app(scope, receive_message, send)
-        headers = dict(scope.get("headers", []))
+        async def safe_send(message):
+            if message["type"] == "http.response.start":
+                message["headers"] = [(key, value) for key, value in message.get("headers", [])
+                                      if key not in {b"cache-control", b"x-content-type-options"}] + [
+                    (b"cache-control", b"no-store"), (b"x-content-type-options", b"nosniff")]
+            await send(message)
+
+        async def reject(status, code):
+            await JSONResponse({"error": code}, status_code=status)(scope, receive_message, safe_send)
+
+        headers = scope.get("headers", [])
+        lengths = [value for key, value in headers if key == b"content-length"]
+        if len(lengths) > 1 or (lengths and (len(lengths[0]) > 20 or not lengths[0].isdigit())):
+            return await reject(400, "invalid_content_length")
+        headers = dict(headers)
         if b"origin" in headers:
-            return await JSONResponse({"error": "browser_origin_not_enabled"}, status_code=403)(scope, receive_message, send)
+            return await reject(403, "browser_origin_not_enabled")
+        if lengths and int(lengths[0]) > self.max_body_bytes:
+            return await reject(413, "request_too_large")
+        if self._body_readers >= self.max_body_readers:
+            return await reject(503, "request_body_busy")
         body = bytearray()
-        while True:
-            message = await receive_message()
-            if message["type"] == "http.disconnect":
-                return
-            body.extend(message.get("body", b""))
-            if len(body) > 65536:
-                return await JSONResponse({"error": "request_too_large"}, status_code=413)(scope, receive_message, send)
-            if not message.get("more_body", False):
-                break
+        failure = None
+        self._body_readers += 1
+        try:
+            loop = asyncio.get_running_loop()
+            deadline = loop.time() + self.body_timeout_seconds
+            async with asyncio.timeout_at(deadline):
+                while True:
+                    if loop.time() >= deadline:
+                        raise TimeoutError
+                    message = await receive_message()
+                    if message["type"] == "http.disconnect":
+                        return
+                    chunk = message.get("body", b"")
+                    if len(body) + len(chunk) > self.max_body_bytes:
+                        failure = (413, "request_too_large")
+                        break
+                    body.extend(chunk)
+                    if not message.get("more_body", False):
+                        break
+        except TimeoutError:
+            failure = (408, "request_body_timeout")
+        finally:
+            self._body_readers -= 1
+        if failure:
+            return await reject(*failure)
         consumed = False
         async def bounded_receive():
             nonlocal consumed
@@ -57,11 +97,6 @@ class RequestBoundary:
                 consumed = True
                 return {"type": "http.request", "body": bytes(body), "more_body": False}
             return await receive_message()
-        async def safe_send(message):
-            if message["type"] == "http.response.start":
-                message["headers"] = list(message.get("headers", [])) + [
-                    (b"cache-control", b"no-store"), (b"x-content-type-options", b"nosniff")]
-            await send(message)
         await self.app(scope, bounded_receive, safe_send)
 
 
@@ -91,7 +126,7 @@ def create_app(settings: Settings | None = None, *, engine=None):
                 engine.dispose()
 
     app = FastAPI(title="PipeGuard API", version="0.1.0", lifespan=lifespan,
-                  responses={code: {"model": ErrorResponse} for code in (401, 403, 404, 409, 410, 413, 422, 503)},
+                  responses={code: {"model": ErrorResponse} for code in (400, 401, 403, 404, 408, 409, 410, 413, 422, 503)},
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(RequestBoundary)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])

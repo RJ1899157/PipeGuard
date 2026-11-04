@@ -1,5 +1,6 @@
 """Scoped lineage ingestion/history/traversal and immutable incident evidence capture."""
 from typing import Annotated
+from threading import BoundedSemaphore
 from uuid import UUID
 from fastapi import Depends, HTTPException, Query
 from pydantic import AwareDatetime
@@ -14,6 +15,7 @@ from pipeguard.lineage.evidence import capture
 
 def install_routes(app, engine, authenticate):
     Caller = Annotated[object, Depends(authenticate)]
+    graph_slots = BoundedSemaphore(2)
     def job(session, job_id, principal):
         row = session.get(Job, job_id)
         if row is None or (not principal.admin and row.integration_id != principal.integration_id):
@@ -82,8 +84,13 @@ def install_routes(app, engine, authenticate):
             raise HTTPException(422,'invalid_request')
         with Session(engine) as session:
             job(session,job_id,principal)
-            return graph(session,job_id,external_run_id=external_run_id,attempt_number=attempt_number,
-                         as_of=as_of,known_at=known_at,root=root_dataset_id,direction=direction,depth=depth,max_nodes=max_nodes)
+            if not graph_slots.acquire(blocking=False):
+                raise HTTPException(503, 'lineage_busy')
+            try:
+                return graph(session,job_id,external_run_id=external_run_id,attempt_number=attempt_number,
+                             as_of=as_of,known_at=known_at,root=root_dataset_id,direction=direction,depth=depth,max_nodes=max_nodes)
+            finally:
+                graph_slots.release()
 
     @app.post('/v1/incidents/{incident_id}/evidence-bundles',status_code=201)
     def snapshot(incident_id:UUID,principal:Caller):
