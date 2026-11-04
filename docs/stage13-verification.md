@@ -1,7 +1,7 @@
 # Stage 13 security, performance and debugging
 
-Date: **2026-11-04**. Status: **runtime patch verification in progress**. Prior tested revision:
-`a82f8e8b6b5929cdf9df4f1759533b6b83119e62`. [Structured evidence](audit/stage13-verification.json).
+Date: **2026-11-04**. Status: **bounded local gate verified**. Tested revision:
+`d258ef37fd5466142a0b9101f4c9ba2c63e5137e`. [Structured evidence](audit/stage13-verification.json).
 This stage does not replace Stage 14's final independent full-project audit.
 
 ## Implemented hardening
@@ -28,11 +28,13 @@ were recreated with the same locked package versions under Python 3.12.16.
 The dashboard uses a verified project-local Node.js archive; system runtimes were
 not replaced. Original environments are preserved privately for rollback.
 uv 0.13.7 installs the pinned Python runtime; CI reads both runtime version files.
-Final acceptance on these patched runtimes is pending.
+All 562 suite cases and the fresh-export acceptance checks passed on these
+patched runtimes. The installed package versions did not change.
 
 ## Measured graph evidence
 
 A disposable schema contains 1,000 valid lineage events and 64,000 dataset mentions.
+The controlled comparison below used Python 3.12.15 for both versions.
 Three warm runs before the change have median 1,701.73 ms. The current bounded
 implementation has median 494.39 ms. A separate tracemalloc run records peak Python
 allocations of 220,805,401 bytes before and 59,583,616 after. The mention query
@@ -42,7 +44,8 @@ Both versions return at most 200 nodes/1,000 links and report partial coverage.
 The new result can contain fewer assertions because scanning stops earlier; this
 is a resource-bound tradeoff, not a claim that a complete graph became equivalent
 and faster. Tracemalloc is not process RSS, and local warm samples are not a
-throughput or distributed-deployment guarantee. No retained evidence was deleted.
+throughput or distributed-deployment guarantee. No retained evidence was deleted. A follow-up on Python 3.12.16 recorded a
+419.55 ms median and 59,583,040 traced peak bytes; it is a separate runtime sample.
 
 ## Current dependency findings
 
@@ -61,7 +64,7 @@ image is unchanged. These are time-specific results.
   The existing Starlette/HTTPX test-client deprecation warning remains unsuppressed.
 - Fresh committed-export checks passed migrations, stored-contract equality,
   dependency consistency, strict TypeScript/unused rules, formatting, production
-  build and HTTP startup. Node 22 was checked through pnpm.
+  build and HTTP startup. Exact Node 22.23.4 was checked through pnpm.
 - Actual isolated HTTP requests returned 413 for an oversized declared length
   without a body, and 408 for a stalled body. Admission responses were no-store.
 - The orders workload failed once and retried successfully. Both attempts,
@@ -72,12 +75,12 @@ image is unchanged. These are time-specific results.
   and evidence was unchanged. This is an access outage, not physical host loss.
 - New backups of all three databases passed disposable restore verification.
   Inspection found no remaining restore-check databases. Backups remain on this disk.
-- The retained API/dashboard were refreshed; live/ready/dashboard returned 200,
+- The retained API/dashboard, monitor, Airflow and watchdog use patched runtimes; live/ready/dashboard returned 200,
   live OpenAPI matched the stored contract and all four listeners stayed on loopback.
 - All **7,688** captured rows retained IDs and full native-row content hashes.
   Source inventory is **8 runs / 14 attempts**, recovery ledger **1/1/1/2** and
   investigation ledger **16/16**, unchanged. Recovery is off and the DAG paused.
-- Twelve retained reads per route had local medians 2.91 ms (jobs), 3.16 ms (runs),
+- Before the runtime switch, twelve retained reads per route had local medians 2.91 ms (jobs), 3.16 ms (runs),
   3.11 ms (incidents), 5.12 ms (coverage). These are post-change samples, not a
   controlled causal comparison or interactive browser-performance claim.
 

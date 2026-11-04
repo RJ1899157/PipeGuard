@@ -12,7 +12,12 @@ Verified: **2026-11-04**, after [Stage 13 local acceptance](stage13-verification
 
 - Stage 12 local delivery acceptance passes on a fresh committed export: 548 suite cases, real HTTP/workload retry, quality/lineage, unchanged captured evidence, production-dashboard HTTP startup and controlled SIGTERM cleanup. The manual workflow is registered on GitHub; a manual hosted run is queued with zero jobs at the latest checkpoint and Linux execution remains unverified.
 
-- Stage 13 passes **562 cases** plus real HTTP admission, runtime database-access outage/restoration, production startup and three fresh restore drills. API/dashboard were refreshed; **7,688** captured rows retain IDs/content hashes, source **8/14** and ledgers are unchanged. The prior GitHub checkpoint and implementation push succeeded; hosted CI still has zero jobs.
+- Stage 13 uses patched **Python 3.12.16 / Node.js 22.23.4** and passes **562 cases** plus real HTTP admission, runtime database-access outage/restoration, production startup and three fresh restore drills. API/dashboard were refreshed; **7,688** captured rows retain IDs/content hashes, source **8/14** and ledgers are unchanged. The prior GitHub checkpoint and implementation push succeeded; hosted CI still has zero jobs.
+
+The prepared checkout keeps its uv/Node launchers in ignored `data/local/toolchain/bin`.
+To select them in a new terminal from the repository root, use
+`export PATH="$PWD/data/local/toolchain/bin:$PATH"`. System runtimes were not replaced;
+the original three environments are preserved in private runtime rollback storage.
 
 Runtime availability must be checked again after sleep, reboot or a closed session; these are verified checkpoint results, not a promise that services start automatically.
 

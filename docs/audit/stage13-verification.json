@@ -1,7 +1,7 @@
 {
   "date": "2026-11-04",
-  "tested_revision": "a82f8e8b6b5929cdf9df4f1759533b6b83119e62",
-  "local_gate_passed": false,
+  "tested_revision": "d258ef37fd5466142a0b9101f4c9ba2c63e5137e",
+  "local_gate_passed": true,
   "suite_cases": {
     "backend": 437,
     "frontend": 48,
@@ -12,127 +12,127 @@
     {
       "name": "application-environment",
       "passed": true,
-      "seconds": 0.152
+      "seconds": 0.128
     },
     {
       "name": "new-private-configuration",
       "passed": true,
-      "seconds": 0.144
+      "seconds": 0.128
     },
     {
       "name": "temporary-postgres",
       "passed": true,
-      "seconds": 3.752
+      "seconds": 5.963
     },
     {
       "name": "migrations",
       "passed": true,
-      "seconds": 3.808
+      "seconds": 3.283
     },
     {
       "name": "runtime-role",
       "passed": true,
-      "seconds": 0.379
+      "seconds": 0.341
     },
     {
       "name": "sample-warehouse",
       "passed": true,
-      "seconds": 0.647
+      "seconds": 0.386
     },
     {
       "name": "backend-suite",
       "passed": true,
-      "seconds": 118.37
+      "seconds": 118.992
     },
     {
       "name": "migration-consistency",
       "passed": true,
-      "seconds": 0.873
+      "seconds": 0.729
     },
     {
       "name": "workload-environment",
       "passed": true,
-      "seconds": 0.27
+      "seconds": 0.23
     },
     {
       "name": "workload-suite",
       "passed": true,
-      "seconds": 18.637
+      "seconds": 18.94
     },
     {
       "name": "airflow-environment",
       "passed": true,
-      "seconds": 0.092
+      "seconds": 0.041
     },
     {
       "name": "airflow-pinned-install",
       "passed": true,
-      "seconds": 0.881
+      "seconds": 0.349
     },
     {
       "name": "airflow-suite",
       "passed": true,
-      "seconds": 5.593
+      "seconds": 4.875
     },
     {
       "name": "application-dependency-consistency",
       "passed": true,
-      "seconds": 0.082
+      "seconds": 0.038
     },
     {
       "name": "workload-dependency-consistency",
       "passed": true,
-      "seconds": 0.138
+      "seconds": 0.078
     },
     {
       "name": "airflow-dependency-consistency",
       "passed": true,
-      "seconds": 0.091
+      "seconds": 0.139
     },
     {
       "name": "http-workload-acceptance",
       "passed": true,
-      "seconds": 21.782
+      "seconds": 20.98
     },
     {
       "name": "web-runtime",
       "passed": true,
-      "seconds": 3.566
+      "seconds": 3.557
     },
     {
       "name": "web-dependencies",
       "passed": true,
-      "seconds": 0.316
+      "seconds": 0.339
     },
     {
       "name": "web-types",
       "passed": true,
-      "seconds": 3.726
+      "seconds": 3.833
     },
     {
       "name": "web-suite",
       "passed": true,
-      "seconds": 0.863
+      "seconds": 1.093
     },
     {
       "name": "web-format",
       "passed": true,
-      "seconds": 1.498
+      "seconds": 1.942
     },
     {
       "name": "web-build",
       "passed": true,
-      "seconds": 8.15
+      "seconds": 13.424
     },
     {
       "name": "web-http-startup",
       "passed": true,
-      "seconds": 0.383
+      "seconds": 0.469
     },
     {
       "name": "temporary-postgres-stop",
       "passed": true,
-      "seconds": 1.425
+      "seconds": 2.053
     }
   ],
   "delivery_cleanup_passed": true,
@@ -277,7 +277,67 @@
       }
     },
     "budget": "1,000 events; 8 MiB canonical payload; 10,000 mentions; 200 nodes/1,000 output links; two builders per worker",
-    "limitation": "Partial graphs may omit more assertions; traced allocation is not RSS."
+    "limitation": "Partial graphs may omit more assertions; traced allocation is not RSS.",
+    "controlled_comparison_python": "3.12.15",
+    "patched_runtime_sample": {
+      "seed_events": 1000,
+      "seed_mentions": 64000,
+      "samples": [
+        {
+          "elapsed_ms": 419.55,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 462.26,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 398.49,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        }
+      ],
+      "memory_sample": {
+        "elapsed_ms": 2007.95,
+        "mentions_fetched": [
+          10001
+        ],
+        "nodes": 200,
+        "edges": 1000,
+        "coverage": "partial",
+        "missing_metadata": [
+          "graph_limit"
+        ],
+        "peak_traced_bytes": 59583040
+      }
+    },
+    "patched_runtime_python": "3.12.16"
   },
   "python_osv": {
     "application": {
@@ -359,32 +419,12 @@
     "dag_paused": true,
     "source_runs": 8,
     "source_attempts": 14,
-    "api_performance": {
-      "jobs": {
-        "requests": 12,
-        "median_ms": 2.91,
-        "max_ms": 20.03
-      },
-      "runs": {
-        "requests": 12,
-        "median_ms": 3.16,
-        "max_ms": 7.19
-      },
-      "incidents": {
-        "requests": 12,
-        "median_ms": 3.11,
-        "max_ms": 7.34
-      },
-      "coverage": {
-        "requests": 12,
-        "median_ms": 5.12,
-        "max_ms": 8.09
-      }
-    }
+    "python": "3.12.16",
+    "node": "v22.23.4"
   },
   "lockfile_sha256": {
-    "uv.lock": "c4fbad925fddd1cf598ff10c3930876a80b18d6b17383e63509e01f7ffb37c0f",
-    "sample-pipelines/orders/uv.lock": "9576ed61183df695755811369a814344927902f1d22f377679e423118e139267",
+    "uv.lock": "7c6006123f3cced19789d408f1ae61e266717d9fadabf697c12f0bb99d3f016a",
+    "sample-pipelines/orders/uv.lock": "3d26dc40614affca036adbea8d605219a951537e180dd5107001300ddd426205",
     "infra/airflow/requirements.lock": "0a045e0aaa7946b86ceb9d17b3583480779e2ef155a52e761569e1675ef96875",
     "apps/pipeguard/web/pnpm-lock.yaml": "0a0b0799cca927c6f01ed41f29100c240a5c03e2ecfc52657f69f6828e2245c2"
   },
@@ -396,15 +436,40 @@
     "automatic_triggers_enabled": false
   },
   "private_config_files_checked": 7,
-  "checked_at": "2026-11-04T10:33:12.874051+00:00",
+  "checked_at": "2026-11-04T10:53:00.331362+00:00",
   "final_checks": {
-    "secret_values_in_changed_source_or_served_js": 0,
-    "scanned_files": 19,
     "broken_local_markdown_links": 0,
     "temporary_delivery_containers_or_volumes": 0,
     "implementation_unchanged_since_tested_revision": true,
     "project_listener_bindings": "127.0.0.1:3000,8000,8080,55432",
-    "restore_checks_remaining": 0
+    "restore_checks_remaining": 0,
+    "secret_values_in_tracked_source_or_built_js": 0,
+    "tracked_files_scanned": 278,
+    "built_js_scanned": 13,
+    "private_configuration_files_checked": 6,
+    "private_watchdog_launchagent_checked": true
   },
-  "runtime_patch_verification": "in_progress"
+  "runtime_patch_verification": "passed",
+  "runtime": {
+    "python": "3.12.16",
+    "node": "22.23.4",
+    "uv": "0.13.7",
+    "locked_package_versions_changed": false,
+    "system_runtimes_replaced": false,
+    "previous_environments_preserved": true,
+    "downloads": {
+      "uv": {
+        "version": "0.13.7",
+        "filename": "uv-0.13.7-py3-none-macosx_11_0_arm64.whl",
+        "sha256": "f91a229093163eefca89ea1b220a221d64c3beade05d03519a6584d1797a5a5f",
+        "source": "https://files.pythonhosted.org/packages/40/a5/8756c38ace102fa13fd4e653e8bc40e1f65924f1c0a0d23350339dac97e5/uv-0.13.7-py3-none-macosx_11_0_arm64.whl"
+      },
+      "node": {
+        "version": "22.23.4",
+        "filename": "node-v22.23.4-darwin-arm64.tar.gz",
+        "sha256": "c9e1dbc748b33ed2d14f42445191ecaf14c56259c7a9a26d0042c49ec2b66428",
+        "source": "https://nodejs.org/dist/v22.23.4/node-v22.23.4-darwin-arm64.tar.gz"
+      }
+    }
+  }
 }
