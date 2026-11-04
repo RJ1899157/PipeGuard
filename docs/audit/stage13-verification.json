@@ -429,11 +429,37 @@
     "apps/pipeguard/web/pnpm-lock.yaml": "0a0b0799cca927c6f01ed41f29100c240a5c03e2ecfc52657f69f6828e2245c2"
   },
   "hosted_ci": {
-    "run_id": 41809107524,
-    "status_at_check": "queued",
-    "job_count": 0,
-    "linux_verified": false,
-    "automatic_triggers_enabled": false
+    "run_id": 41818080465,
+    "url": "https://github.com/RJ1899157/PipeGuard/actions/runs/41818080465",
+    "tested_revision": "0dc22d91dd26c0d7978cb8f610a4f48b0e4ba709",
+    "status_at_check": "completed",
+    "conclusion": "success",
+    "job_count": 2,
+    "jobs": [
+      {
+        "name": "Application, workload and Airflow",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Dashboard types, tests and production build",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "linux_verified": true,
+    "automatic_triggers_enabled": false,
+    "actor": "RJ1899157",
+    "triggering_actor": "RJ1899157",
+    "old_run_cleanup": {
+      "run_id": 41809107524,
+      "status": "queued",
+      "delete_http_status": 403,
+      "cancel_http_status": 409,
+      "force_cancel_http_status": 409,
+      "deleted": false
+    },
+    "checked_at": "2026-11-04T11:06:02.728474+00:00"
   },
   "private_config_files_checked": 7,
   "checked_at": "2026-11-04T10:53:00.331362+00:00",

@@ -52,7 +52,7 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage                        | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented  |
 | Web application           | Next.js 16, React 19, TypeScript 5, Phosphor icons, CSS tokens | Local dashboard with explicit advisory investigation; pnpm lockfile committed                 |
 | Graphs and charts         | React Flow; Apache ECharts                                     | Attempt-scoped graph, execution timeline, quality charts and textual alternatives implemented |
-| Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | Isolated delivery checks and manual CI configured; hosted CI execution pending                |
+| Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | Isolated delivery checks and both manual hosted Linux CI jobs passed                |
 | Later integrations        | Marquez, Prometheus, optional GCP                              | Deferred                                                                                      |
 
 Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.
@@ -100,4 +100,4 @@ All repository changes are owned by **RJ1899157**.
 
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
 
-Latest verification: [Stage 13 local acceptance](docs/stage13-verification.md) records 562 passing suite cases, bounded request/graph resources, measured graph improvements, actual HTTP deadline and database-access fault checks, three restore drills and preserved history. [Delivery operations](docs/delivery-operations.md) provides isolated checks and manual CI. Hosted CI remains queued and unverified. The [roadmap](docs/roadmap.md) retains the hosted-CI follow-up and Stage 14 final full-project audit; [deployment risks](docs/security-threat-model.md#deployment-restrictions-and-unresolved-risks) remain explicit.
+Latest verification: [Stage 13 local acceptance](docs/stage13-verification.md) records 562 passing suite cases, bounded request/graph resources, measured graph improvements, actual HTTP deadline and database-access fault checks, three restore drills and preserved history. [Delivery operations](docs/delivery-operations.md) provides isolated checks and manual CI. Hosted Linux CI passed both jobs in [run #3](https://github.com/RJ1899157/PipeGuard/actions/runs/41818080465). The [roadmap](docs/roadmap.md) retains Stage 14's final full-project audit; [deployment risks](docs/security-threat-model.md#deployment-restrictions-and-unresolved-risks) remain explicit.

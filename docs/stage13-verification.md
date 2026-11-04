@@ -89,10 +89,12 @@ unique schemas. The catchable-termination drill remains recorded in [Stage 12](d
 
 ## Remaining gates and risks
 
-Stage 14's independent multi-agent full-project audit remains required. Hosted run
-41809107524 is still queued with zero jobs; Linux execution is unverified. GitHub
-accepted the previously pending checkpoint and implementation push under RJ1899157.
-No replacement workflow or automatic trigger was started.
+Stage 14's independent multi-agent full-project audit remains required. The owner
+started [run #3](https://github.com/RJ1899157/PipeGuard/actions/runs/41818080465) against `0dc22d91dd26c0d7978cb8f610a4f48b0e4ba709`;
+both hosted Linux jobs passed. Actor and triggering actor are RJ1899157. Automatic
+triggers remain disabled. Old run 41809107524 remains stuck: GitHub rejected
+deletion with 403 and both cancellation endpoints with 409. Its administrative
+cleanup remains unresolved; it is not the acceptance run.
 
 Container advisories, the bulk-feed discrepancy, same-host monitoring, same-disk
 backups, broader live AI evaluation and deployment/atomic-publication limits stay

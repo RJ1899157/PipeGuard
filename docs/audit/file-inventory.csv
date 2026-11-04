@@ -4,7 +4,7 @@ path,review_area,method,bytes,text_lines,sha256
 .gitignore,2026-11-04 coordinating review,documentation/structure/provenance check,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .node-version,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,8,1,0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314
 .python-version,Stage 13 security and resource review,source/configuration review; 562-case patched-runtime isolated acceptance,8,1,a05e0074505ce29f25abf3aebe4f7218d28e98411822f199e3272740be4e363c
-README.md,Stage 13 security and resource review,documentation/evidence consistency check,9971,103,1cc299c65757886db25932ab00390e66113ea2fd56c5859c70b68250f83cf5c7
+README.md,Stage 13 security and resource review,documentation/evidence consistency check,10005,103,0c362be23df875e2e87269d3ddc4b99d5b90b320064b97ada6cd389888d5528a
 alembic.ini,2026-11-04 coordinating review,documentation/structure/provenance check,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,1158,14,5c617779eb4a37ea9f36470944956caf4d15943ee2e7e2d2245330c3732a94c6
 apps/pipeguard/migrations/README,2026-11-04 persistence review,migration/constraint review; isolated schema regressions,38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -165,7 +165,7 @@ docs/audit/recovery-live-success.png,2026-11-04 coordinating review,asset/hash i
 docs/audit/recovery-mobile.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,53744,511,7503da1bae274b266cd4eb63395930dd47d7934757aeadf0752137c84fe029ac
 docs/audit/recovery-phase1-attempts.png,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,113096,629,61f3559f0ee799f7d1e5fb8a27890eb6b1c0623000e7736df6c233c399d78cfa
 docs/audit/stage12-delivery.json,Stage 12 delivery review,documentation/evidence review,4701,206,b313b4c5b0802fa44033e8aa3164c3a59209bddbbefbde8ee682ae98d32354ce
-docs/audit/stage13-verification.json,Stage 13 security and resource review,documentation/evidence consistency check,11892,475,6578a8855343583c7f128bb267f35ddb7e40d47a3429879a75b109f9fea0302e
+docs/audit/stage13-verification.json,Stage 13 security and resource review,documentation/evidence consistency check,12696,501,8cd0cab6c42600042d8d3e3e441cc464819b0a4c39cbf9a858c30ec588439eaa
 docs/audit/tablet-final.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,42467,237,14f12fd976cb44429549bb8f25113cf80e134555d73b6608664786bbc2a1b381
 docs/container-security.md,Stage 13 security and resource review,documentation/evidence consistency check,4295,29,3f247a167793c7663a3e06e1263e4fed9ad913fb557d36ad288057c86e9c0307
 docs/contracts/execution-event-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
@@ -178,7 +178,7 @@ docs/contracts/quality-report-v1.schema.json,2026-11-04 coordinating review,runt
 docs/contracts/quality-reports.md,2026-11-04 coordinating review,documentation/structure/provenance check,3864,28,4b04f37e6005974d09054676c5dfee65450bf84bf34355e8bcefeb6f13f7d62f
 docs/dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4606,56,c3f37bfa540019b0d7590ff431c84c6fd6e41cff75779914ecda55b31e3c9886
 docs/delivery-operations.md,Stage 13 security and resource review,documentation/evidence consistency check,7844,129,367054f60361ab3108724c0fa86142690a9f12af5c3645aed6746390a982441b
-docs/delivery-verification.md,Stage 12 delivery review,documentation/evidence review,7165,98,bfa479fb64850931a06ebda0687713bd9907c73c175654055f1b45647c793db5
+docs/delivery-verification.md,Stage 13 security and resource review,documentation/evidence consistency check,8057,113,9b1b0acdbd8ee79cc8c64a8e330009294034affd82b62bd46281017d78a7ba33
 docs/design/dashboard-attempts.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,24914,186,3903d0f2aa427e7d78b36ce9e3244cd9a286809de1185569b0a78b4f672c981d
 docs/design/dashboard-desktop.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,107273,691,1c312f4e0444695ad15bf61af11932a09fe4f719ced434f2e106d522f3a91a91
 docs/design/dashboard-mobile.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,124350,710,91c970de22e2cf7b508ba2b75f7bc57f5ff22d5d13498dfc7a1818b3b61c7c3f
@@ -194,7 +194,7 @@ docs/investigation-verification.md,2026-11-04 coordinating review,documentation/
 docs/lineage-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,2026-11-04 coordinating review,documentation/structure/provenance check,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7080,45,064844fa8eb42b44a9c9794ca1b7831abdb0fe60dbb9239cecb2d452c7e85f67
+docs/next-session.md,Stage 13 security and resource review,documentation/evidence consistency check,7003,45,15a6c449a8a8251ee6d515927fe1c263960fac7a96212867646ccbd011d1515b
 docs/post-recovery-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16961,87,8c174984c9f8874f517dc7a8dfc0acc9d5f2736cd213fdd2175f1fb057e583f6
 docs/recovery-airflow-authorization.md,2026-11-04 coordinating review,documentation/structure/provenance check,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5527,51,535994c88accb9301d3c057ccc8a316bce87c64a14889242aacdf17bf759b486
@@ -206,9 +206,9 @@ docs/recovery-live-verification.md,2026-11-04 coordinating review,documentation/
 docs/recovery-operations.md,2026-11-04 coordinating review,documentation/structure/provenance check,8937,65,2dbe3c71bf83f8af1a9410afa980e8b77ca2914308113835dbde87b287ed42de
 docs/recovery-phase1-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,5487,46,817d1746081d508fce5af5d5cfecc2d73d4393bd0cbeb913253e4366fc38c348
 docs/recovery-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,8137,66,c2e0bc28903902242e5d37584c7b4c8028648491a884c081b4af500519f5304d
-docs/roadmap.md,Stage 13 security and resource review,documentation/evidence consistency check,15631,49,b0ea6b03c41b1c8ca33d6cfe608d77b06617c45aca10a447460727080f9b0bbf
+docs/roadmap.md,Stage 13 security and resource review,documentation/evidence consistency check,15699,49,d0e3bb8f88061f299cb3e08ab261b89cb067fcabcf0cc0ce8360f597c0b107ad
 docs/security-threat-model.md,Stage 13 security and resource review,documentation/evidence consistency check,9675,72,a8fec6dd56881b69254745f850e1dd0c66768834780fec95dca5d111abe9e5dc
-docs/stage13-verification.md,Stage 13 security and resource review,documentation/evidence consistency check,6508,101,4eccc9cb23f65436f45a21187bff5444adbe985979a6b99bbb0f79ef364587d0
+docs/stage13-verification.md,Stage 13 security and resource review,documentation/evidence consistency check,6714,103,15ca2e423cea2aa454753275a139a463bfd7ec93265f3df1a8bde95eb7e67787
 docs/system-audit.md,2026-11-04 coordinating review,documentation/structure/provenance check,16092,92,6d76332ae46f1c19d24c99eb6fffe2e2095bd87bc84e32982f836c185b1ba2a7
 infra/airflow/README.md,Stage 13 security and resource review,documentation/evidence consistency check,13535,163,f744c5afff735512bf21a7bfec06e0425ea956cd50c5311dce22f90f46f81e54
 infra/airflow/auth/pipeguard_airflow_auth.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c

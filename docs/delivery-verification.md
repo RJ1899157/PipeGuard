@@ -82,17 +82,32 @@ The dispatch returned HTTP 502, but independent reads confirmed run creation.
 At the follow-up snapshot it remained `queued` with zero jobs; normal and force
 cancellation both returned HTTP 409 claiming it had not been queued yet. This is
 an inconsistent GitHub scheduling state, not a recorded application test failure.
-Hosted Linux execution remains unverified. No duplicate dispatch, billing change
-or automatic trigger was introduced; inspect the run page before the next action.
+This historical queue snapshot is superseded by the hosted acceptance below.
+
+### Hosted Linux acceptance follow-up
+
+On 2026-11-04, the owner manually started [run #3](https://github.com/RJ1899157/PipeGuard/actions/runs/41818080465) against
+`0dc22d91dd26c0d7978cb8f610a4f48b0e4ba709`. Both **Application, workload and Airflow**
+and **Dashboard types, tests and production build** completed successfully. The
+Python job reached temporary PostgreSQL shutdown; both isolated runners reported
+completion. Actor and triggering actor were RJ1899157. This verifies the Linux
+delivery path as well as the separately recorded local acceptance. The private
+per-suite logs/reports were not uploaded, as designed. No retained local source
+run, hosted AI generation, recovery dispatch or billing change was introduced.
+
+The owner requested deletion of old run #1. GitHub rejected DELETE with 403 and
+normal/force cancellation with 409 claiming the run had not been queued. The old
+record remains unresolved and is not used as proof of CI acceptance. Automatic
+triggers remain disabled.
 
 One initial preparation run passed the Python suites but failed the newly added
 HTTP scenario because it assumed a configurable producer port. The acceptance
 transport was corrected and the complete fresh-export check then passed at the
 revision above. The failed preparation run remains recorded in private local logs.
 
-Stage 12's local delivery slice is verified. Hosted Linux execution remains its
-explicit follow-up. Stage 13 security/performance/debugging and Stage 14 final
-full-project audit are still planned. Optional application metrics were not added
+Stage 12's local and hosted Linux delivery paths are verified. Stage 13's
+[local gate](stage13-verification.md) also passes. Stage 14's final full-project
+audit remains required. Optional application metrics were not added
 without a concrete operating need. Existing container-advisory, off-host monitoring,
 off-device backup, broader AI evaluation and deployment limits remain open in the
 [next-session checkpoint](next-session.md#explicit-remaining-limits).
