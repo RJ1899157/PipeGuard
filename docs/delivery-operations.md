@@ -73,8 +73,8 @@ database connection into the isolated check.
 ## GitHub Actions
 
 [Delivery checks](../.github/workflows/delivery.yml) provides separate Linux Python
-and dashboard jobs using the same runner. It is **manual only** (`workflow_dispatch`)
-until the owner confirms the private repository's available Actions allowance.
+and dashboard jobs using the same runner. It is **manual only** (`workflow_dispatch`). Before starting a run, confirm the
+private repository's available included compute and spending controls.
 No hosted run or free billing allowance is implied by the presence of the workflow.
 After confirming the allowance, the owner can choose **Actions → Delivery checks →
 Run workflow**, selecting the intended branch.

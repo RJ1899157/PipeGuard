@@ -75,10 +75,15 @@ the preceding audit's complete content-hash comparison.
 
 GitHub registered the **Delivery checks** workflow as active. Its YAML parses,
 uses full action commit pins and read-only contents permission, and has only a
-manual `workflow_dispatch` trigger. No hosted workflow has run. The current CLI
-cannot read the account's billing usage; available free Actions minutes have not
-been confirmed. Do not infer Linux compatibility or free remote execution from
-local success. Automatic triggers remain disabled pending the owner's choice.
+manual `workflow_dispatch` trigger. After the owner confirmed included compute
+and spending controls, [manual run 41809107524](https://github.com/RJ1899157/PipeGuard/actions/runs/41809107524)
+was dispatched against `594c991` under actor and triggering actor `RJ1899157`.
+The dispatch returned HTTP 502, but independent reads confirmed run creation.
+At the follow-up snapshot it remained `queued` with zero jobs; normal and force
+cancellation both returned HTTP 409 claiming it had not been queued yet. This is
+an inconsistent GitHub scheduling state, not a recorded application test failure.
+Hosted Linux execution remains unverified. No duplicate dispatch, billing change
+or automatic trigger was introduced; inspect the run page before the next action.
 
 One initial preparation run passed the Python suites but failed the newly added
 HTTP scenario because it assumed a configurable producer port. The acceptance

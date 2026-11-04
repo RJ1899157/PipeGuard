@@ -183,5 +183,24 @@
     "hosted_runs": 0,
     "linux_execution_verified": false,
     "automatic_triggers_enabled": false
+  },
+  "hosted_follow_up": {
+    "checked_at": "2026-11-04T09:46:31.225070+00:00",
+    "run": {
+      "actor": "RJ1899157",
+      "conclusion": null,
+      "head_sha": "594c991d8b43c0c784304c0ceb9c360480ed0481",
+      "html_url": "https://github.com/RJ1899157/PipeGuard/actions/runs/41809107524",
+      "id": 41809107524,
+      "status": "queued",
+      "triggering_actor": "RJ1899157"
+    },
+    "job_count": 0,
+    "dispatch_response": "HTTP 502; run creation independently confirmed",
+    "cancel_response": "HTTP 409: run has not been queued yet",
+    "force_cancel_response": "HTTP 409: run has not been queued yet",
+    "allowance_confirmation_received": true,
+    "billing_settings_changed": false,
+    "automatic_triggers_enabled": false
   }
 }

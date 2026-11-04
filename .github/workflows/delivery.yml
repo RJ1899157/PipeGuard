@@ -1,6 +1,6 @@
 name: Delivery checks
 
-# Manual until the owner confirms the private-repository Actions allowance.
+# Manual runs only; automatic triggers require a separate owner choice.
 on:
   workflow_dispatch:
 
