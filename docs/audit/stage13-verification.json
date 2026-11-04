@@ -1,0 +1,410 @@
+{
+  "date": "2026-11-04",
+  "tested_revision": "a82f8e8b6b5929cdf9df4f1759533b6b83119e62",
+  "local_gate_passed": false,
+  "suite_cases": {
+    "backend": 437,
+    "frontend": 48,
+    "workload": 64,
+    "airflow": 13
+  },
+  "delivery_steps": [
+    {
+      "name": "application-environment",
+      "passed": true,
+      "seconds": 0.152
+    },
+    {
+      "name": "new-private-configuration",
+      "passed": true,
+      "seconds": 0.144
+    },
+    {
+      "name": "temporary-postgres",
+      "passed": true,
+      "seconds": 3.752
+    },
+    {
+      "name": "migrations",
+      "passed": true,
+      "seconds": 3.808
+    },
+    {
+      "name": "runtime-role",
+      "passed": true,
+      "seconds": 0.379
+    },
+    {
+      "name": "sample-warehouse",
+      "passed": true,
+      "seconds": 0.647
+    },
+    {
+      "name": "backend-suite",
+      "passed": true,
+      "seconds": 118.37
+    },
+    {
+      "name": "migration-consistency",
+      "passed": true,
+      "seconds": 0.873
+    },
+    {
+      "name": "workload-environment",
+      "passed": true,
+      "seconds": 0.27
+    },
+    {
+      "name": "workload-suite",
+      "passed": true,
+      "seconds": 18.637
+    },
+    {
+      "name": "airflow-environment",
+      "passed": true,
+      "seconds": 0.092
+    },
+    {
+      "name": "airflow-pinned-install",
+      "passed": true,
+      "seconds": 0.881
+    },
+    {
+      "name": "airflow-suite",
+      "passed": true,
+      "seconds": 5.593
+    },
+    {
+      "name": "application-dependency-consistency",
+      "passed": true,
+      "seconds": 0.082
+    },
+    {
+      "name": "workload-dependency-consistency",
+      "passed": true,
+      "seconds": 0.138
+    },
+    {
+      "name": "airflow-dependency-consistency",
+      "passed": true,
+      "seconds": 0.091
+    },
+    {
+      "name": "http-workload-acceptance",
+      "passed": true,
+      "seconds": 21.782
+    },
+    {
+      "name": "web-runtime",
+      "passed": true,
+      "seconds": 3.566
+    },
+    {
+      "name": "web-dependencies",
+      "passed": true,
+      "seconds": 0.316
+    },
+    {
+      "name": "web-types",
+      "passed": true,
+      "seconds": 3.726
+    },
+    {
+      "name": "web-suite",
+      "passed": true,
+      "seconds": 0.863
+    },
+    {
+      "name": "web-format",
+      "passed": true,
+      "seconds": 1.498
+    },
+    {
+      "name": "web-build",
+      "passed": true,
+      "seconds": 8.15
+    },
+    {
+      "name": "web-http-startup",
+      "passed": true,
+      "seconds": 0.383
+    },
+    {
+      "name": "temporary-postgres-stop",
+      "passed": true,
+      "seconds": 1.425
+    }
+  ],
+  "delivery_cleanup_passed": true,
+  "http_fault_scenario": {
+    "passed": true,
+    "attempt_states": [
+      "failed",
+      "succeeded"
+    ],
+    "incident_state": "resolved",
+    "quality_checks": 14,
+    "lineage_coverage": "reported_complete",
+    "captured_evidence_unchanged": true,
+    "body_admission_statuses": [
+      413,
+      408
+    ],
+    "runtime_database_access_outage": {
+      "live": 200,
+      "ready": 503,
+      "restored_ready": 200
+    },
+    "hosted_ai_calls": 0,
+    "recovery_dispatches": 0
+  },
+  "graph_benchmark": {
+    "baseline_revision": "a51a9f2",
+    "before": {
+      "seed_events": 1000,
+      "seed_mentions": 64000,
+      "samples": [
+        {
+          "elapsed_ms": 1679.44,
+          "mentions_fetched": [
+            64000
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 1744.29,
+          "mentions_fetched": [
+            64000
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 1701.73,
+          "mentions_fetched": [
+            64000
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        }
+      ],
+      "memory_sample": {
+        "elapsed_ms": 7372.25,
+        "mentions_fetched": [
+          64000
+        ],
+        "nodes": 200,
+        "edges": 1000,
+        "coverage": "partial",
+        "missing_metadata": [
+          "graph_limit"
+        ],
+        "peak_traced_bytes": 220805401
+      }
+    },
+    "after": {
+      "seed_events": 1000,
+      "seed_mentions": 64000,
+      "samples": [
+        {
+          "elapsed_ms": 540.02,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 494.39,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        },
+        {
+          "elapsed_ms": 405.42,
+          "mentions_fetched": [
+            10001
+          ],
+          "nodes": 200,
+          "edges": 1000,
+          "coverage": "partial",
+          "missing_metadata": [
+            "graph_limit"
+          ],
+          "peak_traced_bytes": null
+        }
+      ],
+      "memory_sample": {
+        "elapsed_ms": 2101.15,
+        "mentions_fetched": [
+          10001
+        ],
+        "nodes": 200,
+        "edges": 1000,
+        "coverage": "partial",
+        "missing_metadata": [
+          "graph_limit"
+        ],
+        "peak_traced_bytes": 59583616
+      }
+    },
+    "budget": "1,000 events; 8 MiB canonical payload; 10,000 mentions; 200 nodes/1,000 output links; two builders per worker",
+    "limitation": "Partial graphs may omit more assertions; traced allocation is not RSS."
+  },
+  "python_osv": {
+    "application": {
+      "packages": 28,
+      "matches": []
+    },
+    "workload": {
+      "packages": 65,
+      "matches": []
+    },
+    "airflow": {
+      "packages": 131,
+      "matches": []
+    }
+  },
+  "frontend_audit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 45,
+    "devDependencies": 2,
+    "optionalDependencies": 39,
+    "totalDependencies": 86
+  },
+  "container": {
+    "source_version_pairs": 95,
+    "advisory_matches": 130,
+    "published_fixed_versions": [],
+    "bulk_missing_release_records": 1,
+    "arm64_manifest_unchanged": true,
+    "tracker_sha256": "1524d84e9596f2816a28244543d6a79e3978d17e92032740d7ad3a658102f3e3",
+    "bulk_gap_follow_up": {
+      "cve": "CVE-2026-95209",
+      "source_package": "gnutls28",
+      "source": "https://security-tracker.debian.org/tracker/CVE-2026-95209",
+      "source_sha256": "83755dc4e0ddeed28f57686837cbeb3e0f7cefe38d92b3335b93622bebab7aaa",
+      "finding": "Individual tracker still lists trixie vulnerable/unfixed, urgency unimportant; security impact disputed upstream. Retained as unresolved."
+    }
+  },
+  "backup_restore_checks": {
+    "pipeguard": {
+      "backup_id": "d6a035f9-7f1b-4e5d-be45-b9d34807738c",
+      "operation": "verify",
+      "passed": true
+    },
+    "airflow": {
+      "backup_id": "0c73d64f-162e-4f9d-8289-565145dcfccf",
+      "operation": "verify",
+      "passed": true
+    },
+    "sample_warehouse": {
+      "backup_id": "e0be82d4-26c7-4e75-bfb6-fe496ec9da23",
+      "operation": "verify",
+      "passed": true
+    }
+  },
+  "retained_system": {
+    "preserved_rows_and_hashes": 7688,
+    "counts": {
+      "recovery_actions": 1,
+      "recovery_action_decisions": 1,
+      "recovery_dispatches": 1,
+      "recovery_dispatch_events": 2,
+      "investigation_requests": 16,
+      "investigation_outcomes": 16
+    },
+    "api_live": 200,
+    "api_ready": 200,
+    "dashboard": 200,
+    "stored_openapi_matches": true,
+    "recovery_flags": {
+      "PIPEGUARD_RECOVERY_EXECUTION_ENABLED": "0",
+      "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED": "0"
+    },
+    "dag_paused": true,
+    "source_runs": 8,
+    "source_attempts": 14,
+    "api_performance": {
+      "jobs": {
+        "requests": 12,
+        "median_ms": 2.91,
+        "max_ms": 20.03
+      },
+      "runs": {
+        "requests": 12,
+        "median_ms": 3.16,
+        "max_ms": 7.19
+      },
+      "incidents": {
+        "requests": 12,
+        "median_ms": 3.11,
+        "max_ms": 7.34
+      },
+      "coverage": {
+        "requests": 12,
+        "median_ms": 5.12,
+        "max_ms": 8.09
+      }
+    }
+  },
+  "lockfile_sha256": {
+    "uv.lock": "c4fbad925fddd1cf598ff10c3930876a80b18d6b17383e63509e01f7ffb37c0f",
+    "sample-pipelines/orders/uv.lock": "9576ed61183df695755811369a814344927902f1d22f377679e423118e139267",
+    "infra/airflow/requirements.lock": "0a045e0aaa7946b86ceb9d17b3583480779e2ef155a52e761569e1675ef96875",
+    "apps/pipeguard/web/pnpm-lock.yaml": "0a0b0799cca927c6f01ed41f29100c240a5c03e2ecfc52657f69f6828e2245c2"
+  },
+  "hosted_ci": {
+    "run_id": 41809107524,
+    "status_at_check": "queued",
+    "job_count": 0,
+    "linux_verified": false,
+    "automatic_triggers_enabled": false
+  },
+  "private_config_files_checked": 7,
+  "checked_at": "2026-11-04T10:33:12.874051+00:00",
+  "final_checks": {
+    "secret_values_in_changed_source_or_served_js": 0,
+    "scanned_files": 19,
+    "broken_local_markdown_links": 0,
+    "temporary_delivery_containers_or_volumes": 0,
+    "implementation_unchanged_since_tested_revision": true,
+    "project_listener_bindings": "127.0.0.1:3000,8000,8080,55432",
+    "restore_checks_remaining": 0
+  },
+  "runtime_patch_verification": "in_progress"
+}

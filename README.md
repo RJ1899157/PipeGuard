@@ -46,7 +46,7 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 
 | Layer                     | Target technologies                                            | Current state                                                                                 |
 | ------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Python environment        | Python 3.12, uv, project-local `.venv`                         | Configured; persistence dependencies locked                                                   |
+| Python environment        | Python 3.12.16, uv, project-local `.venv`                         | Configured; persistence dependencies locked                                                   |
 | Persistence               | PostgreSQL 17, SQLAlchemy 2, Alembic                           | Initial schema implemented                                                                    |
 | API and validation        | FastAPI, Pydantic 2                                            | Authenticated local API and versioned contracts implemented                                   |
 | Sample pipeline execution | Apache Airflow 3, dbt Core, OpenLineage                        | Orders/dbt workload, Airflow execution adapter and bounded OpenLineage ingestion implemented  |
@@ -59,7 +59,7 @@ Library patch versions and container image references will be selected and locke
 
 ## Get started
 
-With Git, uv, and Python 3.12 available:
+With Git, uv 0.13.7, and Python 3.12.16 available:
 
 ```sh
 git clone https://github.com/RJ1899157/PipeGuard.git
@@ -100,4 +100,4 @@ All repository changes are owned by **RJ1899157**.
 
 See [manual investigation operations](docs/investigation-operations.md) for the current Stage 10 checkpoint and its limits.
 
-Latest verification: [Stage 12 local delivery acceptance](docs/delivery-verification.md) repeats all 548 suite cases in a fresh committed export and verifies HTTP retry/evidence preservation, production-dashboard startup and interrupted-check cleanup. Manual GitHub Actions is registered but has not run on hosted Linux. The earlier [multi-agent audit](docs/post-recovery-audit.md) records browser checks, measured optimization and deployment limits. The [roadmap](docs/roadmap.md) retains the hosted-CI follow-up, Stage 13 security/performance hardening and Stage 14 final full-project audit.
+Latest verification: [Stage 13 local acceptance](docs/stage13-verification.md) records 562 passing suite cases, bounded request/graph resources, measured graph improvements, actual HTTP deadline and database-access fault checks, three restore drills and preserved history. [Delivery operations](docs/delivery-operations.md) provides isolated checks and manual CI. Hosted CI remains queued and unverified. The [roadmap](docs/roadmap.md) retains the hosted-CI follow-up and Stage 14 final full-project audit; [deployment risks](docs/security-threat-model.md#deployment-restrictions-and-unresolved-risks) remain explicit.

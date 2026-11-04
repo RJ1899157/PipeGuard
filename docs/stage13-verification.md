@@ -1,10 +1,10 @@
 # Stage 13 security, performance and debugging
 
-Date: **2026-11-04**. Status: **in progress**. Focused backend checks pass;
-complete committed-export verification and fresh restore drills are pending.
+Date: **2026-11-04**. Status: **runtime patch verification in progress**. Prior tested revision:
+`a82f8e8b6b5929cdf9df4f1759533b6b83119e62`. [Structured evidence](audit/stage13-verification.json).
 This stage does not replace Stage 14's final independent full-project audit.
 
-## Changes under verification
+## Implemented hardening
 
 - API body admission now limits bytes, absolute read time and concurrent readers;
   timeout/overload/malformed-length responses are explicit and carry safe headers.
@@ -19,7 +19,18 @@ This stage does not replace Stage 14's final independent full-project audit.
 - The [threat model](security-threat-model.md) records assets, trust boundaries,
   controls, verification methods and deployment restrictions.
 
-## Preliminary measured graph evidence
+## Runtime security patches
+
+[Python 3.12.16](https://www.python.org/downloads/release/python-31216/) and
+[Node.js 22.23.4](https://nodejs.org/en/blog/release/v22.23.4) address security
+issues in the previously installed interpreters. The three application environments
+were recreated with the same locked package versions under Python 3.12.16.
+The dashboard uses a verified project-local Node.js archive; system runtimes were
+not replaced. Original environments are preserved privately for rollback.
+uv 0.13.7 installs the pinned Python runtime; CI reads both runtime version files.
+Final acceptance on these patched runtimes is pending.
+
+## Measured graph evidence
 
 A disposable schema contains 1,000 valid lineage events and 64,000 dataset mentions.
 Three warm runs before the change have median 1,701.73 ms. The current bounded
@@ -38,16 +49,50 @@ throughput or distributed-deployment guarantee. No retained evidence was deleted
 Fresh OSV queries find no known matches in the installed application (28), workload
 (65) or Airflow (131) package entries; pnpm reports zero known matches across its
 86 recorded dependency entries. The container still matches 130 source advisories;
-full current Debian triage is being refreshed. These are time-specific results.
+no matched record publishes a nonzero compatible fixed version. One GnuTLS
+entry is absent from the bulk feed, but its [individual tracker page](https://security-tracker.debian.org/tracker/CVE-2026-95209)
+still lists trixie as vulnerable/unfixed, with disputed security impact. That
+discrepancy is retained rather than dropping the advisory. The official ARM64
+image is unchanged. These are time-specific results.
 
-## Remaining acceptance work
+## Acceptance results
 
-- Complete the full fresh-export suites, build and real HTTP fault scenario.
-- Verify new logical backups of all three databases through disposable restoration.
-- Refresh retained services and verify health, disabled recovery and preserved history.
-- Publish structured results and distinguish local acceptance from pending hosted CI.
+- **562 suite cases passed:** 437 backend, 48 frontend, 64 workload and 13 Airflow.
+  The existing Starlette/HTTPX test-client deprecation warning remains unsuppressed.
+- Fresh committed-export checks passed migrations, stored-contract equality,
+  dependency consistency, strict TypeScript/unused rules, formatting, production
+  build and HTTP startup. Node 22 was checked through pnpm.
+- Actual isolated HTTP requests returned 413 for an oversized declared length
+  without a body, and 408 for a stalled body. Admission responses were no-store.
+- The orders workload failed once and retried successfully. Both attempts,
+  incident transitions and unchanged captured evidence remained. Its 14 quality
+  checks passed and successful-attempt lineage reported complete.
+- Denying only the disposable cluster's API account preserved liveness 200 while
+  readiness returned sanitized 503. Restoring access returned readiness to 200
+  and evidence was unchanged. This is an access outage, not physical host loss.
+- New backups of all three databases passed disposable restore verification.
+  Inspection found no remaining restore-check databases. Backups remain on this disk.
+- The retained API/dashboard were refreshed; live/ready/dashboard returned 200,
+  live OpenAPI matched the stored contract and all four listeners stayed on loopback.
+- All **7,688** captured rows retained IDs and full native-row content hashes.
+  Source inventory is **8 runs / 14 attempts**, recovery ledger **1/1/1/2** and
+  investigation ledger **16/16**, unchanged. Recovery is off and the DAG paused.
+- Twelve retained reads per route had local medians 2.91 ms (jobs), 3.16 ms (runs),
+  3.11 ms (incidents), 5.12 ms (coverage). These are post-change samples, not a
+  controlled causal comparison or interactive browser-performance claim.
 
-The pending hosted run and checkpoint pushes are separate GitHub processing issues.
-Automatic CI, recovery execution and new hosted-AI generation are not enabled by
-this stage. Existing [deployment limits](next-session.md#explicit-remaining-limits)
-remain explicit.
+The delivery runner removed its temporary stack; graph fixtures removed their
+unique schemas. The catchable-termination drill remains recorded in [Stage 12](delivery-verification.md).
+
+## Remaining gates and risks
+
+Stage 14's independent multi-agent full-project audit remains required. Hosted run
+41809107524 is still queued with zero jobs; Linux execution is unverified. GitHub
+accepted the previously pending checkpoint and implementation push under RJ1899157.
+No replacement workflow or automatic trigger was started.
+
+Container advisories, the bulk-feed discrepancy, same-host monitoring, same-disk
+backups, broader live AI evaluation and deployment/atomic-publication limits stay
+open. Passing this gate does not establish universal optimality, zero vulnerabilities,
+public deployment readiness or coverage of every possible failure. No new hosted-AI
+generation or retained recovery run was performed.

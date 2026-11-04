@@ -1,6 +1,6 @@
 # Local orders orchestration
 
-Airflow 3.3.2 on Python 3.12 runs the independent orders workload with LocalExecutor.
+Airflow 3.3.2 on Python 3.12.16 runs the independent orders workload with LocalExecutor.
 It has its own `.venv`, hash-pinned requirements and PostgreSQL metadata database.
 PipeGuard receives bounded producer events; it never queries Airflow internal tables.
 The UI/API listens on `127.0.0.1:8080`. This configuration is for local development.
@@ -25,7 +25,7 @@ family is updated together. `requirements.lock` records the complete compatible
 resolution and hashes. To install from root:
 
 ```sh
-uv venv infra/airflow/.venv --python 3.12
+uv venv infra/airflow/.venv --python 3.12.16
 uv pip sync --python infra/airflow/.venv/bin/python infra/airflow/requirements.lock
 ```
 

@@ -10,9 +10,11 @@ if __name__ == "__main__":
     token = os.environ.get("PIPEGUARD_ADMIN_TOKEN")
     if not token:
         raise SystemExit("Load the private root .env before launching the dashboard")
-    node = shutil.which("node")
-    if not node or subprocess.check_output([node, "-p", "process.versions.node.split('.')[0]"], text=True).strip() != "22":
-        raise SystemExit("Use Node.js 22 for the dashboard")
+    local_node = root / "data/local/toolchain/node/bin/node"
+    node = str(local_node) if local_node.is_file() else shutil.which("node")
+    required_node = (root / ".node-version").read_text().strip()
+    if not node or subprocess.check_output([node, "-p", "process.versions.node"], text=True).strip() != required_node:
+        raise SystemExit("Use the patched Node.js version pinned in .node-version")
     web = root / "apps/pipeguard/web"
     next_cli = web / "node_modules/next/dist/bin/next"
     if not next_cli.is_file():

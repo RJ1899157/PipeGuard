@@ -1,6 +1,6 @@
 # PostgreSQL container advisory triage
 
-**Current follow-up:** The [2026-11-04 audit](post-recovery-audit.md#dependency-and-container-findings) finds 130 matches, including 14 additional GCC/SQLite records. No matched trixie fixed version is published. The official multi-platform tag changed, but its ARM64 image used on this Mac is unchanged. The historical counts below describe the earlier checkpoint.
+**Current follow-up:** [Stage 13 verification](stage13-verification.md#current-dependency-findings) retains 130 matches without a published compatible fixed version. One GnuTLS record is absent from the bulk feed but remains vulnerable/unfixed on its individual tracker page; that discrepancy is explicit. The official ARM64 image is unchanged. The historical counts below describe the earlier checkpoint.
 
 Checkpoint: 2026-11-01. This is a time-specific installed-package comparison, not a reachability proof. The container remains bound to loopback, with separate administrator, application, Airflow, workload and minimal watcher roles.
 

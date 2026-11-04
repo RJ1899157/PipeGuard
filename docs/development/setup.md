@@ -8,7 +8,7 @@ The independent [orders workload](../../sample-pipelines/orders/README.md) adds 
 
 ## Prerequisites
 
-- Python 3.12, uv, Git and Docker Desktop.
+- Python 3.12.16, uv 0.13.7, Git and Docker Desktop.
 - GitHub access as `RJ1899157` for the private repository.
 - Node.js 22 and pnpm 11.25.0 for the web application.
 
@@ -102,7 +102,7 @@ From the repository root, with PostgreSQL running:
 
 ```sh
 uv run --env-file .env python scripts/configure_sample_warehouse.py
-uv sync --project sample-pipelines/orders --locked --python 3.12
+uv sync --project sample-pipelines/orders --locked --python 3.12.16
 uv run --directory sample-pipelines/orders --locked --env-file .env python run.py
 uv run --directory sample-pipelines/orders --locked --env-file .env pytest -q
 ```

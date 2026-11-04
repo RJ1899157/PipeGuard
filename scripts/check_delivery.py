@@ -98,7 +98,7 @@ def main():
     # Discard private application/provider configuration and inherited tool overrides.
     environment = {k: v for k, v in os.environ.items()
                    if k in {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "SSL_CERT_FILE"}}
-    environment.update(UV_PYTHON="3.12", UV_NO_PROGRESS="1", NEXT_TELEMETRY_DISABLED="1",
+    environment.update(UV_NO_PROGRESS="1", NEXT_TELEMETRY_DISABLED="1",
                        DO_NOT_TRACK="1", CI="1")
     result = {"revision": revision, "suite": args.suite, "steps": [], "passed": False,
               "cleanup_passed": False, "compose_project": "pipeguard-check-" + identity}
@@ -141,10 +141,13 @@ def main():
                        cwd=ROOT, env=environment, check=True, timeout=30)
         with tarfile.open(archive) as package:
             package.extractall(source, filter="data")
+        python_version = (source / ".python-version").read_text().strip()
+        node_version = (source / ".node-version").read_text().strip()
+        environment["UV_PYTHON"] = python_version
         if any(source.glob(".env*")) and any(p.name != ".env.example" for p in source.glob(".env*")):
             raise RuntimeError("Committed export contains private configuration")
         if args.suite in ("python", "all"):
-            run("application-environment", ["uv", "sync", "--locked", "--python", "3.12"])
+            run("application-environment", ["uv", "sync", "--locked", "--python", python_version])
             run("new-private-configuration", ["uv", "run", "--locked", "python", "scripts/init_local_env.py"])
             override = source / "compose.delivery.yaml"
             override.write_text('''services:
@@ -173,10 +176,10 @@ def main():
             run("sample-warehouse", uv("python", "scripts/configure_sample_warehouse.py"))
             run("backend-suite", uv("pytest", "-q"))
             run("migration-consistency", uv("alembic", "check"))
-            run("workload-environment", ["uv", "sync", "--project", "sample-pipelines/orders", "--locked", "--python", "3.12"])
+            run("workload-environment", ["uv", "sync", "--project", "sample-pipelines/orders", "--locked", "--python", python_version])
             run("workload-suite", ["uv", "run", "--directory", "sample-pipelines/orders", "--locked",
                                    "--env-file", ".env", "pytest", "-q"])
-            run("airflow-environment", ["uv", "venv", "infra/airflow/.venv", "--python", "3.12"])
+            run("airflow-environment", ["uv", "venv", "infra/airflow/.venv", "--python", python_version])
             run("airflow-pinned-install", ["uv", "pip", "sync", "--python", "infra/airflow/.venv/bin/python",
                                           "--require-hashes", "infra/airflow/requirements.lock"])
             run("airflow-suite", [str(source / "infra/airflow/.venv/bin/python"), "-m", "unittest",
@@ -191,7 +194,7 @@ def main():
             run("http-workload-acceptance", uv("python", "scripts/check_delivery_scenario.py"), timeout=240)
         if args.suite in ("web", "all"):
             web = source / "apps/pipeguard/web"
-            run("web-runtime", ["pnpm", "exec", "node", "--eval", "if(process.versions.node.split('.')[0]!=='22')process.exit(1)"], cwd=web)
+            run("web-runtime", ["pnpm", "exec", "node", "--eval", "if(process.versions.node!==" + json.dumps(node_version) + ")process.exit(1)"], cwd=web)
             run("web-dependencies", ["pnpm", "install", "--frozen-lockfile"], cwd=web)
             run("web-types", ["pnpm", "exec", "tsc", "--noEmit", "--noUnusedLocals", "--noUnusedParameters"], cwd=web)
             run("web-suite", ["pnpm", "test"], cwd=web)

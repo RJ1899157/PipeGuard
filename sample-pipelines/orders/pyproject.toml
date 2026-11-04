@@ -1,7 +1,7 @@
 [project]
 name = "pipeguard-orders-sample"
 version = "0.1.0"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.12.16,<3.13"
 dependencies = [
     "dbt-core>=1.10,<1.13",
     "dbt-postgres>=1.9,<1.11",

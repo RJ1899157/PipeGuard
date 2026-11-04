@@ -5,10 +5,11 @@ configuration or the running local warehouse as test fixtures.
 
 ## Isolated verification
 
-Prerequisites: Git, Python 3.12, uv 0.11.23, Docker with Compose 2.24.4 or later,
-Node.js 22 and pnpm 11.25.0. Start Docker Desktop before the Python checks.
+Prerequisites: Git, Python 3.12.16, uv 0.13.7, Docker with Compose 2.24.4 or later,
+Node.js 22.23.4 and pnpm 11.25.0. Start Docker Desktop before the Python checks.
 The runner also checks Node as invoked through pnpm: a launcher that silently
-selects another Node major fails admission even if the shell's `node` is 22.
+selects a different Node version fails admission even if the shell runtime matches.
+The exact security patch versions are pinned in `.python-version` and `.node-version`.
 From the repository root:
 
 ```sh

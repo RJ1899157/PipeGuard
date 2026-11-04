@@ -67,6 +67,6 @@ See [Stage 13 verification](stage13-verification.md), [failure coverage](failure
 [container triage](container-security.md) and [resilience operations](local-resilience.md).
 
 Primary implementation references: [Python absolute timeouts](https://docs.python.org/3.12/library/asyncio-task.html#asyncio.timeout_at),
-[Node 22 streams](https://nodejs.org/download/release/v22.20.0/docs/api/webstreams.html),
+[Node 22 streams](https://nodejs.org/download/release/v22.23.4/docs/api/webstreams.html),
 [PostgreSQL query plans](https://www.postgresql.org/docs/17/using-explain.html),
 [OSV query semantics](https://google.github.io/osv.dev/post-v1-querybatch/).
