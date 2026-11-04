@@ -6,11 +6,14 @@ from pathlib import Path
 import re
 import shutil
 import signal
+import socket
 import subprocess
 import tarfile
 import tempfile
 import time
 from uuid import uuid4
+from urllib.error import HTTPError, URLError
+from urllib.request import build_opener, ProxyHandler, Request
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -27,6 +30,52 @@ def stop(process):
             continue
         if kind == signal.SIGKILL:
             break
+
+
+def check_web_startup(web, environment, log):
+    """HTTP smoke only; no browser execution or live metadata connection is claimed."""
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        port = listener.getsockname()[1]
+    command = ["node", str(web / "node_modules/next/dist/bin/next"), "start", "--hostname", "127.0.0.1", "--port", str(port)]
+    process = subprocess.Popen(command, cwd=web, env=environment, stdout=log,
+                               stderr=subprocess.STDOUT, start_new_session=True)
+    opener = build_opener(ProxyHandler({}))
+
+    def read(path, headers=None):
+        # Preserve the app's fixed production Host boundary on a separate test port.
+        request = Request(f"http://127.0.0.1:{port}" + path, headers={"Host": "127.0.0.1:3000"} | (headers or {}))
+        try:
+            response = opener.open(request, timeout=5)
+        except HTTPError as error:
+            response = error
+        with response:
+            return response.status, response.headers, response.read(2 * 1024 * 1024)
+
+    try:
+        deadline = time.monotonic() + 30
+        while True:
+            if process.poll() is not None:
+                raise RuntimeError("Isolated dashboard stopped before readiness")
+            try:
+                status, headers, body = read("/")
+                break
+            except (URLError, TimeoutError):
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("Isolated dashboard readiness deadline exceeded") from None
+                time.sleep(0.2)
+        if (status != 200 or b"PipeGuard" not in body or not headers.get("Content-Security-Policy")
+                or headers.get("X-Frame-Options") != "DENY"):
+            raise RuntimeError("Dashboard document or security headers invalid")
+        status, _, body = read("/api/read?kind=jobs")
+        if status != 503 or json.loads(body).get("error") != "dashboard_not_configured":
+            raise RuntimeError("Fresh dashboard must fail closed without a credential")
+        if read("/api/read?kind=jobs", {"Origin": "https://outside.invalid"})[0] != 403:
+            raise RuntimeError("Cross-origin metadata request was not rejected")
+        if read("/", {"Host": "outside.invalid"})[0] != 403:
+            raise RuntimeError("Unexpected Host was not rejected")
+    finally:
+        stop(process)
 
 
 def main():
@@ -62,12 +111,18 @@ def main():
         started = time.monotonic()
         print(label, flush=True)
         with log.open("wb") as stream:
-            process = subprocess.Popen(command, cwd=cwd, env=environment | (extra_env or {}), stdout=stream,
-                                       stderr=subprocess.STDOUT, start_new_session=True)
             try:
-                code = process.wait(timeout=timeout)
+                if callable(command):
+                    command(stream)
+                    code = 0
+                else:
+                    process = subprocess.Popen(command, cwd=cwd, env=environment | (extra_env or {}), stdout=stream,
+                                               stderr=subprocess.STDOUT, start_new_session=True)
+                    try:
+                        code = process.wait(timeout=timeout)
+                    finally:
+                        stop(process)
             finally:
-                stop(process)
                 step["seconds"] = round(time.monotonic() - started, 3)
         step["passed"] = code == 0
         if code:
@@ -142,6 +197,7 @@ def main():
             run("web-suite", ["pnpm", "test"], cwd=web)
             run("web-format", ["pnpm", "exec", "prettier", "--check", "app", "components", "lib", "tests", "proxy.ts", "next.config.ts"], cwd=web)
             run("web-build", ["pnpm", "build"], cwd=web)
+            run("web-http-startup", lambda log: check_web_startup(web, environment, log))
         result["passed"] = True
     except (Exception, KeyboardInterrupt) as error:
         # Child output stays private; avoid leaking inherited or generated credentials.
@@ -158,6 +214,9 @@ def main():
                     cwd=source, env=environment, text=True, timeout=30).strip()
                 if remaining:
                     raise RuntimeError("Temporary container remains")
+            # Preserve bounded scenario diagnostics privately before deleting its export.
+            for log in (source / "data/local").glob("delivery-*.log"):
+                shutil.copyfile(log, output / log.name)
             shutil.rmtree(workspace)
             result["cleanup_passed"] = True
         except Exception:

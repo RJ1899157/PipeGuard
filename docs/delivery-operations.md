@@ -35,6 +35,9 @@ The runner:
    complete reported lineage for the successful attempt.
 6. Installs the dashboard from its frozen lockfile, checks strict unused/type rules,
    tests and formatting, and creates a production build in the temporary export.
+   A separate HTTP smoke check starts that build, checks document/security headers,
+   rejects foreign Host/Origin requests and confirms missing credentials fail closed.
+   It does not execute a browser or connect to retained metadata.
 7. Stops owned process groups and removes only its uniquely named temporary
    container/network. It checks for remaining containers before deleting the export.
 
@@ -44,6 +47,13 @@ approval/start and replay/failure paths run against synthetic source adapters in
 the existing suite. The actual authorized Airflow recovery journey is recorded
 in the [live recovery checkpoint](recovery-live-verification.md); this runner does
 not claim to repeat that live source scenario.
+
+The producer retains its fixed port-8000 destination restriction. The acceptance
+scenario wraps only its HTTP transport to route the three admitted producer POST
+paths to the separately owned temporary API port. The workload, dbt operations,
+payloads, authentication and API ingestion are real; the fixture does not relax
+production endpoint validation. The dashboard smoke similarly supplies its required
+Host header while using a separate test listener.
 
 ### Results and interrupted checks
 

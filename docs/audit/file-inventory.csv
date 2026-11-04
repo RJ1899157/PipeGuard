@@ -173,7 +173,7 @@ docs/contracts/lineage-report-v1.schema.json,2026-11-04 coordinating review,runt
 docs/contracts/quality-report-v1.schema.json,2026-11-04 coordinating review,runtime model comparison,2612,121,efe8ea6bdc3ede10defc7e2a2e709b903f5c322e753cfc1f65318d28519b9901
 docs/contracts/quality-reports.md,2026-11-04 coordinating review,documentation/structure/provenance check,3864,28,4b04f37e6005974d09054676c5dfee65450bf84bf34355e8bcefeb6f13f7d62f
 docs/dashboard-verification.md,2026-11-04 coordinating review,documentation/structure/provenance check,4606,56,c3f37bfa540019b0d7590ff431c84c6fd6e41cff75779914ecda55b31e3c9886
-docs/delivery-operations.md,Stage 12 delivery review,source/configuration review; fresh-export verification pending,6867,116,f499baab7f2486b6e32f65a85a09c9294acf24cb0ea01d94ce1b112757340dde
+docs/delivery-operations.md,Stage 12 delivery review,source/configuration review; fresh-export verification pending,7560,126,62507233cd3e3f983575943dd6a6be77cde2c76dbfa463834270a28dcb19f6fc
 docs/design/dashboard-attempts.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,24914,,3903d0f2aa427e7d78b36ce9e3244cd9a286809de1185569b0a78b4f672c981d
 docs/design/dashboard-desktop.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,107273,,1c312f4e0444695ad15bf61af11932a09fe4f719ced434f2e106d522f3a91a91
 docs/design/dashboard-mobile.jpg,2026-11-04 coordinating review,asset/hash inventory; historical visual evidence retained,124350,,91c970de22e2cf7b508ba2b75f7bc57f5ff22d5d13498dfc7a1818b3b61c7c3f
@@ -244,8 +244,8 @@ sample-pipelines/orders/tests/test_process.py,2026-11-04 recovery and operations
 sample-pipelines/orders/tests/test_quality.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,4493,93,4c7866785e9e02eb2677c8a8fe1b9a68cd20ff60eced25a78c0f0276a61c5757
 sample-pipelines/orders/uv.lock,2026-11-04 recovery and operations review,dependency/compatibility/advisory check,104107,944,9576ed61183df695755811369a814344927902f1d22f377679e423118e139267
 scripts/backup_local.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,19919,366,bab2c5bdbae1d62cbb98cfcd347dbfa0a51a6aa51692f41d51542e46c0d65102
-scripts/check_delivery.py,Stage 12 delivery review,source/configuration review; fresh-export verification pending,9323,173,124c28660960aadf4a55853b19fe8b9ab137a141ea06815d9386d9ac56f80d49
-scripts/check_delivery_scenario.py,Stage 12 delivery review,source/configuration review; fresh-export verification pending,8535,141,1ff23f4ca65c05c34dafbf3369900f21c71fd60b436b1a08cd0eb1ac71ac0056
+scripts/check_delivery.py,Stage 12 delivery review,source/configuration review; fresh-export verification pending,12339,232,9658434aaba919a1c8760738e49e87f2449999019f2fd8296ad894b3d42e928d
+scripts/check_delivery_scenario.py,Stage 12 delivery review,source/configuration review; fresh-export verification pending,9702,166,7298753628d190aa684e0026551027c0ad42bd4dfcbae1696e8cd4a9ff93b98d
 scripts/compile_airflow_requirements.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,1680,35,67b86499f38453d552e3de4143d88097548ecf22ac8ca4a2b79f1a1ced019c82
 scripts/configure_airflow.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,5046,86,8d21442ef91ea8dc93c7b33dc8ed36721ca9f6455386eb97b091a43079c328f4
 scripts/configure_api.py,2026-11-04 recovery and operations review,source/command review; isolated regressions,2776,53,4f551e615f1a88b2e81caa6f76dd1b221bd2b6dd7adea526b14455f14c3beb43

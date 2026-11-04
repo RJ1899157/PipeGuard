@@ -20,6 +20,30 @@ from pipeguard.db.config import database_url
 from pipeguard.db.models import Integration
 from pipeguard.detection.service import evaluate_job
 
+# Transport fixture only: retain the producer's port-8000 validation while sending
+# its three fixed POST paths to the separately owned, ephemeral acceptance API.
+WORKLOAD_CHECK = '''
+import os, sys
+sys.path.insert(0, "src")
+from urllib.request import Request
+import orders_pipeline.observer as observer
+original = observer.build_opener
+class IsolatedTransport:
+    def __init__(self, *handlers):
+        self.opener = original(*handlers)
+    def open(self, request, **options):
+        prefix = "http://127.0.0.1:8000"
+        if request.full_url not in {prefix + path for path in
+            ("/v1/events", "/v1/quality-reports", "/v1/lineage-events")}:
+            raise ValueError("Unexpected producer destination")
+        redirected = Request(os.environ["DELIVERY_API_URL"] + request.full_url[len(prefix):],
+            data=request.data, headers=dict(request.header_items()), method=request.get_method())
+        return self.opener.open(redirected, **options)
+observer.build_opener = IsolatedTransport
+from orders_pipeline.runner import main
+raise SystemExit(main())
+'''
+
 
 def require(condition, description):
     if not condition:
@@ -82,17 +106,18 @@ def main():
                 configuration = workload / ".env"
                 with configuration.open("a") as stream:
                     for key, value in {"PIPEGUARD_INTEGRATION_ID": integration["id"], "PIPEGUARD_JOB_ID": job["id"],
-                                       "PIPEGUARD_PRODUCER_TOKEN": credential["token"], "PIPEGUARD_BASE_URL": base}.items():
+                                       "PIPEGUARD_PRODUCER_TOKEN": credential["token"], "PIPEGUARD_BASE_URL": "http://127.0.0.1:8000"}.items():
                         stream.write(f"{key}={value}\n")
 
                 def attempt(number, *, fail=False):
-                    command = ["uv", "run", "--locked", "--env-file", ".env", "python", "run.py",
+                    command = ["uv", "run", "--locked", "--env-file", ".env", "python", "-c", WORKLOAD_CHECK,
                                "--run-id", "delivery-retry", "--attempt", str(number)]
                     if fail:
                         command.append("--simulate-first-attempt-failure")
                     # Only workload configuration is loaded; monitoring-owner credentials stay out.
                     child_env = {key: value for key, value in os.environ.items()
                                  if key in {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL"}}
+                    child_env["DELIVERY_API_URL"] = base
                     with (ROOT / f"data/local/delivery-attempt-{number}.log").open("wb") as attempt_log:
                         child = subprocess.Popen(command, cwd=workload, env=child_env, stdout=attempt_log,
                                                  stderr=subprocess.STDOUT, start_new_session=True)
