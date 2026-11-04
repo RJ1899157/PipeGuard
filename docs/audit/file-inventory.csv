@@ -135,7 +135,7 @@ apps/pipeguard/web/tests/watchdog.test.ts,2026-11-04 frontend review,source revi
 apps/pipeguard/web/tsconfig.json,2026-11-04 frontend review,source review; regression/build/browser checks,655,28,9f75583e8c444090c24b67a4140ccd8e05ba34b601e5798ea557d09e5c5836d3
 compose.yaml,2026-11-04 coordinating review,documentation/structure/provenance check,682,18,1e33e331e46bac21033e9a4ad4659588b6c4ac592ec1a91dc109b49c4157e264
 design-qa.md,2026-11-04 coordinating review,documentation/structure/provenance check,7073,68,62965076a982bb6190691652fb957901ad432a3cb316471fe5ad264741830255
-docs/README.md,2026-11-04 coordinating review,documentation/structure/provenance check,5983,92,ae4b5d9600b9586507d63a12202796d0033da79aed3d03b5d78355a11a8ea6c8
+docs/README.md,Stage 13 security and resource review,documentation/evidence consistency check,6122,94,984dd18d40bd945f8efe9673c366fa0ffcf55c872e24d40f220f03cb6cff9a3a
 docs/architecture/dashboard-foundation.md,2026-11-04 coordinating review,documentation/structure/provenance check,4845,47,4f0f422688a0e2d55c5a3062d0bfa820f995b413053f95371e8b0112c2d03a7b
 docs/architecture/domain-model.md,2026-11-04 coordinating review,documentation/structure/provenance check,20050,139,93e7b87936995dfd227f2284384a1b4650f345fbd6ecae25553aa804f1eb196c
 docs/architecture/incident-detection.md,2026-11-04 coordinating review,documentation/structure/provenance check,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835

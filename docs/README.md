@@ -90,3 +90,5 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 - [Local threat model](security-threat-model.md): assets, trust boundaries, controls and residual risks.
 - [Stage 13 verification](stage13-verification.md): hardening, measurements and acceptance state.
+
+- [Expanded advisory evaluation](investigation-expanded-evaluation.md): three additional incident classes and frozen acceptance protocol.
