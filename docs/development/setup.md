@@ -149,3 +149,7 @@ See [lineage operations](../lineage-operations.md) for migration, explicit deliv
 ## Current hardening checkpoint
 
 The historical test counts above describe their original checkpoints. See [current hardening verification](../hardening-verification.md) for the latest integrated checks and [local resilience](../local-resilience.md) for independent watcher installation, dedicated credentials, private backups, restore drills and interrupted-drill inspection. No public deployment or off-host monitoring is configured.
+
+## Integrated delivery checks
+
+Use the [delivery operations](../delivery-operations.md) procedure for committed-revision verification in a fresh temporary environment and for the ordered retained-stack startup/shutdown checklist. These checks do not use the live warehouse or authorize recovery.

@@ -81,3 +81,7 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 - [Contract](contracts/lineage-events.md): bounded OpenLineage profile and authenticated APIs.
 - [Operations](lineage-operations.md): enrollment, delivery, replay and snapshot capture.
 - [Verification](lineage-verification.md): failure scenarios and live checkpoint evidence.
+
+## Integrated delivery
+
+[Delivery operations](delivery-operations.md) describes isolated fresh-export checks, manual GitHub Actions, and retained-stack startup/shutdown.
