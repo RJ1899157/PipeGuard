@@ -4,7 +4,7 @@ path,review_area,method,bytes,text_lines,sha256
 .gitignore,Stage 14 final review,ops: source/configuration/documentation review,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .node-version,Stage 14 final review,ops: source/configuration/documentation review,8,1,0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314
 .python-version,Stage 14 final review,ops: source/configuration/documentation review,8,1,a05e0074505ce29f25abf3aebe4f7218d28e98411822f199e3272740be4e363c
-README.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",10846,107,852bc3e02a90bf6a4933734c69d3a80dee335b5b7e7e38b613620b5026552c79
+README.md,Repository presentation,current feature and checkpoint consistency; GitHub Markdown API rendering; browser layout/image check; local link and secret-value scan,11752,240,435680a84de89174ee6e230d1e0f981a013e6a331b6d8fa97cd0c0998924faf9
 alembic.ini,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,1158,14,5c617779eb4a37ea9f36470944956caf4d15943ee2e7e2d2245330c3732a94c6
 apps/pipeguard/migrations/README,Stage 14 final review,"backend: Schema/constraint, immutability triggers, privilege and destructive downgrade guard review",38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -202,6 +202,9 @@ docs/development/setup.md,Stage 14 final review,ops: source/configuration/docume
 docs/exploration-verification.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,4864,40,944d3e96171536c26f10530353cb490252f2e7a3b42ea5c540330390c54b474f
 docs/failure-coverage.md,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,15356,87,ae68d0ede888003462e63a1910870fdea08e18b871365bd83628be8372015178
 docs/hardening-verification.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,10599,61,1ebef747b3d50ec35370869e2179c2ccfa6208ff96ab02fe2ee4a9378218c370
+docs/images/execution.jpg,Repository presentation,live read-only dashboard capture; visual inspection for content and credential exposure; JPEG signature and byte hash,164894,0,98bebeb07ac5ccbc11cb0b1217ceb43f160fc6d0528af029500d50a26d940c5e
+docs/images/incidents.jpg,Repository presentation,live read-only dashboard capture; visual inspection for content and credential exposure; JPEG signature and byte hash,137510,0,af57792620655724ba92cb852ee42fff13ad80ce67ae993af6d1b613931d7423
+docs/images/overview.jpg,Repository presentation,live read-only dashboard capture; visual inspection for content and credential exposure; JPEG signature and byte hash,108961,0,b15b54be8b7a4005a7f4a02c15e0e7e7a2109b0eaacb53b99aa6138867350602
 docs/incident-operations.md,Stage 14 final review,ops: source/configuration/documentation review,3932,67,70e6a914aa0119aed868921fc095d45101d74741d316054c174f648992d77275
 docs/investigation-evaluation.md,Stage 14 final review,ops: source/configuration/documentation review,9009,68,28af315cce5c8bc1bbe74f6f67fd6e9cf5d2bb045a22df266266aeae450d78ab
 docs/investigation-expanded-evaluation.md,Stage 14 final review,ops: source/configuration/documentation review,9690,154,fcb68df795b63ecee8694fd74c084529c74934b5060d1194a271e3396acc0eac
