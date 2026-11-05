@@ -1,6 +1,8 @@
 services:
   postgres:
-    image: postgres:17@sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f
+    image: pipeguard-postgres:17.11-apt3.0.4
+    build: ./infra/postgres
+    pull_policy: build
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       PIPEGUARD_OWNER_PASSWORD: ${PIPEGUARD_OWNER_PASSWORD:?Set PIPEGUARD_OWNER_PASSWORD in .env}
