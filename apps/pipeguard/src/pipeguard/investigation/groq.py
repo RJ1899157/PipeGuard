@@ -83,9 +83,10 @@ def response_schema(packet):
 
 
 def json_request(url, *, key, body=None):
-    # All callers supply one of two fixed local/provider endpoints.
+    # Metadata checks are GET-only and cannot submit a generation body.
     local = re.fullmatch(r"http://127\.0\.0\.1:8000/v1/(?:evidence-bundles/[0-9a-f-]{36}|incidents/[0-9a-f-]{36}/investigations)", url)
-    if url != "https://api.groq.com/openai/v1/chat/completions" and not local:
+    metadata = url == "https://api.groq.com/openai/v1/models" and body is None
+    if url != "https://api.groq.com/openai/v1/chat/completions" and not local and not metadata:
         raise InvestigationRejected("unsupported_endpoint")
     opener = build_opener(ProxyHandler({}), NoRedirect())
     request = Request(url, data=json.dumps(body).encode() if body is not None else None,

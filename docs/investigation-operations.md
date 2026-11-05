@@ -61,11 +61,11 @@ uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE
 # Replay an existing request; never regenerate its recorded operation.
 uv run --locked --env-file .env python scripts/investigate.py --bundle-id BUNDLE_UUID --request-key REQUEST_UUID --free-plan-confirmed
 
-# Explicit synthetic connectivity probe; outside the incident ledger/admission budget.
+# Authenticated model metadata check; no generation or incident evidence submission.
 uv run --locked --env-file .env python scripts/investigate.py --verify-connection --free-plan-confirmed
 ```
 
-The connectivity probe sends synthetic data and saves a private local file under ignored `data/local/investigations/`. It is a diagnostic exception, not the normal incident workflow. Initial prototype files predate durable API records and are not retroactively imported.
+`--verify-connection` performs only an authenticated GET of Groq's fixed `/openai/v1/models` metadata endpoint and refuses missing, malformed or explicitly inactive configured-model entries. It never submits a prompt, generates a response or writes an investigation record. `--dry-run --verify-connection` makes no network request and needs no key or Free-plan confirmation. A live metadata check retains explicit Free-plan confirmation, but cannot verify the billing plan, inference availability or structured-output behavior. Normal generations still use the durable incident API and its admission caps. Historical prototype files remain private and are not retroactively imported.
 
 See [verification](investigation-verification.md) and [evaluation](investigation-evaluation.md) for measured checks and remaining acceptance work, and [Stage 11 design](recovery-design.md) for the recovery boundary. Official references: [Groq structured outputs](https://console.groq.com/docs/structured-outputs), [model status](https://console.groq.com/docs/model/openai/gpt-oss-120b), [rate limits](https://console.groq.com/docs/rate-limits), [data handling](https://console.groq.com/docs/your-data), [billing](https://console.groq.com/docs/billing-faqs), [PostgreSQL advisory locks](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS).
 

@@ -23,6 +23,8 @@ def test_fixture_values_are_exact():
     ("order_id", "DROP TABLE orders"), ("customer_id", ""), ("quantity", "0"),
     ("quantity", "1.5"), ("unit_price", "NaN"), ("unit_price", "1.234"),
     ("unit_price", "-1"), ("ordered_at", "2026-10-01T09:00:00"), ("status", "unknown"),
+    ("ordered_at", "9999-12-31T23:59:59-01:00"),
+    ("ordered_at", "0001-01-01T00:00:00+01:00"),
 ])
 def test_invalid_source_values_rejected_without_echo(tmp_path, column, value):
     lines = SOURCE.read_text().splitlines()

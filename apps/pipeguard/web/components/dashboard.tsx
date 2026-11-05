@@ -30,6 +30,7 @@ import type {
 } from "@/lib/types";
 import { graphEvidence, selectedEdgeIndex } from "@/lib/graph-evidence";
 import { useRead } from "@/lib/use-read";
+import { coverageSampleFresh } from "@/lib/coverage-freshness";
 import { ExecutionTimeline, QualityResults } from "./analytics";
 import { GraphText } from "./graph-text";
 import { WatchdogStatus } from "./watchdog-status";
@@ -304,10 +305,16 @@ export default function Dashboard() {
   );
   const references = graphEvidence(graph.data, node?.id, edgeIndex);
   const cov = coverage.data?.jobs.find((c) => c.job_id === job?.id);
-  const localFresh =
-    coverage.at && Date.now() - Date.parse(coverage.at) > 90000;
+  const coverageSample = useMemo(
+    () =>
+      coverage.at
+        ? { at: coverage.at, observedMonotonic: performance.now() }
+        : null,
+    [coverage.at],
+  );
+  const coverageStale = !coverageSampleFresh(coverageSample);
   const detector =
-    coverage.error || localFresh
+    coverage.error || coverageStale
       ? "unknown"
       : cov?.detector_status || "unknown";
   const [clock, setClock] = useState(0);
@@ -528,7 +535,7 @@ export default function Dashboard() {
                           <td>
                             <Status
                               value={
-                                coverage.error || localFresh
+                                coverage.error || coverageStale
                                   ? "unknown"
                                   : c?.detector_status || "unknown"
                               }
@@ -831,7 +838,9 @@ export default function Dashboard() {
                     <Status value={detector}>Monitor {label(detector)}</Status>
                     <small>
                       {cov ? label(cov.mode) : "Coverage unavailable"}
-                      {!demo && localFresh ? " · refresh needed" : ""}
+                      {!demo && coverage.at && coverageStale
+                        ? " · refresh needed"
+                        : ""}
                     </small>
                   </div>
                   <div>

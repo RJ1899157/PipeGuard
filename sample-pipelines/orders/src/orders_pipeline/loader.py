@@ -84,7 +84,7 @@ def parse_orders(path: Path):
                     raise ValueError
                 rows.append((int(row["order_id"]), row["customer_id"], timestamp.astimezone(timezone.utc),
                              int(row["quantity"]), price, row["status"]))
-            except (ValueError, InvalidOperation):
+            except (ValueError, OverflowError, InvalidOperation):
                 raise InvalidSource(f"invalid_values_at_line_{number}") from None
     except csv.Error:
         raise InvalidSource("malformed_csv") from None

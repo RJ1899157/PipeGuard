@@ -2,7 +2,7 @@
 
 ## Available components
 
-The project includes PostgreSQL 17, 21 SQLAlchemy metadata models (including incident, lineage and evidence records), Alembic
+The project includes PostgreSQL 17, 25 SQLAlchemy metadata models (including incident, lineage, evidence, investigation and recovery records), Alembic
 migrations, execution ingestion, an authenticated HTTP API and integration tests.
 The independent [orders workload](../../sample-pipelines/orders/README.md) adds source ingestion, dbt models and quality checks. Deterministic incident detection, lineage and a local read-only dashboard are implemented. See the [dashboard setup](../../apps/pipeguard/web/README.md) for frontend startup and its local owner access boundary.
 
@@ -10,7 +10,7 @@ The independent [orders workload](../../sample-pipelines/orders/README.md) adds 
 
 - Python 3.12.16, uv 0.13.7, Git and Docker Desktop.
 - GitHub access as `RJ1899157` for the private repository.
-- Node.js 22 and pnpm 11.25.0 for the web application.
+- Node.js 22.23.4 (pinned in `.node-version`) and pnpm 11.25.0 for the web application.
 
 The primary checkout is `/Users/rishabhjain/Desktop/PipeGuard`. Run the following
 commands from the repository root. Python packages are installed only in `.venv`;
@@ -125,7 +125,7 @@ stored data and is not part of routine shutdown.
 
 ## Boundaries and verification
 
-Monitoring dependencies remain in the root `.venv`; the independent orders workload uses its own local `.venv` and lockfile; future JavaScript dependencies belong in
+Monitoring dependencies remain in the root `.venv`; the independent orders workload uses its own local `.venv` and lockfile; JavaScript dependencies belong in
 local `node_modules`, and Airflow has an isolated constrained `.venv` and hash-pinned requirements.
 GitHub changes and commits use the repository owner, `RJ1899157`.
 
@@ -148,7 +148,7 @@ See [lineage operations](../lineage-operations.md) for migration, explicit deliv
 
 ## Current hardening checkpoint
 
-The historical test counts above describe their original checkpoints. See [current hardening verification](../hardening-verification.md) for the latest integrated checks and [local resilience](../local-resilience.md) for independent watcher installation, dedicated credentials, private backups, restore drills and interrupted-drill inspection. No public deployment or off-host monitoring is configured.
+The historical test counts above describe their original checkpoints. See the [current checkpoint](../next-session.md), [Stage 13 verification](../stage13-verification.md) and [expanded AI evaluation](../investigation-expanded-evaluation.md) for the latest completed integrated checks and [local resilience](../local-resilience.md) for independent watcher installation, dedicated credentials, private backups, restore drills and interrupted-drill inspection. No public deployment or off-host monitoring is configured.
 
 ## Integrated delivery checks
 

@@ -21,7 +21,7 @@ function LineageNode({ data, selected }: NodeProps) {
     <div className={`lineage-node ${node.kind} ${selected ? "selected" : ""}`}>
       <Handle type="target" position={Position.Left} />
       <Icon size={25} aria-hidden />
-      <strong>{node.name}</strong>
+      <strong title={node.name}>{node.name}</strong>
       <span>{node.kind === "dataset" ? "Dataset" : "Step execution"}</span>
       <Handle type="source" position={Position.Right} />
     </div>

@@ -35,7 +35,7 @@ Start the existing local PostgreSQL service. From the repository root:
 
 ```sh
 uv run --env-file .env python scripts/configure_sample_warehouse.py
-uv sync --project sample-pipelines/orders --locked --python 3.12
+uv sync --project sample-pipelines/orders --locked --python 3.12.16
 uv run --directory sample-pipelines/orders --locked --env-file .env python run.py
 ```
 
@@ -48,7 +48,7 @@ placeholders in `.env.example`.
 
 The sample uses `sample-pipelines/orders/.venv`, separate from the monitoring app's
 root `.venv`. Selected versions are dbt Core 1.12.6 and dbt-postgres 1.10.2 on Python
-3.12; `uv.lock` records the full resolution. Do not install the unrelated default
+3.12.16; `uv.lock` records the full resolution. Do not install the unrelated default
 `dbt` package or switch to dbt v2 without reviewing compatibility.
 
 To use another local, synthetic CSV:

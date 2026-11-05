@@ -4,7 +4,7 @@ The local monitoring UI uses Next.js 16, React 19, TypeScript, React Flow and EC
 
 ## Start
 
-Use Node.js 22 and pnpm 11.25.0. From the repository root:
+Use Node.js 22.23.4 (the exact [root version pin](../../../.node-version)) and pnpm 11.25.0. From the repository root:
 
 ```sh
 pnpm --dir apps/pipeguard/web install --frozen-lockfile
@@ -12,7 +12,7 @@ pnpm --dir apps/pipeguard/web build
 uv run --env-file .env python scripts/run_dashboard.py
 ```
 
-The provisioned API must already be running on `127.0.0.1:8000`. Open `http://127.0.0.1:3000`. The launcher verifies Node.js 22, binds the dashboard to loopback, disables Next.js telemetry and passes only the API credential plus basic process environment to the web server. Database and Airflow credentials are excluded. Ctrl+C stops the dashboard. Use `--dev` for development instead of the production build.
+The provisioned API must already be running on `127.0.0.1:8000`. Open `http://127.0.0.1:3000`. The launcher verifies the exact root `.node-version`, binds the dashboard to loopback, disables Next.js telemetry and passes only the API credential plus basic process environment to the web server. Database and Airflow credentials are excluded. Ctrl+C stops the dashboard. Use `--dev` for development instead of the production build.
 
 Before rebuilding production assets, stop the running dashboard. After the build completes, start the launcher again and reload open dashboard tabs. Replacing `.next` under a running production server can leave old HTML referring to missing chunks.
 

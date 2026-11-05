@@ -1,7 +1,7 @@
 """Immutable, bounded incident snapshots with scoped references and explicit missing evidence."""
 import json
 from uuid import UUID
-from sqlalchemy import select, func, literal, or_
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -19,6 +19,13 @@ SAFE_SOURCE_ERRORS = {
     "source_unsupported_mapping", "source_missing_timestamp", "source_incomplete_pagination",
     "source_scan_limit_exceeded", "source_component_unhealthy", "source_dag_import_error",
     "source_history_disappeared", "source_not_configured"}
+
+RUN_SUBJECT_CONDITIONS = {
+    "execution_evidence_missing", "orchestrator_run_failure", "clock_skew",
+    "attempt_history_gap", "conflicting_evidence", "execution_failure",
+    "unknown_execution_state", "missing_terminal", "quality_missing",
+    "lineage_partial", "lineage_missing"}
+COMPOSITE_SUBJECT_CONDITIONS = {"quality_failure", "quality_conflict", "lineage_conflict"}
 
 
 def _machine_summary(payload):
@@ -70,21 +77,21 @@ def capture(engine, incident_id):
                     return
                 seen.add(key); items.append(item); size += encoded_size
 
-            relevant = list(session.scalars(select(Run).where(Run.job_id == job.id, or_(
-                Run.external_run_id == incident.subject, func.starts_with(literal(incident.subject), Run.external_run_id + ":")))
-                .order_by(Run.created_at.desc(), Run.id).limit(101)))
-            binding_ids = list(session.scalars(select(LineageRun.external_run_id).where(LineageRun.job_id == job.id,
-                or_(LineageRun.external_run_id == incident.subject,
-                    func.starts_with(literal(incident.subject), LineageRun.external_run_id + ":"))).distinct().limit(101)))
-            execution_scoped = bool(relevant or binding_ids)
-            external_ids = {r.external_run_id for r in relevant} | set(binding_ids)
+            # The condition defines the subject namespace. A legal run ID may
+            # contain ':' or equal 'job'; neither may change an incident's scope.
+            execution_scoped = (incident.condition in RUN_SUBJECT_CONDITIONS
+                                or incident.condition in COMPOSITE_SUBJECT_CONDITIONS)
             if execution_scoped:
-                runs = relevant
+                external = (incident.subject.rsplit(":", 1)[0]
+                            if incident.condition in COMPOSITE_SUBJECT_CONDITIONS else incident.subject)
+                external_ids = {external}
+                runs = list(session.scalars(select(Run).where(Run.job_id == job.id,
+                    Run.external_run_id == external)))
             else:
                 runs = list(session.scalars(select(Run).where(Run.job_id == job.id)
                             .order_by(Run.created_at.desc(), Run.id).limit(101)))
                 external_ids = {r.external_run_id for r in runs[:100]}
-            if len(runs) > 100 or len(binding_ids) > 100:
+            if len(runs) > 100:
                 gaps.add("evidence_limit")
             history = list(session.scalars(select(IncidentHistory).where(IncidentHistory.incident_id == incident.id)
                                            .order_by(IncidentHistory.created_at, IncidentHistory.id).limit(101)))

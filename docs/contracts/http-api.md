@@ -3,7 +3,9 @@
 Status: implemented and verified with PostgreSQL using a restricted runtime role.
 The reference launcher binds only to `127.0.0.1:8000`. This is a local synthetic-data
 checkpoint; deployment beyond loopback requires a separate identity, TLS and security
-review. A local read-only dashboard is available; recovery endpoints remain planned.
+review. The local dashboard provides monitoring reads, explicit advisory investigation,
+and separate review-only and executable recovery controls. Executable recovery is
+normally disabled; its approval and start boundaries are described below.
 
 [OpenAPI contract](http-api-v1.openapi.json) · [Execution events](execution-events.md)
 · [Setup](../development/setup.md)
@@ -102,7 +104,10 @@ The database role operates across integrations, with producer isolation enforced
 API authorization; this is not database row-level tenant isolation. Integration IDs
 alone never authenticate a caller.
 
-## Verified checkpoint
+## Historical initial-API checkpoint
+
+This records the initial execution API slice, before the extensions below. Current
+checks and limitations are recorded in the [next-session checkpoint](../next-session.md).
 
 74 automated tests passed, including the previous persistence/ingestion checks and
 HTTP authentication, scope isolation, credential hashing/revocation, disabled
@@ -136,4 +141,36 @@ Administrator-only `POST /v1/incidents/{incident_id}/investigations` requires a 
 
 ## Recovery review
 
-The administrator-only proposal and approve/reject endpoints record review-only decisions, with integration-scoped keyset history. No execute endpoint exists. See [recovery operations](../recovery-operations.md) for exact inputs, freshness checks, replay semantics and the non-executable policy boundary; the generated OpenAPI contract includes all three routes.
+The administrator-only proposal and approve/reject endpoints record review-only decisions, with integration-scoped keyset history. No execution endpoint exists in this review-only namespace; separate executable
+recovery routes are described below. See [recovery operations](../recovery-operations.md) for exact inputs, freshness checks, replay semantics and the non-executable policy boundary; the generated OpenAPI contract includes all three routes.
+
+
+## Separate executable recovery
+
+Executable proposals use a separate immutable ledger and namespace, not the
+review-only approvals above. The fixed incident-scoped prefix is
+`/v1/incidents/{incident_id}/recovery-actions`:
+
+| Method and suffix | Access | Behavior |
+| --- | --- | --- |
+| `GET` prefix | Administrator or scoped producer | Keyset history, at most five proposals, eligibility and worker availability |
+| `POST` prefix | Administrator | Propose one allowlisted sample-job action using a UUID `request_key` |
+| `POST /{action_id}/decisions` | Administrator | Record approve/reject/cancel with exact proposal hash, UUID request key and literal confirmation |
+| `POST /{action_id}/dispatch` | Administrator | Separately start an approved action, bound to its exact hash and explicit confirmation |
+| `POST /{action_id}/reconcile` | Administrator | Look up the exact reserved external run and append its observation; never start a replacement |
+
+Incident, action and cursor scope is checked before worker access. Mutations use
+fixed operations through a supervised worker; arbitrary commands and destinations
+are not accepted. Dispatch rechecks execution capabilities, expiry, source state,
+monitoring freshness and unchanged evidence. Its durable intent commits before the
+external start request. Approval alone cannot start a run, and a review-only
+approval cannot supply executable authority.
+
+An uncertain transport/database response is not proof that no run started. Retain
+the exact operation body/key for deliberate replay and inspect its saved history.
+An existing intent is never dispatched a second time; exact-run reconciliation
+retains uncertain or conflicting observations. These controls do not establish
+exactly-once external execution. Source credentials stay outside the browser/API
+process in the private worker configuration. See [executable operations](../recovery-execution.md)
+and the [recorded live acceptance](../recovery-live-verification.md) for the bounded
+sample action, disabled defaults and remaining cross-system limits.

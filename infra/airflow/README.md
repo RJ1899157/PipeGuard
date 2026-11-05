@@ -26,7 +26,7 @@ resolution and hashes. To install from root:
 
 ```sh
 uv venv infra/airflow/.venv --python 3.12.16
-uv pip sync --python infra/airflow/.venv/bin/python infra/airflow/requirements.lock
+uv pip sync --python infra/airflow/.venv/bin/python --require-hashes infra/airflow/requirements.lock
 ```
 
 To intentionally regenerate a resolution, review the official constraint version,

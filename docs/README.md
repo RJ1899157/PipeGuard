@@ -17,7 +17,10 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Latest verification
 
-- [2026-11-04 post-recovery audit](post-recovery-audit.md): fixes, measured optimization, fresh suite/browser/restore evidence and remaining work.
+- [2026-11-04 expanded advisory evaluation](investigation-expanded-evaluation.md): version-11 synthetic live cohort, retained failed cohorts, replay and preservation checks.
+- [2026-11-04 Stage 13 verification](stage13-verification.md): runtime security patches, bounded resources, measurements and local acceptance.
+- [2026-11-04 delivery verification](delivery-verification.md): isolated local acceptance and subsequent hosted Linux success at its recorded revision.
+- [2026-11-04 post-recovery audit](post-recovery-audit.md): earlier fixes, measurements and checks before Stage 12.
 
 ## Dashboard
 
@@ -84,7 +87,7 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Integrated delivery
 
-[Delivery operations](delivery-operations.md) describes isolated fresh-export checks, manual GitHub Actions, and retained-stack startup/shutdown. [Local delivery verification](delivery-verification.md) records the passing checks and the pending hosted-Linux run.
+[Delivery operations](delivery-operations.md) describes isolated fresh-export checks, manual GitHub Actions, and retained-stack startup/shutdown. [Delivery verification](delivery-verification.md) records local acceptance and the successful owner-started hosted Linux run at the stated revision. The older stuck run is not acceptance evidence.
 
 ## Security and performance
 

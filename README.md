@@ -29,10 +29,10 @@ PipeGuard's workflow is:
 
 Sample pipelines emit observations consumed by PipeGuard. Business data stays in their warehouse; monitoring records belong to PipeGuard. See the [architecture overview](docs/architecture/overview.md) for planned service and database boundaries.
 
-## Planned capabilities
+## Capabilities and coverage
 
 - Pipeline and dataset catalog with execution and retry history.
-- Data freshness, volume, schema, and integrity checks.
+- Versioned reported quality checks, including the sample pipeline’s integrity rules.
 - Dataset lineage and downstream impact exploration.
 - Deterministic incident detection with deduplication and lifecycle history.
 - Captured evidence with provenance and redaction metadata.
@@ -40,7 +40,7 @@ Sample pipelines emit observations consumed by PipeGuard. Business data stays in
 - Human-approved recovery with authorization, expiry, and audit records.
 - Responsive operational dashboards and repeatable fault scenarios.
 
-Capabilities beyond the execution, sample quality and deterministic detection slices remain delivery targets. The [roadmap](docs/roadmap.md) tracks implementation stages and acceptance criteria.
+Execution history, reported quality, deterministic detection, observed lineage, advisory investigation and scoped recovery are implemented as bounded local slices. Broader quality policies and deployment extensions remain separate scope. The [roadmap](docs/roadmap.md) tracks implementation stages and acceptance criteria.
 
 ## Technology plan
 
@@ -55,7 +55,7 @@ Capabilities beyond the execution, sample quality and deterministic detection sl
 | Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | Isolated delivery checks and both manual hosted Linux CI jobs passed                |
 | Later integrations        | Marquez, Prometheus, optional GCP                              | Deferred                                                                                      |
 
-Library patch versions and container image references will be selected and locked at implementation. Optional 3D visualization is an exploration, not a core dependency.
+Library patch versions and the official container image digest are locked; unresolved advisories are documented. Optional 3D visualization is an exploration, not a core dependency.
 
 ## Get started
 
@@ -69,7 +69,7 @@ uv sync --locked
 
 The repository is private and requires authorized GitHub access. For the existing checkout on the development machine, use `/Users/rishabhjain/Desktop/PipeGuard` and run only `uv sync --locked`.
 
-The command prepares the monitoring application’s `.venv`. The development setup documents database migration, API provisioning and startup. The [orders workload](sample-pipelines/orders/README.md) has its own environment and execution instructions. Docker Desktop is only needed when container-backed services are introduced. See [development setup](docs/development/setup.md) for environment and dependency policies.
+The command prepares the monitoring application’s `.venv`. The development setup documents database migration, API provisioning and startup. The [orders workload](sample-pipelines/orders/README.md) has its own environment and execution instructions. Docker Desktop is required for the existing PostgreSQL-backed local runtime. See [development setup](docs/development/setup.md) for environment and dependency policies.
 
 For the dashboard, follow the [web setup](apps/pipeguard/web/README.md). It runs locally on port 3000 and uses the existing API without exposing its credential to the browser.
 
@@ -83,7 +83,7 @@ PipeGuard/
 │   ├── architecture/       # System boundaries and domain model
 │   ├── development/        # Local setup and dependency policies
 │   └── roadmap.md          # Delivery stages and acceptance criteria
-├── .python-version         # Python minor-version selection
+├── .python-version         # Exact Python security-patch selection
 ├── pyproject.toml          # Python project metadata
 └── uv.lock                 # Dependency resolution
 ```

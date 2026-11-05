@@ -54,7 +54,7 @@ uv run --env-file .env alembic check
 uv run --directory sample-pipelines/orders --env-file .env pytest -q
 ```
 
-See [detection architecture](architecture/incident-detection.md) for authority and limitations. The final security/performance stage remains required.
+See [detection architecture](architecture/incident-detection.md) for authority and limitations. The [Stage 13 local security/performance gate](stage13-verification.md) is verified; the [Stage 14 final audit](roadmap.md) remains a separate sign-off.
 
 ## Enroll an event-only job
 

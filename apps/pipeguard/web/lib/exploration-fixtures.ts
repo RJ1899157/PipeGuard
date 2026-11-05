@@ -57,7 +57,7 @@ export function performanceGraph(cycle = false): Graph {
   const nodes = Array.from({ length: 200 }, (_, i) => ({
     id: `${Math.floor(i / 10) % 2 ? "step" : "dataset"}:fixture-${i}`,
     kind: Math.floor(i / 10) % 2 ? ("step" as const) : ("dataset" as const),
-    name: `fixture-${i}`,
+    name: i < 2 ? `fixture-${i}-`.padEnd(255, "x") : `fixture-${i}`,
     namespace: "synthetic-performance-fixture",
   }));
   if (cycle)

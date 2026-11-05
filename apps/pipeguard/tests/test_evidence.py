@@ -109,3 +109,111 @@ def test_bundle_bounds_are_explicit_when_cited_history_exceeds_budget(api):
     assert r.status_code==201,r.text
     body=r.json()['payload']
     assert body['truncated'] and 'evidence_limit' in body['missing_evidence'] and len(body['items'])<=100
+
+
+def _scope_fixture(api, *, airflow=False):
+    client, admin, engine, _ = api
+    headers, event, _ = producer(api, 'scope-proof')
+    policy = {'job_id': event['job_id'], 'quality_required': False}
+    if airflow:
+        policy.update(airflow_dag_id='scope-proof', airflow_task_id='task')
+    assert client.post('/v1/monitor-policies', headers=admin, json=policy).status_code == 201
+    return client, admin, engine, headers, event
+
+
+def _scope_event(client, headers, event, run, state='succeeded'):
+    assert client.post('/v1/events', headers=headers, json=event | {
+        'event_id':run, 'external_run_id':run, 'state':state}).status_code == 202
+
+
+def _scope_bundle(client, admin, incident):
+    response = client.post(f"/v1/incidents/{incident['id']}/evidence-bundles", headers=admin)
+    assert response.status_code == 201, response.text
+    return response.json()['payload']
+
+
+def test_execution_subject_does_not_include_a_separate_run_with_a_prefix_id(api):
+    client, admin, engine, headers, event = _scope_fixture(api)
+    for run in ('foo', 'foo:bar'):
+        _scope_event(client, headers, event, run, 'failed')
+    evaluate_job(engine, event['job_id'])
+    incident = next(i for i in client.get('/v1/incidents', headers=admin).json()
+                    if i['condition'] == 'execution_failure' and i['subject'] == 'foo:bar')
+    body = _scope_bundle(client, admin, incident)
+    assert body['context_scope'] == 'execution'
+    assert body['external_run_ids'] == ['foo:bar']
+    assert {i['summary']['external_run_id'] for i in body['items'] if i['table'] == 'runs'} == {'foo:bar'}
+
+
+def test_source_coverage_stays_job_wide_when_a_run_is_named_job(api):
+    client, admin, engine, headers, event = _scope_fixture(api, airflow=True)
+    for run in ('job', 'other'):
+        _scope_event(client, headers, event, run)
+    with Session(engine) as session, session.begin():
+        observe(session, UUID(event['job_id']), 'airflow', 'source_scan',
+                {'status':'incomplete'}, datetime.now(timezone.utc))
+    evaluate_job(engine, event['job_id'])
+    incident = next(i for i in client.get('/v1/incidents', headers=admin).json() if i['condition'] == 'source_coverage')
+    body = _scope_bundle(client, admin, incident)
+    assert body['context_scope'] == 'job'
+    assert body['external_run_ids'] == ['job', 'other']
+
+
+def _scope_quality(client, headers, event, key, status):
+    report = {k:event[k] for k in ('schema_version', 'integration_id', 'job_id',
+        'external_run_id', 'attempt_number', 'occurred_at')}
+    report.update(event_id=key, inventory_complete=True,
+                  checks=[{'rule_id':'orders.unique', 'rule_version':'a'*64, 'status':status}])
+    assert client.post('/v1/quality-reports', headers=headers, json=report).status_code == 202
+
+
+@pytest.mark.parametrize('condition', ['quality_failure', 'quality_conflict', 'lineage_conflict'])
+def test_composite_subject_uses_its_typed_suffix_not_a_run_id_prefix_or_exact_decoy(api, condition):
+    client, admin, engine, headers, event = _scope_fixture(api)
+    for run in ('foo', 'foo:bar'):
+        _scope_event(client, headers, event, run)
+    target = event | {'external_run_id':'foo:bar'}
+    if condition.startswith('quality'):
+        _scope_quality(client, headers, target, 'quality-failed', 'fail')
+        if condition == 'quality_conflict':
+            _scope_quality(client, headers, target, 'quality-passed', 'pass')
+    else:
+        first = report(target)
+        post(client, headers, first)
+        second = first | {'event_id':'lineage-failed', 'event':first['event'] | {'eventType':'FAIL'}}
+        post(client, headers, second)
+    evaluate_job(engine, event['job_id'])
+    incident = next(i for i in client.get('/v1/incidents', headers=admin).json() if i['condition'] == condition)
+    # A legal run can even equal the entire composite incident subject.
+    _scope_event(client, headers, event, incident['subject'])
+    body = _scope_bundle(client, admin, incident)
+    assert body['context_scope'] == 'execution'
+    assert body['external_run_ids'] == ['foo:bar']
+    assert {i['summary']['external_run_id'] for i in body['items'] if i['table'] == 'runs'} == {'foo:bar'}
+
+
+def test_quality_only_subject_remains_execution_scoped_without_a_run_projection(api):
+    client, admin, engine, headers, event = _scope_fixture(api)
+    _scope_event(client, headers, event, 'other')
+    _scope_quality(client, headers, event | {'external_run_id':'foo:bar'}, 'quality-only', 'fail')
+    evaluate_job(engine, event['job_id'])
+    incident = next(i for i in client.get('/v1/incidents', headers=admin).json() if i['condition'] == 'quality_failure')
+    body = _scope_bundle(client, admin, incident)
+    assert body['context_scope'] == 'execution'
+    assert body['external_run_ids'] == ['foo:bar']
+    assert not [i for i in body['items'] if i['table'] in {'runs', 'ingested_events'}]
+
+
+def test_lineage_only_subject_does_not_include_another_binding_with_a_prefix_id(api):
+    client, admin, engine, headers, event = _scope_fixture(api)
+    for run in ('foo', 'foo:bar'):
+        body = report(event | {'external_run_id':run}, key=run)
+        body.update(coverage='partial', missing_metadata=['unresolved_dependency'])
+        post(client, headers, body)
+    evaluate_job(engine, event['job_id'])
+    incident = next(i for i in client.get('/v1/incidents', headers=admin).json()
+                    if i['condition'] == 'lineage_partial' and i['subject'] == 'foo:bar')
+    body = _scope_bundle(client, admin, incident)
+    assert body['context_scope'] == 'execution'
+    assert body['external_run_ids'] == ['foo:bar']
+    assert {i['summary']['external_run_id'] for i in body['items'] if i['table'] == 'lineage_events'} == {'foo:bar'}
