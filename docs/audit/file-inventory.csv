@@ -4,7 +4,7 @@ path,review_area,method,bytes,text_lines,sha256
 .gitignore,Stage 14 final review,ops: source/configuration/documentation review,373,34,66ce382c9bb2aadd6c3489e670d13706f9eecb69106b069f0f6d737e18c44190
 .node-version,Stage 14 final review,ops: source/configuration/documentation review,8,1,0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314
 .python-version,Stage 14 final review,ops: source/configuration/documentation review,8,1,a05e0074505ce29f25abf3aebe4f7218d28e98411822f199e3272740be4e363c
-README.md,Stage 14 final review,ops: source/configuration/documentation review,10806,107,74284f843abd071bd9c2672871429b36d8e9135ec47427d61e7e7eca1c35d592
+README.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",10846,107,852bc3e02a90bf6a4933734c69d3a80dee335b5b7e7e38b613620b5026552c79
 alembic.ini,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,130,4,72e73253b455a50c7dc9aa1504fbe24aa95034fccbed12a4e499641982b1c487
 apps/pipeguard/README.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,1158,14,5c617779eb4a37ea9f36470944956caf4d15943ee2e7e2d2245330c3732a94c6
 apps/pipeguard/migrations/README,Stage 14 final review,"backend: Schema/constraint, immutability triggers, privilege and destructive downgrade guard review",38,1,31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884
@@ -138,9 +138,9 @@ apps/pipeguard/web/tests/recovery.test.ts,Stage 14 final review,web: owned sourc
 apps/pipeguard/web/tests/security.test.ts,Stage 14 final review,web: owned source/configuration/tests/lockfile structure review; actual browser proof performed separately by parent,1991,51,2e0429b4161848870371fba4c8ff1d19ca704f8b4f82d32ecc4495f1b035c505
 apps/pipeguard/web/tests/watchdog.test.ts,Stage 14 final review,web: owned source/configuration/tests/lockfile structure review; actual browser proof performed separately by parent,1370,33,a065ac14200d9163af47a21f0ebad5d2ba64f866bf9f124f5c4ba320c79502d9
 apps/pipeguard/web/tsconfig.json,Stage 14 final review,web: owned source/configuration/tests/lockfile structure review; actual browser proof performed separately by parent; coordinator: Parsed complete JSON structure and recorded content hash; generated API contract equality covered by delivery checks,655,28,9f75583e8c444090c24b67a4140ccd8e05ba34b601e5798ea557d09e5c5836d3
-compose.yaml,Stage 14 final review,ops: source/configuration/documentation review,682,18,1e33e331e46bac21033e9a4ad4659588b6c4ac592ec1a91dc109b49c4157e264
+compose.yaml,Post-audit container security maintenance,signed Debian provenance and minimal image diff; ARM64 isolated 599-case acceptance; AMD64 hosted CI; pre/post three-database restore and retained-data verification,683,20,70840329b214feacf0ab04775fa3112c9037889c696f32d011809f56b63481ab
 design-qa.md,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,7073,68,62965076a982bb6190691652fb957901ad432a3cb316471fe5ad264741830255
-docs/README.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,6778,99,52fd726c63a6b3eddfdb09d16684d5ce1a18ac80993dfe670f769d722c686891
+docs/README.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",6952,101,d61421967957d6c3df91eeecab1920654d90b20184137c6faaeb365e4d5e3369
 docs/architecture/dashboard-foundation.md,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,4845,47,4f0f422688a0e2d55c5a3062d0bfa820f995b413053f95371e8b0112c2d03a7b
 docs/architecture/domain-model.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,20050,139,93e7b87936995dfd227f2284384a1b4650f345fbd6ecae25553aa804f1eb196c
 docs/architecture/incident-detection.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,6474,40,97920f1ab783beb075f87ea366d6666d96a770fefe8cd516b8a99a7f8c972835
@@ -152,6 +152,7 @@ docs/audit/2026-11-04/03-uncertain-submission.jpg,Stage 14 final review,coordina
 docs/audit/2026-11-04/04-unavailable-preview.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,38018,0,7db0586c151e67daff923252cef0cf3dc993292c76c5e7ef9a1bce7beca693c7
 docs/audit/2026-11-04/05-mobile.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,41492,0,48cd157c3c676da53225a59110c1184507df755505aa374ae2f67ad52ab7f98b
 docs/audit/2026-11-04/verification-data.json,Stage 14 final review,coordinator: Parsed complete JSON structure and recorded content hash; generated API contract equality covered by delivery checks,71035,2315,d1aee5ad2dc777071c80948b2756d67485b1c2b72ff9966962754d25c7024439
+docs/audit/container-maintenance-verification.json,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",10197,355,6c692fdf21d217ff8bc05b2f24f218e8b1a5d6323e279916be19acdec25ca92c
 docs/audit/execution-dashboard-desktop.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,82747,0,79e08cbff28e7bca894cc12b5d17a21f44a8ac1bd1dbb6b1ba5e45042e223955
 docs/audit/execution-dashboard-live.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,114648,0,984bf83b8b5bdf5643796ee44a0f8e15a97a969b0559fc4a23583605218e9a74
 docs/audit/execution-dashboard-mobile.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,64049,0,a37835c47f1d8f1219e585f69763c9cd49b8fe4fec02427d9b959838d3af8101
@@ -165,6 +166,8 @@ docs/audit/investigation-expanded-evaluation.json,Stage 14 final review,coordina
 docs/audit/investigation-mobile.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,45862,0,f28dadd002bdd1c05637d5250cc7f89f9e9ecbeaaddfa53707ad5d20c6db5441
 docs/audit/mobile-top.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,34246,0,c0eded98a7c2b8cf291b3ad28f8ee5858448c6f097923f5d57379113d014ff30
 docs/audit/postgres-advisory-triage.json,Stage 14 final review,coordinator: Parsed complete JSON structure and recorded content hash; generated API contract equality covered by delivery checks,60459,1950,99f331bc5673c7129a4c39b6f0f3ae7eb5b43cf72af25b083c3ab876b0e84d95
+docs/audit/postgres-maintenance-advisories.json,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",55982,1888,a48e407f58b6bde52d4d27bd18864533647bd5e944593e30fe7082b8dd25764f
+docs/audit/postgres-maintenance-packages.tsv,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",1897,95,5353f2f91de9dde989c0b8069532c921e41ec03a4d2869ad834a66240c40c8a9
 docs/audit/postgres-packages.tsv,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,2942,142,2c1e624c7594486f4f434a3fc87aeff699e82b6ab3c9bd53571bd6524c4869a0
 docs/audit/recovery-desktop.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,57377,0,7c352537f4302db77bebd1b3786618862e7f6f74fddfe4ba2471df7ac9e5e8b3
 docs/audit/recovery-live-success.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,134221,0,1d2f854f7c73b13c777b7cab606047d69713be6c3dd3c09a44ac04cc5c03e7d8
@@ -178,7 +181,8 @@ docs/audit/stage14/graph-before.jpg,Stage 14 final review,coordinator: current c
 docs/audit/stage14/mobile.jpg,Stage 14 final review,coordinator: current captured/visually inspected browser evidence,39792,0,c95e20cb4f589bc570013a2e16dc11e46c507ef537ecac29785b5bb2dad66845
 docs/audit/stage14/overview.jpg,Stage 14 final review,coordinator: current captured/visually inspected browser evidence,66113,0,8e8b20be7ce3337863ea1d909b714b415b77aba24ba9dabee3d3b42df8bd160f
 docs/audit/tablet-final.jpg,Stage 14 final review,coordinator: historical visual artifact signature/hash; not used as current UI evidence,42467,0,14f12fd976cb44429549bb8f25113cf80e134555d73b6608664786bbc2a1b381
-docs/container-security.md,Stage 14 final review,ops: source/configuration/documentation review,5705,49,24ee794334dad3b7e5f2a8cb2f9de0901fb8901a98dce3ec6cc001fc41d369a9
+docs/container-maintenance.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",3972,64,947cd18f0c705e9c27e73b311cfbc46a232cd4eb77f51e0ebe02d775262bb4d2
+docs/container-security.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",6094,55,6596d903f4bbe9701533c4170ee4f1d7b97241d2c923e8482da738e6133556be
 docs/contracts/execution-event-v1.schema.json,Stage 14 final review,coordinator: Parsed complete JSON structure and recorded content hash; generated API contract equality covered by delivery checks,1757,86,7d92c3f7b707a1ffc509968aba916468671ea4b5c2c268c1a10304ddbaf75dbb
 docs/contracts/execution-events.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,6762,116,f547adad9945fa24759be4f75180f113c20ced9f220146b98fd2d6c8f8ff8451
 docs/contracts/http-api-v1.openapi.json,Stage 14 final review,coordinator: Parsed complete JSON structure and recorded content hash; generated API contract equality covered by delivery checks,212240,8088,e880037e70d3e8b737d6e23b97367249606067dcc6399cef71ee1c6646176106
@@ -206,7 +210,7 @@ docs/investigation-verification.md,Stage 14 final review,web: human contract/sou
 docs/lineage-operations.md,Stage 14 final review,ops: source/configuration/documentation review,2858,49,c064552eef0c7407ef38d63c9189e17d7674fe7d18550a836867ecfee34c503f
 docs/lineage-verification.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,4619,43,12811eb5f075eeeece845a016ae63b697bfee1c0f452c050492b6812f8b90d6b
 docs/local-resilience.md,Stage 14 final review,ops: source/configuration/documentation review,6139,67,aec4509b872511e78d9f23789b2dc09db333f82a50bd7ba866d368efde17b60a
-docs/next-session.md,Stage 14 final review,ops: source/configuration/documentation review,7339,53,da76d02fccb282d99c8e1321a115a94d224e8b29ba32d1065d292a0468dd1cd0
+docs/next-session.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",7521,58,f0d5e900eebad59efd2c45656244945795cee9d578c7275f2c881672ba105e99
 docs/post-recovery-audit.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,16961,87,20de60bad2ab579bd869e73ab1687217258e43df09a5cec14d11646684cac39c
 docs/recovery-airflow-authorization.md,Stage 14 final review,ops: source/configuration/documentation review,7310,57,c15244d1d94d92778bef0f621af8be6bf52a0d117e9a69f993f0f9fab61bd345
 docs/recovery-dashboard-verification.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,5527,51,28bf2826eb14ab4edd9a20e7a4bf3f070444a161f8dc2348986a812e03425cdb
@@ -221,7 +225,7 @@ docs/recovery-verification.md,Stage 14 final review,web: human contract/source c
 docs/roadmap.md,Stage 14 final review,ops: source/configuration/documentation review,16119,49,07a7debad3fd368a2d3b83200da5b79e6440293b2ecd44c492de9f09786cd01a
 docs/security-threat-model.md,Stage 14 final review,ops: source/configuration/documentation review,9838,72,be3e170f71e3bf1b704bbc2a5a7ac258ca16a1d09069c3f1d9eb8d9cd9839191
 docs/stage13-verification.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,6714,103,15ca2e423cea2aa454753275a139a463bfd7ec93265f3df1a8bde95eb7e67787
-docs/stage14-audit.md,Stage 14 final review,coordinator: configuration or document scope/link/consistency review,7982,117,747c9f35bb2adbdd63f2f7ce59648eda2df6c63bc11bac7545d019a92a57e1e2
+docs/stage14-audit.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",8147,120,81d7128828483fa6f65b9fb4368fd91a44bbc2dce7911669f24195c23ac1fa77
 docs/system-audit.md,Stage 14 final review,web: human contract/source comparison and historical/current scope review,16092,92,6d76332ae46f1c19d24c99eb6fffe2e2095bd87bc84e32982f836c185b1ba2a7
 infra/airflow/README.md,Stage 14 final review,ops: source/configuration/documentation review,13552,163,fac13bce42eccec86f7bb971a4d2aad085be98f90defab45e81355d17da802ac
 infra/airflow/auth/pipeguard_airflow_auth.py,Stage 14 final review,ops: source/configuration/documentation review,4355,92,397702cdda5adf16286112cae8a5bc3d7b12000daafa02e071fa924dcb1ce21c
@@ -232,6 +236,9 @@ infra/airflow/requirements.lock,Stage 14 final review,coordinator: lock/provenan
 infra/airflow/security-constraints.txt,Stage 14 final review,ops: source/configuration/documentation review,533,15,8dedd93edaf4e20da0e50dbefee58bfc4658b872ef5d8db2c2299ac9674d7740
 infra/airflow/tests/test_orders_scenario.py,Stage 14 final review,ops: source/configuration/documentation review,3513,74,ba46f4247373d0dcceab774f9b8f35c04e0311dd703231a0f19295636d8faca5
 infra/airflow/tests/test_recovery_auth.py,Stage 14 final review,ops: source/configuration/documentation review,10762,173,98516a60607506b69b9d8bafbabccf7b4bc32d0d0f46732ece820b77e568ba99
+infra/postgres/Dockerfile,Post-audit container security maintenance,signed Debian provenance and minimal image diff; ARM64 isolated 599-case acceptance; AMD64 hosted CI; pre/post three-database restore and retained-data verification,1188,11,f35f7c0bf343a619601f7ce35477144185c0c108c5243e38af3d24ff1da7da8a
+infra/postgres/README.md,Post-audit container security maintenance,"maintenance documentation, evidence and link consistency review",1936,31,12604e04fd78aca0e9bbebe5d04bdc6f94c0aeaf6498e6efebf4d523d0da5313
+infra/postgres/apt-patch.json,Post-audit container security maintenance,signed Debian provenance and minimal image diff; ARM64 isolated 599-case acceptance; AMD64 hosted CI; pre/post three-database restore and retained-data verification,2092,44,75087034d2f8bcf405f1429cb52a327bc34ab993f968deee295be8b2b622fbf5
 infra/postgres/init.sh,Stage 14 final review,ops: source/configuration/documentation review,349,8,a83eab06a5092ed14925ca246e800771fb4c4b4a6b9b35aad125dbc54cb3b7aa
 pyproject.toml,Stage 14 final review,ops: source/configuration/documentation review,433,22,e648bb4eed7b2c12b3b0e80153c1e62e0fa23f77e7460dc1ae33f95a9d0d5dfa
 sample-pipelines/README.md,Stage 14 final review,ops: source/configuration/documentation review,558,11,43b377b82c4954d2d8b044ffd5d08aa8120cad343dac5d3c262c23b95aa8633a

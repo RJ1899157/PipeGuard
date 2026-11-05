@@ -17,6 +17,8 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Latest verification
 
+- [2026-11-05 container maintenance](container-maintenance.md): verified APT patch, 599 cases, both architecture builds, retained-data preservation, restores and hosted CI.
+
 - [Stage 14 final audit](stage14-audit.md):599 cases, multi-agent fixes, current browser evidence, restores, preservation and hosted CI.
 
 - [2026-11-04 expanded advisory evaluation](investigation-expanded-evaluation.md): version-11 synthetic live cohort, retained failed cohorts, replay and preservation checks.

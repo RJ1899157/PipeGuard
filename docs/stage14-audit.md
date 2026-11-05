@@ -62,7 +62,10 @@ Python OSV queries returned zero matches across 28 application, 65 workload and 
 Airflow package entries. Frontend audit returned zero known advisories across 86
 entries. These are time-specific advisory lookups, not proofs of vulnerability absence.
 
-### Current container maintenance finding
+### Container maintenance finding at audit sign-off
+
+Subsequent [verified image maintenance](container-maintenance.md) closed the APT
+fix described below. This section retains the original audit checkpoint.
 
 The 2026-11-05 refresh returns **131 installed-source matches**, up from 130.
 Debian now publishes **APT 3.0.4** for [CVE-2026-109518](https://security-tracker.debian.org/tracker/CVE-2026-109518);

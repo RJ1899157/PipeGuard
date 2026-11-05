@@ -55,7 +55,7 @@ Execution history, reported quality, deterministic detection, observed lineage, 
 | Runtime and checks        | Docker Compose, Pytest, Playwright, GitHub Actions             | Isolated delivery checks and both manual hosted Linux CI jobs passed                |
 | Later integrations        | Marquez, Prometheus, optional GCP                              | Deferred                                                                                      |
 
-Library patch versions and the official container image digest are locked; unresolved advisories are documented. Optional 3D visualization is an exploration, not a core dependency.
+Library patch versions, the official container base digest and the two-package Debian security overlay are locked; unresolved advisories are documented. Optional 3D visualization is an exploration, not a core dependency.
 
 ## Get started
 

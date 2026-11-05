@@ -1,6 +1,7 @@
 # Next-session checkpoint
 
-Verified: **2026-11-04**, after [Stage 13 local acceptance](stage13-verification.md).
+Latest verification: **2026-11-05**, after [container maintenance](container-maintenance.md).
+Earlier stage checkpoints below retain their original evidence and counts.
 
 ## Current verified state
 
@@ -31,8 +32,12 @@ current browser evidence, three fresh restores and both hosted Linux CI jobs on
 content hashes. All **16** isolated AI records replay without new generation. Recovery
 remains off, the DAG paused and source inventory **8/14**.
 
-No mandatory owned-code stage remains. Future maintenance includes the newly
-published APT 3.0.4 container fix, upstream image/advisory updates and any explicitly
+The published APT 3.0.4 fix is now deployed: all 599 cases and both hosted CI jobs
+passed again. All 10,807 pre-maintenance immutable rows retain content hashes;
+three database backups passed restores before and after the switch.
+
+No mandatory owned-code stage remains. Future maintenance includes
+upstream image/advisory updates and any explicitly
 chosen deployment expansion. The owner deferred old GitHub run #1 cleanup and
 declined off-device monitoring/backups; do not treat them as blocked code work.
 
@@ -40,7 +45,7 @@ declined off-device monitoring/backups; do not treat them as blocked code work.
 
 | Boundary                      | Current state                                                                                                              | Needed for broader guarantees                                                                                                             |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Container advisories          | 131 matches across 95 source/version pairs; APT 3.0.4 fix published; official ARM64 image unchanged | Reviewed image maintenance for APT 3.0.4 and future upstream fixes; [current evidence](stage13-verification.md#current-dependency-findings) |
+| Container advisories          | 130 matches across 95 source/version pairs after verified APT 3.0.4 patch | Future compatible upstream fixes; [current evidence](container-maintenance.md) |
 | Total host/network loss       | Watcher runs on this Mac                                                                                                   | An independent always-on device or externally hosted watcher                                                                              |
 | Disk/host loss                | Verified backups remain on this disk                                                                                       | Separately protected backup destination and transfer/restore procedure                                                                    |
 | Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion                            | Reviewed incremental processing/retention and cross-host fencing                                                                          |

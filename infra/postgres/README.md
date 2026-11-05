@@ -20,8 +20,9 @@ The build context contains only this directory, excluding project secrets.
 
 Before replacing a retained container, take consistent backups of all three
 databases and verify restores against a disposable patched database. Retain the
-previous image and named volume. Then run `docker compose up --detach --no-deps
---wait postgres`, verify health and retained evidence, and repeat restore checks.
+previous image and named volume. Then run
+`docker compose up --detach --no-deps --wait postgres`, verify health and retained
+evidence, and repeat restore checks.
 Never remove the volume. This overlay does not claim to resolve unrelated Debian
 advisories; see [container security](../../docs/container-security.md).
 

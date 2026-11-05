@@ -1,0 +1,1888 @@
+{
+  "checked_at": "2026-11-05T04:22:56.720642+00:00",
+  "image": "pipeguard-postgres:17.11-apt3.0.4",
+  "source_version_pairs": 95,
+  "advisory_matches": 130,
+  "fixed_apt_cve": "CVE-2026-109518",
+  "published_fixed_versions_in_remaining_matches": [],
+  "bulk_feed_missing_records": 1,
+  "osv_sha256": "3216f38e8238db85f34b37ad35cec706d8a5d14e420073e9020546424b5ac8d1",
+  "tracker_sha256": "ff4c1a08a537b7bc4bd2e48baeda1bcc644aefb4defeff37aaa4115bd8b3a27f",
+  "records": [
+    {
+      "source_package": "acl",
+      "installed_source_version": "2.3.2-2",
+      "cve": "CVE-2026-54369",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.3.2-2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Will be fixed first in unstable, then point release update; not to be backported by individual patches",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-54369"
+    },
+    {
+      "source_package": "acl",
+      "installed_source_version": "2.3.2-2",
+      "cve": "CVE-2026-54370",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.3.2-2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Will be fixed first in unstable, then point release update; not to be backported by individual patches",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-54370"
+    },
+    {
+      "source_package": "apt",
+      "installed_source_version": "3.0.4",
+      "cve": "CVE-2011-3374",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.0.3",
+          "trixie-security": "3.0.4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2011-3374"
+    },
+    {
+      "source_package": "attr",
+      "installed_source_version": "1:2.5.2-3",
+      "cve": "CVE-2026-54371",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:2.5.2-3"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Will be fixed first in unstable, then point release update; not to be backported by individual patches",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-54371"
+    },
+    {
+      "source_package": "bzip2",
+      "installed_source_version": "1.0.8-6",
+      "cve": "CVE-2026-42250",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.0.8-6"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-42250"
+    },
+    {
+      "source_package": "coreutils",
+      "installed_source_version": "9.7-3",
+      "cve": "CVE-2017-18018",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "9.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2017-18018"
+    },
+    {
+      "source_package": "coreutils",
+      "installed_source_version": "9.7-3",
+      "cve": "CVE-2025-5278",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "9.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-5278"
+    },
+    {
+      "source_package": "coreutils",
+      "installed_source_version": "9.7-3",
+      "cve": "CVE-2026-56391",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "9.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-56391"
+    },
+    {
+      "source_package": "coreutils",
+      "installed_source_version": "9.7-3",
+      "cve": "CVE-2026-56392",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "9.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-56392"
+    },
+    {
+      "source_package": "cyrus-sasl2",
+      "installed_source_version": "2.1.28+dfsg1-9",
+      "cve": "CVE-2026-107161",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.1.28+dfsg1-9"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Will be fixed via point release; suggested patch taken for update",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-107161"
+    },
+    {
+      "source_package": "dash",
+      "installed_source_version": "0.5.12-12",
+      "cve": "CVE-2026-102473",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "0.5.12-12"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-102473"
+    },
+    {
+      "source_package": "dash",
+      "installed_source_version": "0.5.12-12",
+      "cve": "CVE-2026-102474",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "0.5.12-12"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-102474"
+    },
+    {
+      "source_package": "diffutils",
+      "installed_source_version": "1:3.10-4",
+      "cve": "CVE-2026-53910",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:3.10-4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-53910"
+    },
+    {
+      "source_package": "gcc-14",
+      "installed_source_version": "14.2.0-19",
+      "cve": "CVE-2026-102010",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "14.2.0-19"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-102010"
+    },
+    {
+      "source_package": "gcc-14",
+      "installed_source_version": "14.2.0-19",
+      "cve": "CVE-2026-114690",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "14.2.0-19"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-114690"
+    },
+    {
+      "source_package": "gcc-14",
+      "installed_source_version": "14.2.0-19",
+      "cve": "CVE-2026-114691",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "14.2.0-19"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-114691"
+    },
+    {
+      "source_package": "gcc-14",
+      "installed_source_version": "14.2.0-19",
+      "cve": "CVE-2026-115455",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "14.2.0-19"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-115455"
+    },
+    {
+      "source_package": "gcc-14",
+      "installed_source_version": "14.2.0-19",
+      "cve": "CVE-2026-95619",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "14.2.0-19"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-95619"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2010-4756",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2010-4756"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2018-20796",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2018-20796"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2019-1010022",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2019-1010022"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2019-1010023",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2019-1010023"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2019-1010024",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2019-1010024"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2019-1010025",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2019-1010025"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2019-9192",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2019-9192"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-18374",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-18374"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-19499",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-19499"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-19542",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-19542"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-5435",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-5435"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-6238",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-6238"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-6368",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-6368"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-6791",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-6791"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-77117",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-77117"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-80489",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-80489"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-84243",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-84243"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-8674",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-8674"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-86805",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86805"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-89092",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-89092"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-95818",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-95818"
+    },
+    {
+      "source_package": "glibc",
+      "installed_source_version": "2.41-12+deb13u4",
+      "cve": "CVE-2026-97399",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41-12+deb13u4"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-97399"
+    },
+    {
+      "source_package": "gnupg2",
+      "installed_source_version": "2.4.7-21+deb13u1",
+      "cve": "CVE-2022-3219",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.4.7-21+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2022-3219"
+    },
+    {
+      "source_package": "gnupg2",
+      "installed_source_version": "2.4.7-21+deb13u1",
+      "cve": "CVE-2025-68972",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.4.7-21+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-68972"
+    },
+    {
+      "source_package": "gnupg2",
+      "installed_source_version": "2.4.7-21+deb13u1",
+      "cve": "CVE-2026-105712",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.4.7-21+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-105712"
+    },
+    {
+      "source_package": "gnupg2",
+      "installed_source_version": "2.4.7-21+deb13u1",
+      "cve": "CVE-2026-24882",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.4.7-21+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-24882"
+    },
+    {
+      "source_package": "gnupg2",
+      "installed_source_version": "2.4.7-21+deb13u1",
+      "cve": "CVE-2026-57062",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.4.7-21+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": "",
+        "next_point_update": true
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-57062"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2011-3389",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2011-3389"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-67693",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-67693"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-88647",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-88647"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-88648",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-88648"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-95184",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-95184"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-95209",
+      "trixie": null,
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-95209"
+    },
+    {
+      "source_package": "gnutls28",
+      "installed_source_version": "3.8.9-3+deb13u4",
+      "cve": "CVE-2026-95210",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.8.9-3+deb13u4",
+          "trixie-security": "3.8.9-3+deb13u4"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-95210"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2018-5709",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2018-5709"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2024-26458",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2024-26458"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2024-26461",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2024-26461"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2026-107708",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-107708"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2026-107778",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-107778"
+    },
+    {
+      "source_package": "krb5",
+      "installed_source_version": "1.21.3-5+deb13u1",
+      "cve": "CVE-2026-11850",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.21.3-5+deb13u1",
+          "trixie-security": "1.21.3-5+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-11850"
+    },
+    {
+      "source_package": "libgcrypt20",
+      "installed_source_version": "1.11.0-7+deb13u1",
+      "cve": "CVE-2018-6829",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.11.0-7+deb13u1",
+          "trixie-security": "1.11.0-7+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2018-6829"
+    },
+    {
+      "source_package": "libgcrypt20",
+      "installed_source_version": "1.11.0-7+deb13u1",
+      "cve": "CVE-2024-2236",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.11.0-7+deb13u1",
+          "trixie-security": "1.11.0-7+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2024-2236"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-11979",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-11979"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-6653",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-6653"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-74860",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-74860"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-76781",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-76781"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86137",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86137"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86138",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86138"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86139",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86139"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86140",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86140"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86141",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86141"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86142",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86142"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86143",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86143"
+    },
+    {
+      "source_package": "libxml2",
+      "installed_source_version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+      "cve": "CVE-2026-86144",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+          "trixie-security": "2.12.7+dfsg+really2.9.14-2.1+deb13u1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-86144"
+    },
+    {
+      "source_package": "libxslt",
+      "installed_source_version": "1.1.35-1.2+deb13u3",
+      "cve": "CVE-2015-9019",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.1.35-1.2+deb13u3",
+          "trixie-security": "1.1.35-1.2+deb13u2"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2015-9019"
+    },
+    {
+      "source_package": "libxslt",
+      "installed_source_version": "1.1.35-1.2+deb13u3",
+      "cve": "CVE-2025-10911",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.1.35-1.2+deb13u3",
+          "trixie-security": "1.1.35-1.2+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "(Minor issue, revisit when fix is merged upstream",
+        "nodsa_reason": "postponed"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-10911"
+    },
+    {
+      "source_package": "libxslt",
+      "installed_source_version": "1.1.35-1.2+deb13u3",
+      "cve": "CVE-2025-11731",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.1.35-1.2+deb13u3",
+          "trixie-security": "1.1.35-1.2+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-11731"
+    },
+    {
+      "source_package": "llvm-toolchain-19",
+      "installed_source_version": "1:19.1.7-3",
+      "cve": "CVE-2024-7883",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:19.1.7-3"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue, doesn't affect the default build flags in Debian and no backport into release branch 19 planned",
+        "nodsa_reason": "ignored"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2024-7883"
+    },
+    {
+      "source_package": "llvm-toolchain-19",
+      "installed_source_version": "1:19.1.7-3",
+      "cve": "CVE-2026-13573",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:19.1.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-13573"
+    },
+    {
+      "source_package": "llvm-toolchain-19",
+      "installed_source_version": "1:19.1.7-3",
+      "cve": "CVE-2026-13574",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:19.1.7-3"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-13574"
+    },
+    {
+      "source_package": "ncurses",
+      "installed_source_version": "6.5+20250216-2",
+      "cve": "CVE-2025-6141",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "6.5+20250216-2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-6141"
+    },
+    {
+      "source_package": "ncurses",
+      "installed_source_version": "6.5+20250216-2",
+      "cve": "CVE-2025-69720",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "6.5+20250216-2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-69720"
+    },
+    {
+      "source_package": "openldap",
+      "installed_source_version": "2.6.10+dfsg-1",
+      "cve": "CVE-2015-3276",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.6.10+dfsg-1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2015-3276"
+    },
+    {
+      "source_package": "openldap",
+      "installed_source_version": "2.6.10+dfsg-1",
+      "cve": "CVE-2017-14159",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.6.10+dfsg-1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2017-14159"
+    },
+    {
+      "source_package": "openldap",
+      "installed_source_version": "2.6.10+dfsg-1",
+      "cve": "CVE-2017-17740",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.6.10+dfsg-1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2017-17740"
+    },
+    {
+      "source_package": "openldap",
+      "installed_source_version": "2.6.10+dfsg-1",
+      "cve": "CVE-2020-15719",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.6.10+dfsg-1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2020-15719"
+    },
+    {
+      "source_package": "openldap",
+      "installed_source_version": "2.6.10+dfsg-1",
+      "cve": "CVE-2026-22185",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.6.10+dfsg-1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-22185"
+    },
+    {
+      "source_package": "p11-kit",
+      "installed_source_version": "0.25.5-3",
+      "cve": "CVE-2026-13757",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "0.25.5-3"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-13757"
+    },
+    {
+      "source_package": "p11-kit",
+      "installed_source_version": "0.25.5-3",
+      "cve": "CVE-2026-18938",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "0.25.5-3"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-18938"
+    },
+    {
+      "source_package": "pam",
+      "installed_source_version": "1.7.0-5",
+      "cve": "CVE-2025-8941",
+      "trixie": {
+        "status": "undetermined",
+        "repositories": {
+          "trixie": "1.7.0-5"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-8941"
+    },
+    {
+      "source_package": "pam",
+      "installed_source_version": "1.7.0-5",
+      "cve": "CVE-2026-54411",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.7.0-5"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-54411"
+    },
+    {
+      "source_package": "perl",
+      "installed_source_version": "5.40.1-6+deb13u1",
+      "cve": "CVE-2011-4116",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "5.40.1-6+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2011-4116"
+    },
+    {
+      "source_package": "perl",
+      "installed_source_version": "5.40.1-6+deb13u1",
+      "cve": "CVE-2026-15534",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "5.40.1-6+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Wait for exposure unstable and coordinate with Perl maintainers",
+        "nodsa_reason": "postponed"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-15534"
+    },
+    {
+      "source_package": "perl",
+      "installed_source_version": "5.40.1-6+deb13u1",
+      "cve": "CVE-2026-82560",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "5.40.1-6+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-82560"
+    },
+    {
+      "source_package": "perl",
+      "installed_source_version": "5.40.1-6+deb13u1",
+      "cve": "CVE-2026-9538",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "5.40.1-6+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue; wait for regressions upstream sorted out",
+        "nodsa_reason": "postponed"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-9538"
+    },
+    {
+      "source_package": "shadow",
+      "installed_source_version": "1:4.17.4-2",
+      "cve": "CVE-2007-5686",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:4.17.4-2"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2007-5686"
+    },
+    {
+      "source_package": "shadow",
+      "installed_source_version": "1:4.17.4-2",
+      "cve": "CVE-2024-56433",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:4.17.4-2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2024-56433"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2021-45346",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2021-45346"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2025-70873",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2025-70873"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119371",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119371"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119372",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119372"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119373",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119373"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119374",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119374"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119375",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119375"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119376",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119376"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119377",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119377"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119378",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119378"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119379",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119379"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119586",
+      "trixie": {
+        "status": "undetermined",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119586"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-119591",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-119591"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-39113",
+      "trixie": {
+        "status": "resolved",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "fixed_version": "0",
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-39113"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-50812",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-50812"
+    },
+    {
+      "source_package": "sqlite3",
+      "installed_source_version": "3.46.1-7+deb13u2",
+      "cve": "CVE-2026-50813",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "3.46.1-7+deb13u2"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-50813"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2013-4392",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2013-4392"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2023-31437",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2023-31437"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2023-31438",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2023-31438"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2023-31439",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2023-31439"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2026-15059",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-15059"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2026-16742",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-16742"
+    },
+    {
+      "source_package": "systemd",
+      "installed_source_version": "257.13-1~deb13u1",
+      "cve": "CVE-2026-40228",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "257.13-1~deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-40228"
+    },
+    {
+      "source_package": "tar",
+      "installed_source_version": "1.35+dfsg-3.1",
+      "cve": "CVE-2005-2541",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.35+dfsg-3.1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2005-2541"
+    },
+    {
+      "source_package": "tar",
+      "installed_source_version": "1.35+dfsg-3.1",
+      "cve": "CVE-2026-18477",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.35+dfsg-3.1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-18477"
+    },
+    {
+      "source_package": "tar",
+      "installed_source_version": "1.35+dfsg-3.1",
+      "cve": "CVE-2026-18508",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.35+dfsg-3.1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-18508"
+    },
+    {
+      "source_package": "tar",
+      "installed_source_version": "1.35+dfsg-3.1",
+      "cve": "CVE-2026-5704",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1.35+dfsg-3.1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-5704"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2022-0563",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "unimportant"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2022-0563"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2026-3184",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-3184"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2026-76642",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-76642"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2026-78408",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-78408"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2026-78409",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-78409"
+    },
+    {
+      "source_package": "util-linux",
+      "installed_source_version": "2.41.5-0+deb13u1",
+      "cve": "CVE-2026-78410",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "2.41.5-0+deb13u1",
+          "trixie-security": "2.41.5-0+deb13u1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-78410"
+    },
+    {
+      "source_package": "zlib",
+      "installed_source_version": "1:1.3.dfsg+really1.3.1-1",
+      "cve": "CVE-2026-27171",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:1.3.dfsg+really1.3.1-1"
+        },
+        "urgency": "not yet assigned",
+        "nodsa": "Minor issue",
+        "nodsa_reason": ""
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-27171"
+    },
+    {
+      "source_package": "zlib",
+      "installed_source_version": "1:1.3.dfsg+really1.3.1-1",
+      "cve": "CVE-2026-85091",
+      "trixie": {
+        "status": "open",
+        "repositories": {
+          "trixie": "1:1.3.dfsg+really1.3.1-1"
+        },
+        "urgency": "not yet assigned"
+      },
+      "url": "https://security-tracker.debian.org/tracker/CVE-2026-85091"
+    }
+  ]
+}

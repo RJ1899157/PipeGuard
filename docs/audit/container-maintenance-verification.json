@@ -1,0 +1,355 @@
+{
+  "checked_at": "2026-11-05T04:27:46.014962+00:00",
+  "tested_revision": "a7faafbcc2ceb6654ea3ca0489dcba6384c172bf",
+  "suite_cases": {
+    "backend": 466,
+    "workload": 66,
+    "airflow": 13,
+    "frontend": 54
+  },
+  "total_cases": 599,
+  "delivery": {
+    "revision": "a7faafbcc2ceb6654ea3ca0489dcba6384c172bf",
+    "suite": "all",
+    "steps": [
+      {
+        "name": "application-environment",
+        "passed": true,
+        "seconds": 0.082
+      },
+      {
+        "name": "new-private-configuration",
+        "passed": true,
+        "seconds": 0.09
+      },
+      {
+        "name": "temporary-postgres",
+        "passed": true,
+        "seconds": 3.955
+      },
+      {
+        "name": "migrations",
+        "passed": true,
+        "seconds": 4.313
+      },
+      {
+        "name": "runtime-role",
+        "passed": true,
+        "seconds": 0.305
+      },
+      {
+        "name": "sample-warehouse",
+        "passed": true,
+        "seconds": 0.372
+      },
+      {
+        "name": "backend-suite",
+        "passed": true,
+        "seconds": 120.414
+      },
+      {
+        "name": "migration-consistency",
+        "passed": true,
+        "seconds": 0.641
+      },
+      {
+        "name": "workload-environment",
+        "passed": true,
+        "seconds": 0.255
+      },
+      {
+        "name": "workload-suite",
+        "passed": true,
+        "seconds": 17.772
+      },
+      {
+        "name": "airflow-environment",
+        "passed": true,
+        "seconds": 0.026
+      },
+      {
+        "name": "airflow-pinned-install",
+        "passed": true,
+        "seconds": 0.788
+      },
+      {
+        "name": "airflow-suite",
+        "passed": true,
+        "seconds": 5.472
+      },
+      {
+        "name": "application-dependency-consistency",
+        "passed": true,
+        "seconds": 0.05
+      },
+      {
+        "name": "workload-dependency-consistency",
+        "passed": true,
+        "seconds": 0.074
+      },
+      {
+        "name": "airflow-dependency-consistency",
+        "passed": true,
+        "seconds": 0.14
+      },
+      {
+        "name": "http-workload-acceptance",
+        "passed": true,
+        "seconds": 20.747
+      },
+      {
+        "name": "web-runtime",
+        "passed": true,
+        "seconds": 3.057
+      },
+      {
+        "name": "web-dependencies",
+        "passed": true,
+        "seconds": 0.324
+      },
+      {
+        "name": "web-types",
+        "passed": true,
+        "seconds": 3.378
+      },
+      {
+        "name": "web-suite",
+        "passed": true,
+        "seconds": 0.898
+      },
+      {
+        "name": "web-format",
+        "passed": true,
+        "seconds": 1.342
+      },
+      {
+        "name": "web-build",
+        "passed": true,
+        "seconds": 8.87
+      },
+      {
+        "name": "web-http-startup",
+        "passed": true,
+        "seconds": 0.419
+      },
+      {
+        "name": "temporary-postgres-stop",
+        "passed": true,
+        "seconds": 1.35
+      }
+    ],
+    "passed": true,
+    "cleanup_passed": true,
+    "compose_project": "pipeguard-check-53d06e2f354c4187a5dfe98b3f44b05b"
+  },
+  "hosted_ci": {
+    "run_id": 41967389480,
+    "url": "https://github.com/RJ1899157/PipeGuard/actions/runs/41967389480",
+    "revision": "a7faafbcc2ceb6654ea3ca0489dcba6384c172bf",
+    "conclusion": "success",
+    "actor": "RJ1899157",
+    "triggering_actor": "RJ1899157",
+    "automatic_triggers": false,
+    "jobs": [
+      {
+        "name": "Dashboard types, tests and production build",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Application, workload and Airflow",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "package_changes": {
+    "libapt-pkg7.0:arm64": [
+      "3.0.3",
+      "3.0.4"
+    ],
+    "apt": [
+      "3.0.3",
+      "3.0.4"
+    ]
+  },
+  "pre_switch_restores": {
+    "pipeguard": {
+      "version": 1,
+      "backup_id": "76f5662f-e471-476b-9464-c0593e3d3c1a",
+      "database": "pipeguard",
+      "verified_at": "2026-11-05T04:21:45.356599+00:00",
+      "result": "verified",
+      "table_count": 26,
+      "archive_sha256": "b5d4a88fe662cf8a19270f318c3c430f843e79ea6395a397f0b4ac56a8239fa4",
+      "schema_verified": true,
+      "sequence_safety": {
+        "checked": 0,
+        "unsupported": [],
+        "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+        "source_sequence_position_compared": false
+      },
+      "restore_target": "new_disposable_database",
+      "live_database_replaced": false
+    },
+    "airflow": {
+      "version": 1,
+      "backup_id": "986e256d-8a29-4312-9b54-0e6800aadba0",
+      "database": "airflow",
+      "verified_at": "2026-11-05T04:21:45.894040+00:00",
+      "result": "verified",
+      "table_count": 58,
+      "archive_sha256": "4107f41281722940698c793f35a485d8607c7226200e7b1e87751321c75a7661",
+      "schema_verified": true,
+      "sequence_safety": {
+        "checked": 18,
+        "unsupported": [],
+        "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+        "source_sequence_position_compared": false
+      },
+      "restore_target": "new_disposable_database",
+      "live_database_replaced": false
+    },
+    "sample_warehouse": {
+      "version": 1,
+      "backup_id": "a7d07691-de7a-4901-a1ea-b9794ef22120",
+      "database": "sample_warehouse",
+      "verified_at": "2026-11-05T04:21:46.119769+00:00",
+      "result": "verified",
+      "table_count": 3,
+      "archive_sha256": "3943640f62ae943afc5348719eec8f83388a9c42bf7c5e741d449e0b25311e5b",
+      "schema_verified": true,
+      "sequence_safety": {
+        "checked": 0,
+        "unsupported": [],
+        "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+        "source_sequence_position_compared": false
+      },
+      "restore_target": "new_disposable_database",
+      "live_database_replaced": false
+    }
+  },
+  "retained_postflight": {
+    "image_id": "sha256:508d0102fa42b0c9a80b8a0d34e4a0a923d5610934dea36403979eeace24e5db",
+    "old_image_retained": true,
+    "named_volume_preserved": true,
+    "postgres": "postgres (PostgreSQL) 17.11 (Debian 17.11-1.pgdg13+2)",
+    "apt": "3.0.4",
+    "restores": {
+      "pipeguard": {
+        "version": 1,
+        "backup_id": "76f5662f-e471-476b-9464-c0593e3d3c1a",
+        "database": "pipeguard",
+        "verified_at": "2026-11-05T04:26:08.005069+00:00",
+        "result": "verified",
+        "table_count": 26,
+        "archive_sha256": "b5d4a88fe662cf8a19270f318c3c430f843e79ea6395a397f0b4ac56a8239fa4",
+        "schema_verified": true,
+        "sequence_safety": {
+          "checked": 0,
+          "unsupported": [],
+          "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+          "source_sequence_position_compared": false
+        },
+        "restore_target": "new_disposable_database",
+        "live_database_replaced": false
+      },
+      "airflow": {
+        "version": 1,
+        "backup_id": "986e256d-8a29-4312-9b54-0e6800aadba0",
+        "database": "airflow",
+        "verified_at": "2026-11-05T04:26:08.796472+00:00",
+        "result": "verified",
+        "table_count": 58,
+        "archive_sha256": "4107f41281722940698c793f35a485d8607c7226200e7b1e87751321c75a7661",
+        "schema_verified": true,
+        "sequence_safety": {
+          "checked": 18,
+          "unsupported": [],
+          "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+          "source_sequence_position_compared": false
+        },
+        "restore_target": "new_disposable_database",
+        "live_database_replaced": false
+      },
+      "sample_warehouse": {
+        "version": 1,
+        "backup_id": "a7d07691-de7a-4901-a1ea-b9794ef22120",
+        "database": "sample_warehouse",
+        "verified_at": "2026-11-05T04:26:09.128494+00:00",
+        "result": "verified",
+        "table_count": 3,
+        "archive_sha256": "3943640f62ae943afc5348719eec8f83388a9c42bf7c5e741d449e0b25311e5b",
+        "schema_verified": true,
+        "sequence_safety": {
+          "checked": 0,
+          "unsupported": [],
+          "scope": "restored_owned_integer_nocycle_counters_beyond_restored_row_bounds",
+          "source_sequence_position_compared": false
+        },
+        "restore_target": "new_disposable_database",
+        "live_database_replaced": false
+      }
+    }
+  },
+  "preservation": {
+    "tables": 15,
+    "rows_and_hashes_preserved": 10807
+  },
+  "retained_system": {
+    "preserved_rows_and_hashes": 7688,
+    "counts": {
+      "recovery_actions": 1,
+      "recovery_action_decisions": 1,
+      "recovery_dispatches": 1,
+      "recovery_dispatch_events": 2,
+      "investigation_requests": 16,
+      "investigation_outcomes": 16
+    },
+    "api_live": 200,
+    "api_ready": 200,
+    "dashboard": 200,
+    "stored_openapi_matches": true,
+    "recovery_flags": {
+      "PIPEGUARD_RECOVERY_EXECUTION_ENABLED": "0",
+      "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED": "0"
+    },
+    "dag_paused": true,
+    "source_runs": 8,
+    "source_attempts": 14,
+    "python": "3.12.16",
+    "node": "v22.23.4"
+  },
+  "ai_replay": {
+    "requests": 16,
+    "outcomes": 16,
+    "replays": 16,
+    "new_provider_calls_on_replay": 0,
+    "native_ledger_and_bundle_hashes_unchanged": true,
+    "frozen_packets_unchanged": true
+  },
+  "watcher": {
+    "changed_at": "2026-11-05T04:25:43.345994+00:00",
+    "checked_at": "2026-11-05T04:27:45.305728+00:00",
+    "notification": "disabled",
+    "status": {
+      "api": "healthy",
+      "database": "healthy",
+      "monitor": "fresh"
+    },
+    "version": 1
+  },
+  "container_scan": {
+    "checked_at": "2026-11-05T04:22:56.720642+00:00",
+    "image": "pipeguard-postgres:17.11-apt3.0.4",
+    "source_version_pairs": 95,
+    "advisory_matches": 130,
+    "fixed_apt_cve": "CVE-2026-109518",
+    "published_fixed_versions_in_remaining_matches": [],
+    "bulk_feed_missing_records": 1,
+    "osv_sha256": "3216f38e8238db85f34b37ad35cec706d8a5d14e420073e9020546424b5ac8d1",
+    "tracker_sha256": "ff4c1a08a537b7bc4bd2e48baeda1bcc644aefb4defeff37aaa4115bd8b3a27f"
+  },
+  "no_host_packages_installed": true,
+  "no_live_business_runs_or_recovery_actions": true
+}

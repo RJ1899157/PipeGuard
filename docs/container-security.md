@@ -1,5 +1,11 @@
 # PostgreSQL container advisory triage
 
+**Latest maintenance (2026-11-05):** APT 3.0.4 is now deployed in a verified,
+checksum-pinned derived image. The rescan returns **130** matches; the APT advisory
+is absent. PostgreSQL remains 17.11 and all retained data passed preservation and
+restore checks. See [maintenance results](container-maintenance.md). The checkpoints
+below retain their historical package versions and counts.
+
 **Current Stage 14 refresh (2026-11-05):**131 matches across 95 installed source/version
 pairs. One new APT advisory has a published trixie-security fix:3.0.4 versus installed
 3.0.3 ([CVE-2026-109518](https://security-tracker.debian.org/tracker/CVE-2026-109518)).
