@@ -23,18 +23,24 @@ Runtime availability must be checked again after sleep, reboot or a closed sessi
 
 - The [expanded AI evaluation](investigation-expanded-evaluation.md) passes its six-trial version-11 gate for quality failure, source gaps and conflicting attempt evidence. Two failed earlier cohorts remain retained. Current checks pass **566 cases**; the public ledger stays **16/16**, with **16 additional evaluation requests/outcomes** isolated separately. Confidence and broader real-world accuracy remain unestablished.
 
-## Next work
+## Final checkpoint and future work
 
-1. **Old CI run administrative cleanup (blocked).** Run 41809107524 is still stuck with zero jobs. The owner explicitly requested deletion; GitHub rejected DELETE with 403 and normal/force cancellation with 409. Do not delete successful run #3 or change billing to address this record. Its removal is unresolved but is separate from the now-passing hosted acceptance.
-2. **Stage 14: final full-project multi-agent audit.** Stage 13's bounded local gate passes. Review all owned source/features/buttons/views, including new resource limits, contracts and delivery tooling; fix and retest reproduced faults and publish final residual risks.
+[Stage 14](stage14-audit.md) passed its bounded local audit on 2026-11-05 with **599** cases,
+current browser evidence, three fresh restores and both hosted Linux CI jobs on
+`5f10728e70a4200167337d63195dea1ecc4c1e91`. All **8,226** Stage 14 baseline rows retain
+content hashes. All **16** isolated AI records replay without new generation. Recovery
+remains off, the DAG paused and source inventory **8/14**.
 
-See the [roadmap](roadmap.md). Earlier audits provide a baseline; Stage 14 is the separately requested final independent review. No new retained workload, recovery unpause or hosted generation is needed for the remaining delivery/hardening work.
+No mandatory owned-code stage remains. Future maintenance includes the newly
+published APT 3.0.4 container fix, upstream image/advisory updates and any explicitly
+chosen deployment expansion. The owner deferred old GitHub run #1 cleanup and
+declined off-device monitoring/backups; do not treat them as blocked code work.
 
 ## Explicit remaining limits
 
 | Boundary                      | Current state                                                                                                              | Needed for broader guarantees                                                                                                             |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Container advisories          | 130 installed-source matches; rechecked after hosted CI against 95 running source/version pairs; no published compatible fixes; ARM64 image unchanged | Published compatible fixes or a separately reviewed image design; [current evidence](stage13-verification.md#current-dependency-findings) |
+| Container advisories          | 131 matches across 95 source/version pairs; APT 3.0.4 fix published; official ARM64 image unchanged | Reviewed image maintenance for APT 3.0.4 and future upstream fixes; [current evidence](stage13-verification.md#current-dependency-findings) |
 | Total host/network loss       | Watcher runs on this Mac                                                                                                   | An independent always-on device or externally hosted watcher                                                                              |
 | Disk/host loss                | Verified backups remain on this disk                                                                                       | Separately protected backup destination and transfer/restore procedure                                                                    |
 | Larger/distributed deployment | Bounded snapshots and recovery inventories, growing retained history, local warehouse exclusion                            | Reviewed incremental processing/retention and cross-host fencing                                                                          |

@@ -31,9 +31,9 @@ The final finding cites the stored `source_unavailable` receipt for attempt 1. I
 
 The accepted request was replayed through the real API: the request count stayed **six**, with six terminal outcomes. Refreshing the UI preserved the accepted result and prior failures without another provider call. These changing-policy debugging submissions are not a stationary accuracy benchmark; no model-accuracy percentage is inferred from them.
 
-![Accepted advisory finding and retained failures](audit/investigation-desktop.png)
+![Accepted advisory finding and retained failures](audit/investigation-desktop.jpg)
 
-[Mobile investigation view](audit/investigation-mobile.png). At 390 pixels, document and scroll widths both measured 390, including with the evidence inspector expanded; at 768 pixels both measured 768. No browser errors or warnings were captured in the checked session. Generated explanations and technical audit data are collapsed by default. The dashboard's incident metadata and investigation history refresh separately.
+[Mobile investigation view](audit/investigation-mobile.jpg). At 390 pixels, document and scroll widths both measured 390, including with the evidence inspector expanded; at 768 pixels both measured 768. No browser errors or warnings were captured in the checked session. Generated explanations and technical audit data are collapsed by default. The dashboard's incident metadata and investigation history refresh separately.
 
 ## Preservation and deployment checks
 

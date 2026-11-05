@@ -40,9 +40,9 @@ Final disposable counts: **8 proposals, 3 decisions, 1 dispatch intent, 2 observ
 
 The desktop and mobile interaction screenshots show explicitly labeled synthetic disposable data. The live screenshot shows the restored real incident inspector with execution disabled.
 
-- [Disposable desktop interactions](audit/execution-dashboard-desktop.png)
-- [Disposable mobile payload inspector](audit/execution-dashboard-mobile.png)
-- [Live disabled execution state](audit/execution-dashboard-live.png)
+- [Disposable desktop interactions](audit/execution-dashboard-desktop.jpg)
+- [Disposable mobile payload inspector](audit/execution-dashboard-mobile.jpg)
+- [Live disabled execution state](audit/execution-dashboard-live.jpg)
 
 ## Remaining acceptance
 

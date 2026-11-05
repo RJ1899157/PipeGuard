@@ -46,7 +46,7 @@ The DAG was paused before revoking both capabilities. Airflow restarted with `PI
 
 Fresh post-acceptance backups of PipeGuard, Airflow and the selected sample-warehouse schemas were restored in disposable databases and passed schema/row fingerprint checks. No live database was replaced. Private manifests remain in ignored local storage; these backups remain on this disk and do not cover whole-host loss.
 
-[Dashboard evidence: successful dispatch retained with execution disabled](audit/recovery-live-success.png). The [failure checkpoint](recovery-phase1-verification.md) retains the two failed attempts and the source/producer timing repair.
+[Dashboard evidence: successful dispatch retained with execution disabled](audit/recovery-live-success.jpg). The [failure checkpoint](recovery-phase1-verification.md) retains the two failed attempts and the source/producer timing repair.
 
 No application code, dependency or schema changed in this acceptance step, so automated suites were not repeated here. The preceding implementation checkpoint passed **419 backend tests**; the earlier dashboard checkpoint passed **39 frontend tests**, TypeScript checks and production build. These historical counts are distinct from the actual live acceptance checks above.
 

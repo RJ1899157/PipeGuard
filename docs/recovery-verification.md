@@ -37,9 +37,9 @@ The browser checks covered:
 5. Exercise native keyboard confirmation using Space and approval using Enter.
 6. At **390 pixels**, document and scroll widths both equal 390, including with the inspector expanded. At **768 pixels**, both equal 768. Desktop layout was inspected at the browser's normal 1,280-pixel viewport. Temporary viewport overrides were reset.
 
-![Review approval in the disposable fixture](audit/recovery-desktop.png)
+![Review approval in the disposable fixture](audit/recovery-desktop.jpg)
 
-[Mobile approval and rejection history](audit/recovery-mobile.png). These screenshots show isolated verification records, not operational approvals in the live database.
+[Mobile approval and rejection history](audit/recovery-mobile.jpg). These screenshots show isolated verification records, not operational approvals in the live database.
 
 ### Lost-response check
 

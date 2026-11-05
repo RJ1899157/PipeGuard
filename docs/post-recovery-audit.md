@@ -56,18 +56,18 @@ The frontend build was performed with the owned production server stopped, then 
 
 These screenshots were captured during this audit. The uncertainty screenshot is explicitly synthetic; its apparent Groq consent never contacted Groq. Tests and runtime checks complement screenshots; screenshots alone cannot establish accessibility compliance or all failure behavior.
 
-1. **Overview and watcher — healthy.** Refresh, pipeline inspection, explicit monitoring modes and independent service status work. [Screenshot 1](audit/2026-11-04/01-overview.png).
-2. **Execution, lineage, quality and evidence — healthy.** Named pipeline/run/attempt selectors work; earlier failed attempts remain selectable. Graph zoom/fit, text search/type filter, dataset selection, evidence open/close and report inspection work. Separate execution success, quality and source completeness remain explicit. [Screenshot 2](audit/2026-11-04/02-execution.png).
+1. **Overview and watcher — healthy.** Refresh, pipeline inspection, explicit monitoring modes and independent service status work. [Screenshot 1](audit/2026-11-04/01-overview.jpg).
+2. **Execution, lineage, quality and evidence — healthy.** Named pipeline/run/attempt selectors work; earlier failed attempts remain selectable. Graph zoom/fit, text search/type filter, dataset selection, evidence open/close and report inspection work. Separate execution success, quality and source completeness remain explicit. [Screenshot 2](audit/2026-11-04/02-execution.jpg).
 3. **Review and executable controls — healthy in isolated verification.** A fresh 15-second proposal expired without refresh; refresh reset confirmation and blocked old decisions. Approval and start were separate; one fake dispatch progressed unknown → succeeded. Both cursor directions and expired-intent replay worked, retaining one intent and one fake start.
-4. **Uncertain advisory submission — healthy in isolated verification.** An injected 503 followed a committed fake outcome. The exact request remained visible. Navigation reconciled the one recorded result; final counts were one request/outcome/fake generation, with no regeneration. [Screenshot 3](audit/2026-11-04/03-uncertain-submission.png).
-5. **Error and boundary states — healthy.** Empty, stale, unavailable and unauthorized previews were checked. The exact fifty-history boundary opens an empty second preview page and can return to page one; no claim is made that a simulated boundary is live data. State filtering works. [Screenshot 4](audit/2026-11-04/04-unavailable-preview.png).
-6. **Mobile/tablet and dense graph — checked.** At 390 × 844 and 768 × 1024, document width matched viewport width. The 200-node cycle fixture remained partial and rendered without horizontal document overflow; dense labels require the provided text search/filter alternative. [Screenshot 5](audit/2026-11-04/05-mobile.png).
+4. **Uncertain advisory submission — healthy in isolated verification.** An injected 503 followed a committed fake outcome. The exact request remained visible. Navigation reconciled the one recorded result; final counts were one request/outcome/fake generation, with no regeneration. [Screenshot 3](audit/2026-11-04/03-uncertain-submission.jpg).
+5. **Error and boundary states — healthy.** Empty, stale, unavailable and unauthorized previews were checked. The exact fifty-history boundary opens an empty second preview page and can return to page one; no claim is made that a simulated boundary is live data. State filtering works. [Screenshot 4](audit/2026-11-04/04-unavailable-preview.jpg).
+6. **Mobile/tablet and dense graph — checked.** At 390 × 844 and 768 × 1024, document width matched viewport width. The 200-node cycle fixture remained partial and rendered without horizontal document overflow; dense labels require the provided text search/filter alternative. [Screenshot 5](audit/2026-11-04/05-mobile.jpg).
 
-![Overview and watcher](audit/2026-11-04/01-overview.png)
-![Execution and lineage](audit/2026-11-04/02-execution.png)
-![Synthetic uncertain submission](audit/2026-11-04/03-uncertain-submission.png)
-![Unavailable preview](audit/2026-11-04/04-unavailable-preview.png)
-![Mobile dense-graph preview](audit/2026-11-04/05-mobile.png)
+![Overview and watcher](audit/2026-11-04/01-overview.jpg)
+![Execution and lineage](audit/2026-11-04/02-execution.jpg)
+![Synthetic uncertain submission](audit/2026-11-04/03-uncertain-submission.jpg)
+![Unavailable preview](audit/2026-11-04/04-unavailable-preview.jpg)
+![Mobile dense-graph preview](audit/2026-11-04/05-mobile.jpg)
 
 ## Dependency and container findings
 

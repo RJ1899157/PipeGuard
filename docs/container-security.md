@@ -1,6 +1,13 @@
 # PostgreSQL container advisory triage
 
-**Current follow-up:** [Stage 13 verification](stage13-verification.md#current-dependency-findings) retains 130 matches without a published compatible fixed version. One GnuTLS record is absent from the bulk feed but remains vulnerable/unfixed on its individual tracker page; that discrepancy is explicit. The official ARM64 image is unchanged. The historical counts below describe the earlier checkpoint.
+**Current Stage 14 refresh (2026-11-05):**131 matches across 95 installed source/version
+pairs. One new APT advisory has a published trixie-security fix:3.0.4 versus installed
+3.0.3 ([CVE-2026-109518](https://security-tracker.debian.org/tracker/CVE-2026-109518)).
+The official ARM64 image is unchanged. Applying that fix requires reviewed image
+maintenance; no container was modified in this audit. Other matched records have
+no published compatible fixed version in this snapshot. See [Stage 14 results](stage14-audit.md).
+
+**Stage 13 checkpoint (2026-11-04):** [Stage 13 verification](stage13-verification.md#current-dependency-findings) retains 130 matches without a published compatible fixed version. One GnuTLS record is absent from the bulk feed but remains vulnerable/unfixed on its individual tracker page; that discrepancy is explicit. The official ARM64 image is unchanged. The historical counts below describe the earlier checkpoint.
 
 ## Follow-up after hosted CI
 

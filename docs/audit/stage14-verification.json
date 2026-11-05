@@ -1,0 +1,351 @@
+{
+  "date": "2026-11-05",
+  "baseline_revision": "ce4361c4c6a1b4f14237af6f5703ccc2fe6e69a7",
+  "tested_revision": "5f10728e70a4200167337d63195dea1ecc4c1e91",
+  "bounded_local_audit_passed": true,
+  "suite_cases": {
+    "backend": 466,
+    "workload": 66,
+    "frontend": 54,
+    "airflow": 13
+  },
+  "total_cases": 599,
+  "delivery_steps": [
+    {
+      "name": "application-environment",
+      "passed": true,
+      "seconds": 0.132
+    },
+    {
+      "name": "new-private-configuration",
+      "passed": true,
+      "seconds": 0.131
+    },
+    {
+      "name": "temporary-postgres",
+      "passed": true,
+      "seconds": 6.118
+    },
+    {
+      "name": "migrations",
+      "passed": true,
+      "seconds": 3.568
+    },
+    {
+      "name": "runtime-role",
+      "passed": true,
+      "seconds": 0.34
+    },
+    {
+      "name": "sample-warehouse",
+      "passed": true,
+      "seconds": 0.979
+    },
+    {
+      "name": "backend-suite",
+      "passed": true,
+      "seconds": 127.114
+    },
+    {
+      "name": "migration-consistency",
+      "passed": true,
+      "seconds": 0.828
+    },
+    {
+      "name": "workload-environment",
+      "passed": true,
+      "seconds": 0.242
+    },
+    {
+      "name": "workload-suite",
+      "passed": true,
+      "seconds": 20.915
+    },
+    {
+      "name": "airflow-environment",
+      "passed": true,
+      "seconds": 0.075
+    },
+    {
+      "name": "airflow-pinned-install",
+      "passed": true,
+      "seconds": 1.406
+    },
+    {
+      "name": "airflow-suite",
+      "passed": true,
+      "seconds": 6.28
+    },
+    {
+      "name": "application-dependency-consistency",
+      "passed": true,
+      "seconds": 0.13
+    },
+    {
+      "name": "workload-dependency-consistency",
+      "passed": true,
+      "seconds": 0.074
+    },
+    {
+      "name": "airflow-dependency-consistency",
+      "passed": true,
+      "seconds": 0.132
+    },
+    {
+      "name": "http-workload-acceptance",
+      "passed": true,
+      "seconds": 21.301
+    },
+    {
+      "name": "web-runtime",
+      "passed": true,
+      "seconds": 3.187
+    },
+    {
+      "name": "web-dependencies",
+      "passed": true,
+      "seconds": 0.288
+    },
+    {
+      "name": "web-types",
+      "passed": true,
+      "seconds": 3.57
+    },
+    {
+      "name": "web-suite",
+      "passed": true,
+      "seconds": 0.878
+    },
+    {
+      "name": "web-format",
+      "passed": true,
+      "seconds": 1.405
+    },
+    {
+      "name": "web-build",
+      "passed": true,
+      "seconds": 9.24
+    },
+    {
+      "name": "web-http-startup",
+      "passed": true,
+      "seconds": 0.552
+    },
+    {
+      "name": "temporary-postgres-stop",
+      "passed": true,
+      "seconds": 2.13
+    }
+  ],
+  "delivery_cleanup_passed": true,
+  "http_fault_scenario": {
+    "passed": true,
+    "attempt_states": [
+      "failed",
+      "succeeded"
+    ],
+    "incident_state": "resolved",
+    "quality_checks": 14,
+    "lineage_coverage": "reported_complete",
+    "captured_evidence_unchanged": true,
+    "body_admission_statuses": [
+      413,
+      408
+    ],
+    "runtime_database_access_outage": {
+      "live": 200,
+      "ready": 503,
+      "restored_ready": 200
+    },
+    "hosted_ai_calls": 0,
+    "recovery_dispatches": 0
+  },
+  "hosted_ci": {
+    "run_id": 41965505014,
+    "url": "https://github.com/RJ1899157/PipeGuard/actions/runs/41965505014",
+    "revision": "5f10728e70a4200167337d63195dea1ecc4c1e91",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Application, workload and Airflow",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Dashboard types, tests and production build",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "automatic_triggers_enabled": false
+  },
+  "preservation": {
+    "tables": 15,
+    "rows_and_hashes_preserved": 8226
+  },
+  "retained_system": {
+    "preserved_rows_and_hashes": 7688,
+    "counts": {
+      "recovery_actions": 1,
+      "recovery_action_decisions": 1,
+      "recovery_dispatches": 1,
+      "recovery_dispatch_events": 2,
+      "investigation_requests": 16,
+      "investigation_outcomes": 16
+    },
+    "api_live": 200,
+    "api_ready": 200,
+    "dashboard": 200,
+    "stored_openapi_matches": true,
+    "recovery_flags": {
+      "PIPEGUARD_RECOVERY_EXECUTION_ENABLED": "0",
+      "PIPEGUARD_AIRFLOW_RECOVERY_ENABLED": "0"
+    },
+    "dag_paused": true,
+    "source_runs": 8,
+    "source_attempts": 14,
+    "python": "3.12.16",
+    "node": "v22.23.4"
+  },
+  "ai_replay": {
+    "requests": 16,
+    "outcomes": 16,
+    "replays": 16,
+    "new_provider_calls_on_replay": 0,
+    "native_ledger_and_bundle_hashes_unchanged": true,
+    "frozen_packets_unchanged": true
+  },
+  "backup_restore_checks": {
+    "pipeguard": {
+      "backup_id": "8b62c79b-9ab4-45e6-a331-da021f5177d1",
+      "database": "pipeguard",
+      "operation": "verify",
+      "passed": true
+    },
+    "airflow": {
+      "backup_id": "ecbb9d2f-6652-4367-ab47-321b688444fb",
+      "database": "airflow",
+      "operation": "verify",
+      "passed": true
+    },
+    "sample_warehouse": {
+      "backup_id": "3d6f4704-a38c-4ab8-beb0-f47bb77990e3",
+      "database": "sample_warehouse",
+      "operation": "verify",
+      "passed": true
+    }
+  },
+  "graph_before": {
+    "first": [
+      {
+        "height": 383,
+        "id": "dataset:fixture-0",
+        "width": 96
+      },
+      {
+        "height": 381,
+        "id": "dataset:fixture-1",
+        "width": 96
+      }
+    ],
+    "largest_height": 383,
+    "nodes": 200,
+    "overlaps": 4,
+    "render_ms": "1236.3"
+  },
+  "graph_after": {
+    "attribution_color": "rgb(102, 114, 140)",
+    "footer_color": "rgb(102, 114, 140)",
+    "largest_height": 121,
+    "nodes": 200,
+    "overlaps": 0,
+    "render_ms": "650.6"
+  },
+  "python_osv": {
+    "application": {
+      "packages": 28,
+      "matches": []
+    },
+    "workload": {
+      "packages": 65,
+      "matches": []
+    },
+    "airflow": {
+      "packages": 131,
+      "matches": []
+    }
+  },
+  "frontend_advisories": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 45,
+    "devDependencies": 2,
+    "optionalDependencies": 39,
+    "totalDependencies": 86
+  },
+  "container": {
+    "source_version_pairs": 95,
+    "advisory_matches": 131,
+    "new_matches": 15,
+    "fixed_versions_in_matches": [
+      {
+        "source_package": "apt",
+        "installed_source_version": "3.0.3",
+        "cve": "CVE-2026-109518",
+        "trixie": {
+          "status": "resolved",
+          "repositories": {
+            "trixie": "3.0.3",
+            "trixie-security": "3.0.4"
+          },
+          "fixed_version": "3.0.4",
+          "urgency": "not yet assigned"
+        },
+        "description": null,
+        "source": "https://security-tracker.debian.org/tracker/CVE-2026-109518"
+      }
+    ],
+    "missing_trixie_records": 1,
+    "arm64_manifest_unchanged": true,
+    "arm64_manifest": "sha256:ac359420747e1f5f8ac4d23f40d7ce022c0a39090ed6cdd8dde5f596affbe41d",
+    "tracker_sha256": "ff4c1a08a537b7bc4bd2e48baeda1bcc644aefb4defeff37aaa4115bd8b3a27f"
+  },
+  "browser_checks": {
+    "desktop": true,
+    "mobile_width": 390,
+    "mobile_scroll_width": 390,
+    "keyboard_skip_focus": "MAIN",
+    "long_label_overlap_pairs_before": 4,
+    "long_label_overlap_pairs_after": 0,
+    "console_errors_or_warnings": 0,
+    "snapshots_expired_and_refresh_recovered": true,
+    "quality_51_report_conflict_pagination": true,
+    "retained_investigation_and_disabled_recovery_views": true,
+    "preview_empty_access_denied_unavailable": true,
+    "no_new_ai_or_recovery_actions": true,
+    "screen_reader_or_universal_wcag_claim": false
+  },
+  "findings_closed": [
+    "condition-defined exact evidence scope",
+    "clock-bounded cached freshness",
+    "long graph labels overlapping",
+    "small-text contrast",
+    "UTC conversion overflow classification",
+    "direct-generation diagnostic bypass",
+    "operating documentation drift"
+  ],
+  "accepted_limits": [
+    "131 container advisory matches including apt3.0.4 published fix pending reviewed image maintenance; official ARM64 image unchanged",
+    "External monitoring/backups declined; same-host limits remain",
+    "No new retained recovery/AI generation; mutating control flows covered in isolated suites and earlier live acceptance",
+    "Synthetic AI evaluation remains bounded and confidence uncalibrated",
+    "Public multi-user deployment, distributed scaling and atomic warehouse publication remain separate scope",
+    "Old GitHub run #1 administrative cleanup deferred by owner"
+  ],
+  "checked_at": "2026-11-05T04:12:56.106728+00:00"
+}

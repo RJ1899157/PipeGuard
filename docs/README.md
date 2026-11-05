@@ -17,6 +17,8 @@ PipeGuard documentation describes product scope, proposed architecture, local de
 
 ## Latest verification
 
+- [Stage 14 final audit](stage14-audit.md):599 cases, multi-agent fixes, current browser evidence, restores, preservation and hosted CI.
+
 - [2026-11-04 expanded advisory evaluation](investigation-expanded-evaluation.md): version-11 synthetic live cohort, retained failed cohorts, replay and preservation checks.
 - [2026-11-04 Stage 13 verification](stage13-verification.md): runtime security patches, bounded resources, measurements and local acceptance.
 - [2026-11-04 delivery verification](delivery-verification.md): isolated local acceptance and subsequent hosted Linux success at its recorded revision.

@@ -35,7 +35,7 @@ The API and independent monitor were restarted with the fix. The next ordinary r
 
 ## Verification
 
-The final full backend regression passes **419 tests** (110.71 seconds). No frontend source, dependency, schema migration, recovery permission or recovery policy changed. The live dashboard was refreshed and both failed attempts, reasons, intervals and honest quality/lineage gaps were visually checked. See [retained attempts](audit/recovery-phase1-attempts.png).
+The final full backend regression passes **419 tests** (110.71 seconds). No frontend source, dependency, schema migration, recovery permission or recovery policy changed. The live dashboard was refreshed and both failed attempts, reasons, intervals and honest quality/lineage gaps were visually checked. See [retained attempts](audit/recovery-phase1-attempts.jpg).
 
 The first full regression run exposed an older task-timeout fixture missing the newly introduced false-default terminal-fault parameter; the fixture now supplies both documented parameters. A cooldown assertion also failed in that run and passed in isolation; its cause was not established. The final full rerun passes, including the cooldown and timeout-fixture checks. The existing upstream Starlette/HTTPX deprecation warning remains.
 

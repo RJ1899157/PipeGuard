@@ -44,9 +44,9 @@ The latest-receipt plan changed from sorting to an index-only scan. Measurements
 
 ## Current browser evidence
 
-![Live overview with independent watcher status](audit/hardening-desktop.png)
+![Live overview with independent watcher status](audit/hardening-desktop.jpg)
 
-[Mobile live layout](audit/hardening-mobile.png) · [Mobile quality execution view](audit/hardening-quality-mobile.png). The separate table scroll area remains usable without page-level overflow.
+[Mobile live layout](audit/hardening-mobile.jpg) · [Mobile quality execution view](audit/hardening-quality-mobile.jpg). The separate table scroll area remains usable without page-level overflow.
 
 ## Operating limits retained deliberately
 
